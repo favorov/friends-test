@@ -22,7 +22,7 @@ Description: We have two sets:T (rows) and C (columns) and
     are the t's friend. And, the t is the c's marker.
 License: Artistic-2.0
 LazyLoad: yes
-Depends: R (>= 4.4.0)
+Depends: R (>= 4.2.0)
 biocViews: Annotation, StatisticalMethod
 URL: https://github.com/favorov/best-friends
 BugReports: https://github.com/favorov/best-friends/issues
