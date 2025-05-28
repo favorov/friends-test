@@ -1,3 +1,4 @@
+
 #nM<-M/rowSums(M)
 Morig<-M
 scale<-1/2
@@ -6,7 +7,7 @@ scaleMask[selected_rows,]=!mask[selected_rows]
 M[scaleMask]=M[scaleMask]*scale
 
 
-hM<-Heatmap(M,
+hM<-ComplexHeatmap::Heatmap(M,
   name = "Mixture test", # Name of the heatmap legend
   cluster_rows = FALSE,
   cluster_columns = FALSE,
@@ -23,7 +24,7 @@ falsecolor<-"gray98"
 friends<-friends.test::friends.test.bic(M,prior.to.have.friends = 0.001)
 
 
-hmask<-Heatmap(mask,
+hmask<-ComplexHeatmap::Heatmap(mask,
              name = "mask", # Name of the heatmap legend
              cluster_rows = FALSE,
              cluster_columns = FALSE,
@@ -44,7 +45,7 @@ for(r in seq(nrow(friends))){
   friends.mat[friends[r,"marker"],friends[r,"friend"]]=1
 }
 
-hfb<-Heatmap(friends.mat,
+hfb<-ComplexHeatmap::Heatmap(friends.mat,
             name = "Friends", # Name of the heatmap legend
             cluster_rows = FALSE,
             cluster_columns = FALSE,
@@ -63,7 +64,7 @@ plot(hM+hmask+hfb)
 friends<-friends.test::friends.test(M)
 
 
-hmask<-Heatmap(mask,
+hmask<-ComplexHeatmap::Heatmap(mask,
                name = "mask", # Name of the heatmap legend
                cluster_rows = FALSE,
                cluster_columns = FALSE,
@@ -84,7 +85,7 @@ for(r in seq(nrow(friends))){
   friends.mat[friends[r,"marker"],friends[r,"friend"]]=1
 }
 
-hfb<-Heatmap(friends.mat,
+hfb<-ComplexHeatmap::Heatmap(friends.mat,
              name = "Friends", # Name of the heatmap legend
              cluster_rows = FALSE,
              cluster_columns = FALSE,
