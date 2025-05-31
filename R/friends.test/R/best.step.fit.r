@@ -18,10 +18,10 @@
 #' example(tag.int.ranks)
 #' step<-best.step.fit(TF.ranks[42,],genes.no)
 #' @export
-best.step.fit<-function(ranks,tags.no){
-  step.models <- step.fit.ln.likelihoods(ranks,tags.no)
+best.step.fit<-function(ranks,max.possible.rank){
+  step.models <- step.fit.ln.likelihoods(ranks,max.possible.rank)
  
-  possible.step.ranks<-seq_len(tags.no-1)
+  possible.step.ranks<-seq_len(max.possible.rank-1)
   k1.by.l1<-step.models$k1.by.l1[possible.step.ranks]
   possible.step.ranks<-possible.step.ranks[k1.by.l1>0 & k1.by.l1<length(ranks)]
   #we assess only the steps that have nonzero left and right sets

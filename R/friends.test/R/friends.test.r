@@ -100,12 +100,12 @@ friends.test <- function(A=NULL, threshold = 0.05,
 
 
   #find friends that make tag ranks non-uniform
-  tags.no <- dim(A)[1]
+  max.possible.rank <- dim(A)[1]
 
   #we make a list of fit structures (returned by best.step.fit)
   #per marker (marker row)
   best.fits.for.markers <- apply(marker_ranks, 1,
-                       function(x) best.step.fit(x, tags.no = tags.no))
+                       function(x) best.step.fit(x, max.possible.rank = max.possible.rank))
   #we filter to match
   #max.friends.n parameter here,
   #no more than max.friends.n collections

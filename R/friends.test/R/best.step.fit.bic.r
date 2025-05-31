@@ -18,17 +18,17 @@
 #' \code{collections.on.right} is vector of those on the right \cr
 #' \code{population.on.left} is how many ranks are on left of split; they are friends! \cr
 #' if non-step uniform model wins and there are no friends,\cr 
-#' then \code{best.step.rank==tags.no}, \code{population.on.left==0},\cr
+#' then \code{best.step.rank==max.possible.rank}, \code{population.on.left==0},\cr
 #' all collections are listed in \code{collections.on.right} and \code{collections.on.left} is empty
 #' @examples
 #' example(tag.int.ranks)
 #' step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
 #' nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
 #' @export
-best.step.fit.bic<-function(ranks, tags.no, prior.to.have.friends){
-  step.models <- step.fit.ln.likelihoods(ranks,tags.no)
+best.step.fit.bic<-function(ranks, max.possible.rank, prior.to.have.friends){
+  step.models <- step.fit.ln.likelihoods(ranks,max.possible.rank)
  
-  possible.step.ranks<-seq_len(tags.no-1)
+  possible.step.ranks<-seq_len(max.possible.rank-1)
   k1.by.l1<-step.models$k1.by.l1[possible.step.ranks]
   possible.step.ranks<-possible.step.ranks[k1.by.l1>0 & k1.by.l1<length(ranks)]
   #we assess only the steps that have nonzero left and right sets
@@ -42,7 +42,7 @@ best.step.fit.bic<-function(ranks, tags.no, prior.to.have.friends){
   #and here we use the prior.to.have.friends
   if (max.ln.l+
         log(prior.to.have.friends) >= 
-      step.models$ln.likelihoods[tags.no]+
+      step.models$ln.likelihoods[max.possible.rank]+
         log(1-prior.to.have.friends)) {
     #if we are here, the step model won
     best.step.index<-max(which(possible.ln.likelihoods==max.ln.l))
@@ -61,7 +61,7 @@ best.step.fit.bic<-function(ranks, tags.no, prior.to.have.friends){
   } else {
     #if we are here, the uniform won, no friends
     
-    best.step.rank<-tags.no
+    best.step.rank<-max.possible.rank
     
     population.on.left<-0 #all
     
