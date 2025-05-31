@@ -37,12 +37,12 @@ unif.ks.test<-function(ranks,
   ranks<-jitter(ranks,amount=0.1E-6)
   left_end <- min(ranks)
   if(is.na(uniform.max)){
-    left_end <- max(jranks)
+    right_end <- max(jranks)
   } else {
-    left_end<-uniform.max
+    right_end<-uniform.max
   }
 
-  res <- ks.test(ranks, F0,
+  res <- ks.test(ranks, "punif",min=left_end,max=right_end,
                  simulate.p.value = simulate.p.value,
                  B = B)
   return(res$p.value)

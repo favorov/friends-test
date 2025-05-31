@@ -23,6 +23,10 @@
 #' fit the null model, it can be the maximal possible rank that is common for all 
 #' rows and equals the number of rows \code{'c'} or the maximal observed rank 
 #' for the row we test now, \code{'m'} (default).
+#' @param simulate.p.value K-S by Monte-Carlo if \code{TRUE}; 
+#' default is \code{FALSE}, see [stats::ks.test()]
+#' @param B number of or replicates if \code{simulate.p.value=TRUE}
+#' default is 2000, see [stats::ks.test()]
 #' @return A data.frame, rows are pairs of markers and friends,
 #' columns are: marker, friend and friend.rank. The latter is 
 #' the rank of the column-friend in the vector of ranks of the
@@ -47,7 +51,9 @@
 friends.test <- function(A=NULL, threshold = 0.05, 
                          p.adjust.method = "BH",
                          max.friends.n = dim(A)[2]%/%2,
-                         uniform.max = 'm') {
+                         uniform.max = 'm',
+                         simulate.p.value=FALSE,
+                         B=2000) {
   #parameter checks
   if (is.na(max.friends.n) || max.friends.n == "all" ||
       max.friends.n == "al" || max.friends.n == "a" ||
@@ -86,7 +92,10 @@ friends.test <- function(A=NULL, threshold = 0.05,
   #calculate the p-values for null hypothesis for all the rows
   
   adj_nunif_pval <- p.adjust(
-      apply(all_ranks, 1, unif.ks.test,uniform.max=uniform.max),
+      apply(all_ranks, 1, 
+            unif.ks.test,uniform.max=uniform.max,
+            simulate.p.value=FALSE,
+            B=2000),
       method = p.adjust.method)
 
   marker_ranks <- all_ranks[adj_nunif_pval<=threshold,,drop=FALSE]

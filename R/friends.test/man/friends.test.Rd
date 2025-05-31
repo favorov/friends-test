@@ -9,7 +9,9 @@ friends.test(
   threshold = 0.05,
   p.adjust.method = "BH",
   max.friends.n = dim(A)[2]\%/\%2,
-  uniform.max = "m"
+  uniform.max = "m",
+  simulate.p.value = FALSE,
+  B = 2000
 )
 }
 \arguments{
@@ -31,6 +33,12 @@ than $n$ friendly columns. 1 means we look only for unuque (best) friends.}
 fit the null model, it can be the maximal possible rank that is common for all
 rows and equals the number of rows \code{'c'} or the maximal observed rank
 for the row we test now, \code{'m'} (default).}
+
+\item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
+default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
+
+\item{B}{number of or replicates if \code{simulate.p.value=TRUE}
+default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 }
 \value{
 A data.frame, rows are pairs of markers and friends,
