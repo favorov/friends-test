@@ -15,7 +15,7 @@
 #' @param p.adjust.method Multiple testing correction method, 
 #' see \link[stats]{p.adjust}.
 #' @param max.friends.n The maximal number of friends for a marker, the default 
-#' is \code{'all'}, that is an alias for #of columns in A. 
+#' is \code{dim(A)[2]\%/\%2}, that is rounded half of #of columns in A. 
 #' The string "all" means "all friends", i.e. we do not filter by this parameter 
 #' value. A value $n$ means that we filter out a row if it has more 
 #' than $n$ friendly columns. 1 means we look only for unuque (best) friends.
@@ -46,7 +46,7 @@
 #' 
 friends.test <- function(A=NULL, threshold = 0.05, 
                          p.adjust.method = "BH",
-                         max.friends.n = 'all',
+                         max.friends.n = dim(A)[2]%/%2,
                          uniform.max = 'm') {
   #parameter checks
   if (is.na(max.friends.n) || max.friends.n == "all" ||
