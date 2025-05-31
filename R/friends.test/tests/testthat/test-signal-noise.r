@@ -11,7 +11,6 @@ sig.noise.obj <- function(n = 80, k = 30, n0 = 10, p = 0.2, rate_exp = 1/2, lamb
     mask[selected_rows, ] <- matrix(runif(n0 * k) < p, nrow = n0, ncol = k)
     M[mask] <- rpois(sum(mask), lambda = lambda_pois)
     res=list(M=M, selected_rows=selected_rows, mask=mask)
-
     return(res)
 }
 
@@ -51,7 +50,8 @@ for (i in seq_len(nrow(friends))) {
 }
 
 err <- compute_error(signoise[['mask']], friends.mask)
-
-    expect_true(err[['TP']] > 0.7, info = "True Positive rate should be greater than 50%")
-    expect_true(err[['FP']] < 0.2, info = "False Positive rate should be less than 20%")
+cat("\nfriends.test.bic on signal+noise\n")
+print(err)
+expect_true(err[['TP']] > 0.7, info = "True Positive rate should be greater than 50%")
+expect_true(err[['FP']] < 0.2, info = "False Positive rate should be less than 20%")
 })
