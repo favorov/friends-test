@@ -4,20 +4,29 @@
 \alias{unif.ks.test}
 \title{unif.ks.test}
 \usage{
-unif.ks.test(ranks, uniform.max = NA)
+unif.ks.test(ranks, uniform.max = NA, simulate.p.value = FALSE, B = 2000)
 }
 \arguments{
 \item{ranks}{vector of ranks of a tag in different collections, \eqn{1 .. N})}
 
 \item{uniform.max}{the maximal rank in the uniform, default is NA which means
 that we take the max(ranks) as the maximal value}
+
+\item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
+default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
+
+\item{B}{number of or replicates if \code{simulate.p.value=TRUE}
+default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 }
 \value{
-p-value for the KS test comparing the ranks distribution with uniform
+p-value for the K-S test comparing the ranks distribution with uniform
 }
 \description{
-returns p-value for uniformity of the ranks (they are in \eqn{1 .. N}) vector
-#' See \link{friends.test} documentation for details.
+returns the Kolomogorov-Smirnov p-value for uniformity of the values.
+The values are the ranks of the same row in different columns.
+}
+\details{
+See \link{friends.test} documentation for details.
 }
 \examples{
 example(tag.int.ranks)
