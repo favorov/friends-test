@@ -4,12 +4,12 @@
 \alias{best.step.fit}
 \title{best.step.fit}
 \usage{
-best.step.fit(ranks, tags.no)
+best.step.fit(ranks, max.possible.rank)
 }
 \arguments{
 \item{ranks}{vector of ranks of a tag in different collections}
 
-\item{tags.no}{number of tags, i.e. maximal rank}
+\item{max.possible.rank}{number of tags, i.e. maximal rank}
 }
 \value{
 a list of four values: \cr

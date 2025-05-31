@@ -4,12 +4,12 @@
 \alias{best.step.fit.bic}
 \title{best.step.fit.bic}
 \usage{
-best.step.fit.bic(ranks, tags.no, prior.to.have.friends)
+best.step.fit.bic(ranks, max.possible.rank, prior.to.have.friends)
 }
 \arguments{
 \item{ranks}{vector of ranks of a tag in different collections}
 
-\item{tags.no}{number of tags, i.e. maximal rank}
+\item{max.possible.rank}{number of tags, i.e. maximal rank}
 
 \item{prior.to.have.friends}{The prior for a tag is important enough to have friendly collections.}
 }
@@ -23,7 +23,7 @@ it is not obligatory one on the \code{ranks} value.\cr
 \code{collections.on.right} is vector of those on the right \cr
 \code{population.on.left} is how many ranks are on left of split; they are friends! \cr
 if non-step uniform model wins and there are no friends,\cr
-then \code{best.step.rank==tags.no}, \code{population.on.left==0},\cr
+then \code{best.step.rank==max.possible.rank}, \code{population.on.left==0},\cr
 all collections are listed in \code{collections.on.right} and \code{collections.on.left} is empty
 }
 \description{

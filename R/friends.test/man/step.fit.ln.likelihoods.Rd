@@ -4,36 +4,36 @@
 \alias{step.fit.ln.likelihoods}
 \title{step.fit.ln.likelihoods}
 \usage{
-step.fit.ln.likelihoods(ranks, tags.no)
+step.fit.ln.likelihoods(ranks, max.possible.rank)
 }
 \arguments{
 \item{ranks}{vector of ranks of a tag in different collections}
 
-\item{tags.no}{number of tags, i.e. maximal rank}
+\item{max.possible.rank}{number of tags, i.e. maximal rank}
 }
 \value{
 a list of three values: \cr
 \code{collectons.order} is the order of ranks in, collection-by-collection\cr
 \code{ln.likelihoods} the ln of the likelihood of each of models corresponding
-to each split rank value in \eqn{1..tags.no-1} and the last, correspond to just uniform\cr
+to each split rank value in \eqn{1..max.possible.rank-1} and the last, correspond to just uniform\cr
 \code{k1.by.l1} contains \eqn{k_1}, that is the number of ranks on the
-on left of the step, including the split value, for split values \eqn{1..tags.no};\cr
+on left of the step, including the split value, for split values \eqn{1..max.possible.rank};\cr
 }
 \description{
 fits possible bi-uniform step models for a set of descending
 (descending in each collection) ranks of the same tag in different collections
 (the \code{ranks} parameter)
-The input ranks are integers in \eqn{1..tags.no}.
-Each of the split rank values \eqn{1 .. tags.no-1} split all the ranks
+The input ranks are integers in \eqn{1..max.possible.rank}.
+Each of the split rank values \eqn{1 .. max.possible.rank-1} split all the ranks
 into two steps: "this or less" and "greater than this".
 }
 \details{
 The function fits the step (bi-uniform) model for each
-integer splitting value in \eqn{1..tags.no-1};
+integer splitting value in \eqn{1..max.possible.rank-1};
 the splitting value is in the maximal value in the left part
 of the ordering (the original ranks are descending, so best
 collections are in the left part) and calculates the likelihood.
-The last value with the index \eqn{tags.no} is calculated for a
+The last value with the index \eqn{max.possible.rank} is calculated for a
 non-step uniform model.
 See \link{friends.test} documentation for details.
 }
