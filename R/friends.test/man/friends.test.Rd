@@ -30,9 +30,9 @@ value. A value $n$ means that we filter out a row if it has more
 than $n$ friendly columns. 1 means we look only for unuque (best) friends.}
 
 \item{uniform.max}{The maximum of the uniform distribution of the ranks we
-fit the null model, it can be the maximal possible rank that is common for all
-rows and equals the number of rows \code{'c'} or the maximal observed rank
-for the row we test now, \code{'m'} (default).}
+fit the null model, it can be the maximal possible rank that is common for
+all rows and equals the number of rows \code{'c'} or the maximal observed
+rank for the row we test now, \code{'m'} (default).}
 
 \item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
 default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
@@ -61,7 +61,7 @@ A <- matrix(c(10,6,7,8,9,
                 8,9,10,6,7,
                 7,8,9,10,6,
                 6,7,8,9,10,
-                20,0,0,0,0), 
+                20,0,0,0,0),
                 nrow=6, ncol=5, byrow=TRUE)
 A
 friends.test(A, threshold = .05)
