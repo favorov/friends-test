@@ -126,11 +126,13 @@ friends.test <- function(A = NULL, threshold = 0.05,
   #no more than max.friends.n collections
   #vapply is recommended by BioCheck as safer than sapply
 
+
   best.fits.for.markers <- best.fits.for.markers[
     vapply(best.fits.for.markers, function(x) {
       x$population.on.left <= max.friends.n
     }, logical(1))
   ]
+
 
   if (!length(best.fits.for.markers)) {
     return(data.frame(tag = character(),
