@@ -1,7 +1,7 @@
 .onAttach <- function(libname, pkgname) {
     version <- packageDescription("friends.test", fields="Version")
     packageStartupMessage(paste("Welcome to friends.test, version", version,
-        "(A primavera est\u00E1 quase no fim.) and stay tuned!")
+        "(June is almost over.) and stay tuned!")
     )
 }
 # \u00E1 is á
