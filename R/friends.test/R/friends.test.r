@@ -126,30 +126,33 @@ friends.test <- function(A = NULL, threshold = 0.05,
   #no more than max.friends.n collections
   #vapply is recommended by BioCheck as safer than sapply
 
-  best.fits.for.markers <- best.fits.for.markers[vapply(best.fits.for.markers, function(x) {
-    x$population.on.left <= max.friends.n
-  },logical(1))]
+  best.fits.for.markers <-
+    best.fits.for.markers[vapply(best.fits.for.markers, function(x) {
+      x$population.on.left <= max.friends.n
+    }, logical(1))]
 
- 
-  if(!length(best.fits.for.markers)){
-    return(data.frame(tag=character(),
-            collection=character(),
-            friend.rank=integer()))
+
+  if (!length(best.fits.for.markers)) {
+    return(data.frame(tag = character(),
+                      collection = character(),
+                      friend.rank = integer()))
   } #if no tag passed best test, return empty frame rather than NULL
 
-  res_pre <- lapply(seq_along(best.fits.for.markers),
-      function(x) {
-          collections.on.left<-
-            best.fits.for.markers[[x]]$collections.on.left
-          data.frame(
-            marker=names(best.fits.for.markers)[x],
-            friend=colnames(marker_ranks)[collections.on.left],
-            friend.rank=which(
-              best.fits.for.markers[[x]]$step.models$collectons.order %in%
-              collections.on.left
-            )
-          )
-        })
+  res_pre <- lapply(
+    seq_along(best.fits.for.markers),
+    function(x) {
+      collections.on.left <-
+        best.fits.for.markers[[x]]$collections.on.left
+      data.frame(
+        marker = names(best.fits.for.markers)[x],
+        friend = colnames(marker_ranks)[collections.on.left],
+        friend.rank = which(
+          best.fits.for.markers[[x]]$step.models$collectons.order %in%
+            collections.on.left
+        )
+      )
+    }
+  )
 
   res <- do.call(rbind, res_pre)
 
