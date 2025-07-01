@@ -142,10 +142,10 @@ friends.test <- function(A = NULL, threshold = 0.05,
   } #if no tag passed best test, return empty frame rather than NULL
 
 
-  best.fits.for.markers <-
+  best.fits.for.markers <<-
     best.fits.for.markers[filter_for_markers]
 
-  marker_ids <-
+  marker_ids <<-
     marker_ids[filter_for_markers]
 
   #filter marker ids and best fits together
@@ -156,14 +156,12 @@ friends.test <- function(A = NULL, threshold = 0.05,
     lapply(
       seq_len(length(best.fits.for.markers)),
       function(n) {
-        collections.on.left <-
-          best.fits.for.markers[[n]]$collections.on.left
+        x <- best.fits.for.markers[[n]]
         data.frame(
           marker = names(best.fits.for.markers)[n],
-          friend = colnames(marker_ranks)[collections.on.left],
+          friend = colnames(marker_ranks)[x$collections.on.left],
           friend.rank = which(
-            best.fits.for.markers[[n]]$step.models$collections.order %in%
-              collections.on.left
+            x$step.models$collections.order %in% x$collections.on.left
           )
         )
       }
