@@ -101,17 +101,21 @@ friends.test <- function(A = NULL, threshold = 0.05,
                    B = 2000),
              method = p.adjust.method)
 
-  marker_ranks <- all_ranks[adj_nunif_pval <= threshold, , drop = FALSE]
 
-  if (nrow(marker_ranks) == 0) {
-    message("No tags with non-uniform ranks found for given threshold.")
+  is_marker <- (adj_nunif_pval <= threshold)
+  #is it a marker?
+  if (sum(is_marker) == 0) {
+    message("No rows with non-uniform ranks found for given threshold.")
     return(data.frame(tag = character(),
                       collection = character(),
                       friend.rank = integer()))
   }
 
+  marker_ranks <- all_ranks[is_marker, , drop = FALSE]
+  #subset all_ranks to markers only
+  marker_ids <- which(is_marker)
 
-  #find friends that make tag ranks non-uniform
+  #find friends that make in-marker ranks non-uniform
   max.possible.rank <- dim(A)[1]
 
   #we make a list of fit structures (returned by best.step.fit)
@@ -126,13 +130,10 @@ friends.test <- function(A = NULL, threshold = 0.05,
   #no more than max.friends.n collections
   #vapply is recommended by BioCheck as safer than sapply
 
-
-  best.fits.for.markers <- best.fits.for.markers[
+  filter_for_markers <-
     vapply(best.fits.for.markers, function(x) {
-      x$population.on.left <= max.friends.n
+      length(x$collections.on.left) <= max.friends.n
     }, logical(1))
-  ]
-
 
   if (!length(best.fits.for.markers)) {
     return(data.frame(tag = character(),
@@ -140,17 +141,28 @@ friends.test <- function(A = NULL, threshold = 0.05,
                       friend.rank = integer()))
   } #if no tag passed best test, return empty frame rather than NULL
 
+
+  best.fits.for.markers <-
+    best.fits.for.markers[filter_for_markers]
+
+  marker_ids <-
+    marker_ids[filter_for_markers]
+
+  #filter marker ids and best fits together
+
+  #cycle though the best fits and ids
+
   res_pre <-
     lapply(
-      seq_along(best.fits.for.markers),
-      function(x) {
+      seq_len(length(best.fits.for.markers)),
+      function(n) {
         collections.on.left <-
-          best.fits.for.markers[[x]]$collections.on.left
+          best.fits.for.markers[[n]]$collections.on.left
         data.frame(
-          marker = names(best.fits.for.markers)[x],
+          marker = names(best.fits.for.markers)[n],
           friend = colnames(marker_ranks)[collections.on.left],
           friend.rank = which(
-            best.fits.for.markers[[x]]$step.models$collectons.order %in%
+            best.fits.for.markers[[n]]$step.models$collections.order %in%
               collections.on.left
           )
         )
