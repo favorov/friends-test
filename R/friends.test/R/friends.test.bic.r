@@ -91,7 +91,7 @@ friends.test.bic <- function(A=NULL, prior.to.have.friends=-1, max.friends.n=dim
             marker=names(best.fits.for.markers)[x],
             friend=colnames(all_ranks)[collections.on.left],
             friend.rank=which(
-              best.fits.for.markers[[x]]$step.models$collectons.order %in% 
+              best.fits.for.markers[[x]]$step.models$collections.order %in% 
               collections.on.left
             )
           )

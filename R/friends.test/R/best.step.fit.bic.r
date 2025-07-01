@@ -53,10 +53,10 @@ best.step.fit.bic<-function(ranks, max.possible.rank, prior.to.have.friends){
     population.on.left<-k1.by.l1[best.step.rank]
 
     collections.on.left<-
-    step.models$collectons.order[seq_len(population.on.left)] 
+    step.models$collections.order[seq_len(population.on.left)] 
     #1:population.on.left
     collections.on.right<-
-      step.models$collectons.order[seq(population.on.left+1,length(ranks))] 
+      step.models$collections.order[seq(population.on.left+1,length(ranks))] 
     #(population.on.left+1):k
   } else {
     #if we are here, the uniform won, no friends
@@ -67,7 +67,7 @@ best.step.fit.bic<-function(ranks, max.possible.rank, prior.to.have.friends){
     
     collections.on.left<-c() #empty -- no friends
       
-    collections.on.right<-step.models$collectons.order
+    collections.on.right<-step.models$collections.order
     #all
    }
   

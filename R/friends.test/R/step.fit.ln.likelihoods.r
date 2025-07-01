@@ -21,7 +21,7 @@
 #' @param ranks vector of ranks of a tag in different collections
 #' @param max.possible.rank number of tags, i.e. maximal rank 
 #' @return a list of three values: \cr
-#' \code{collectons.order} is the order of ranks in, collection-by-collection\cr
+#' \code{collections.order} is the order of ranks in, collection-by-collection\cr
 #' \code{ln.likelihoods} the ln of the likelihood of each of models corresponding 
 #' to each split rank value in \eqn{1..max.possible.rank-1} and the last, correspond to just uniform\cr
 #' \code{k1.by.l1} contains \eqn{k_1}, that is the number of ranks on the 
@@ -45,8 +45,8 @@ step.fit.ln.likelihoods<-function(ranks,max.possible.rank){
   }
   
   
-  collectons.order<-order(ranks)
-  ranks<-ranks[collectons.order]
+  collections.order<-order(ranks)
+  ranks<-ranks[collections.order]
   ln.likelihoods<-rep(0,max.possible.rank)
   k1.by.l1<-rep(0,max.possible.rank)
   k<-length(ranks)
@@ -73,7 +73,7 @@ step.fit.ln.likelihoods<-function(ranks,max.possible.rank){
   k1.by.l1[max.possible.rank]<-k
   
   list(
-    collectons.order=collectons.order,
+    collections.order=collections.order,
     ln.likelihoods=ln.likelihoods,
     k1.by.l1=k1.by.l1
   )

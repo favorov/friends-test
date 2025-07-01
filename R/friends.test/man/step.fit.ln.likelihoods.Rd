@@ -13,7 +13,7 @@ step.fit.ln.likelihoods(ranks, max.possible.rank)
 }
 \value{
 a list of three values: \cr
-\code{collectons.order} is the order of ranks in, collection-by-collection\cr
+\code{collections.order} is the order of ranks in, collection-by-collection\cr
 \code{ln.likelihoods} the ln of the likelihood of each of models corresponding
 to each split rank value in \eqn{1..max.possible.rank-1} and the last, correspond to just uniform\cr
 \code{k1.by.l1} contains \eqn{k_1}, that is the number of ranks on the

@@ -39,10 +39,10 @@ best.step.fit<-function(ranks,max.possible.rank){
   population.on.left<-k1.by.l1[best.step.rank]
 
   collections.on.left<-
-    step.models$collectons.order[seq_len(population.on.left)] 
+    step.models$collections.order[seq_len(population.on.left)] 
   #1:population.on.left
   collections.on.right<-
-    step.models$collectons.order[seq(population.on.left+1,length(ranks))] 
+    step.models$collections.order[seq(population.on.left+1,length(ranks))] 
   #(population.on.left+1):k
   
   
