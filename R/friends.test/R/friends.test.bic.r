@@ -45,7 +45,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   if (max.friends.n < 1 || max.friends.n > ncol(A)) {
     stop("max.friends.n must be between 1 and the number of collections.")
   }
-  if (prior.to.have.friends < 0 || prior.to.have.friends > 1) { 
+  if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
     stop("friends.test.bic requires the prior.to.have.friends
           value to be explicitely provided and to be a prior.")
   }
@@ -100,19 +100,22 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   marker_indices <- which(filter.for.markers)
 
 
-  res_pre <- lapply(seq_along(best.fits.for.markers),
-      function(x) {
-          collections.on.left<-
-            best.fits.for.markers[[x]]$collections.on.left
-          data.frame(
-            marker=names(best.fits.for.markers)[x],
-            friend=colnames(all_ranks)[collections.on.left],
-            friend.rank=which(
-              best.fits.for.markers[[x]]$step.models$collections.order %in%
-              collections.on.left
-            )
+  res_pre <-
+    lapply(
+      seq_len(length(best.fits.for.markers)),
+      function(n) {
+        x <- best.fits.for.markers[[n]]
+        data.frame(
+          marker = names(best.fits.for.markers)[n],
+          friend = colnames(all_ranks)[x$collections.on.left],
+          friend.rank = which(
+            x$step.models$collections.order %in% x$collections.on.left
           )
-     })
+        )
+      }
+    )
+
+
 
   res <- do.call(rbind, res_pre)
 
