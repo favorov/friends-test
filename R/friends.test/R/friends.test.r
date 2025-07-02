@@ -113,7 +113,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
   marker_ranks <- all_ranks[is_marker, , drop = FALSE]
   #subset all_ranks to markers only
-  marker_ids <- which(is_marker)
+  marker_indices <- which(is_marker)
 
   #find friends that make in-marker ranks non-uniform
   max.possible.rank <- dim(A)[1]
@@ -142,11 +142,11 @@ friends.test <- function(A = NULL, threshold = 0.05,
   } #if no tag passed best test, return empty frame rather than NULL
 
 
-  best.fits.for.markers <<-
+  best.fits.for.markers <-
     best.fits.for.markers[filter_for_markers]
 
-  marker_ids <<-
-    marker_ids[filter_for_markers]
+  marker_indices <-
+    marker_indices[filter_for_markers]
 
   #filter marker ids and best fits together
 
