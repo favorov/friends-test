@@ -160,9 +160,12 @@ friends.test <- function(A = NULL, threshold = 0.05,
         data.frame(
           marker = names(best.fits.for.markers)[n],
           friend = colnames(marker_ranks)[x$collections.on.left],
+          marker.index = marker_indices[n],
+          friend.index = x$collections.on.left,
           friend.rank = which(
             x$step.models$collections.order %in% x$collections.on.left
-          )
+          ),
+          row.names = NULL
         )
       }
     )

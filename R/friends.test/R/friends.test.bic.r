@@ -99,7 +99,6 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   best.fits.for.markers <- best.fits.for.rows[filter.for.markers]
   marker_indices <- which(filter.for.markers)
 
-
   res_pre <-
     lapply(
       seq_len(length(best.fits.for.markers)),
@@ -108,9 +107,12 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
         data.frame(
           marker = names(best.fits.for.markers)[n],
           friend = colnames(all_ranks)[x$collections.on.left],
+          marker.index = marker_indices[n],
+          friend.index = x$collections.on.left,
           friend.rank = which(
             x$step.models$collections.order %in% x$collections.on.left
-          )
+          ),
+          row.names = NULL
         )
       }
     )
