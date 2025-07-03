@@ -89,11 +89,15 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   )
 
   if (!sum(filter.for.markers)) {
-    return(data.frame(
-      tag = character(),
-      collection = character(),
-      friend.rank = integer()
-    ))
+    return(
+      data.frame(
+        marker = character(),
+        friend = character(),
+        marker.index = integer(),
+        friend.index = integer(),
+        friend.rank = integer()
+      )
+    )
   } #if no row passed best test, return empty frame rather than NULL
 
   best.fits.for.markers <- best.fits.for.rows[filter.for.markers]

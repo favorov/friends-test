@@ -106,9 +106,15 @@ friends.test <- function(A = NULL, threshold = 0.05,
   #is it a marker?
   if (sum(is_marker) == 0) {
     message("No rows with non-uniform ranks found for given threshold.")
-    return(data.frame(tag = character(),
-                      collection = character(),
-                      friend.rank = integer()))
+    return(
+      data.frame(
+        marker = character(),
+        friend = character(),
+        marker.index = integer(),
+        friend.index = integer(),
+        friend.rank = integer()
+      )
+    )
   }
 
   marker_ranks <- all_ranks[is_marker, , drop = FALSE]
@@ -136,9 +142,15 @@ friends.test <- function(A = NULL, threshold = 0.05,
     }, logical(1))
 
   if (!length(best.fits.for.markers)) {
-    return(data.frame(tag = character(),
-                      collection = character(),
-                      friend.rank = integer()))
+    return(
+      data.frame(
+        marker = character(),
+        friend = character(),
+        marker.index = integer(),
+        friend.index = integer(),
+        friend.rank = integer()
+      )
+    )
   } #if no tag passed best test, return empty frame rather than NULL
 
 
