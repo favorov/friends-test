@@ -42,7 +42,7 @@ A <- matrix(c(10,6,7,8,9,
                 8,9,10,6,7,
                 7,8,9,10,6,
                 6,7,8,9,10,
-                20,0,0,0,0), 
+                20,0,0,0,0),
                 nrow=6, ncol=5, byrow=TRUE)
 A
 friends.test.bic(A, prior.to.have.friends=0.5)

@@ -28,9 +28,11 @@
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
 #' default is 2000, see [stats::ks.test()]
 #' @return A data.frame, rows are pairs of markers and friends,
-#' columns are: marker, friend and friend.rank. The latter is
-#' the rank of the column-friend in the vector of ranks of the
-#' ranks of the row-marker in different columns.
+#' columns are: marker, friend, marker.index, friend.index and
+#' friend.rank. Marker and friend are the names of the row and column
+#' respectively. Indices are their indices in the input matrix.
+#' The friend.ran is the rank of the column-friend in
+#' the vector of ranks of the ranks of the row-marker in different columns.
 #' @importFrom stats p.adjust
 #' @examples
 #' A <- matrix(c(10,6,7,8,9,
