@@ -27,7 +27,7 @@
 #' default is \code{FALSE}, see [stats::ks.test()]
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
 #' default is 2000, see [stats::ks.test()]
-#' @return A data.frame, rows are pairs of markers and friends,
+#' @return A data.frame, rows are pairs of marker and friend,
 #' columns are: marker, friend, marker.index, friend.index and
 #' friend.rank. Marker and friend are the names of the row and column
 #' respectively. Indices are their indices in the input matrix.

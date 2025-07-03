@@ -41,10 +41,12 @@ default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 }
 \value{
-A data.frame, rows are pairs of markers and friends,
-columns are: marker, friend and friend.rank. The latter is
-the rank of the column-friend in the vector of ranks of the
-ranks of the row-marker in different columns.
+A data.frame, rows are pairs of marker and friend,
+columns are: marker, friend, marker.index, friend.index and
+friend.rank. Marker and friend are the names of the row and column
+respectively. Indices are their indices in the input matrix.
+The friend.ran is the rank of the column-friend in
+the vector of ranks of the ranks of the row-marker in different columns.
 }
 \description{
 We have two sets:T (rows) and C (columns) and
