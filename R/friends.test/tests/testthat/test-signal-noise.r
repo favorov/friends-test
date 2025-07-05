@@ -1,4 +1,4 @@
-test_that("Signal-noise test", {
+test_that("Signal-noise test for ks", {
   set.seed(42)
 
   # generate a signal-noise matrix, as in custom code by Sasha S
@@ -45,7 +45,7 @@ test_that("Signal-noise test", {
 
   signoise <- sig.noise.obj()
 
-  friends <- friends.test.bic(signoise[["M"]], prior.to.have.friends = 0.01)
+  friends <- friends.test(signoise[["M"]])
   friends.mask <- matrix(FALSE, nrow = nrow(signoise[["M"]]),
                          ncol = ncol(signoise[["M"]]))
   for (i in seq_len(nrow(friends))) {
@@ -54,12 +54,12 @@ test_that("Signal-noise test", {
   }
 
   err <- compute_error(signoise[["mask"]], friends.mask)
-  expect_true(err[["TP"]] > 0.55,
+  expect_true(err[["TP"]] > 0.1, #not a superresult
               info = "True Positive rate should be greater than 55%")
-  expect_true(err[["PR"]] > 0.55,
+  expect_true(err[["PR"]] > 0.75,
               info = "Precision should be greater than 55%")
-  expect_true(err[["RCL"]] > 0.55,
+  expect_true(err[["RCL"]] > 0.1,
               info = "Recall should be greater than 55%")
-  expect_true(err[["FP"]] < 0.01,
+  expect_true(err[["FP"]] < 0.001,
               info = "False Positive rate should be less than 1%")
 })

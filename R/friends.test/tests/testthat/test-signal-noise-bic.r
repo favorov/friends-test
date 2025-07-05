@@ -1,4 +1,4 @@
-test_that("Signal-noise test", {
+test_that("Signal-noise test for bic", {
   set.seed(42)
 
   # generate a signal-noise matrix, as in custom code by Sasha S
