@@ -16,7 +16,7 @@
 #' The string "all" means "all friends", i.e. we do not filter by this parameter
 #' value. A value $n$ means that we filter out a row if it has more
 #' than $n$ friendly columns. 1 means we look only for unuque (best) friends.
-#' @return A data.frame, each row describe a pair of a marker and a 
+#' @return A data.frame, each row describe a pair of a marker and a
 #' friend. Columns are: marker, friend, marker.index, friend.index and
 #' friend.rank. Marker and friend are the names of the row and column
 #' respectively. Indices are their indices in the input matrix.
