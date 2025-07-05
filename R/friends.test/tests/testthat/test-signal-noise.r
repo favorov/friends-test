@@ -53,7 +53,7 @@ test_that("Signal-noise test", {
                  as.numeric(friends[i, "friend"])] <- TRUE
   }
 
-  err <<- compute_error(signoise[["mask"]], friends.mask)
+  err <- compute_error(signoise[["mask"]], friends.mask)
   expect_true(err[["TP"]] > 0.55,
               info = "True Positive rate should be greater than 55%")
   expect_true(err[["PR"]] > 0.55,
