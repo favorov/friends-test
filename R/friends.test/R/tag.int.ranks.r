@@ -19,7 +19,7 @@
 #' gene.names<-
 #'     paste0("gene_",as.character(seq( from = 1, to = genes.no )))
 #' TF.names<-
-#'     paste0("TF_",as.character(seq( from = 1, to = TFs.no )))  
+#'     paste0("TF_",as.character(seq( from = 1, to = TFs.no )))
 #' regulation<-matrix(rep(1,TFs.no*genes.no),
 #'     ncol=TFs.no,byrow=FALSE
 #' )
@@ -49,26 +49,30 @@ tag.int.ranks <- function(
     }
   }
 
-    order <- ifelse(distance_like, 1, -1)
-    #if attention is distance_like, we will order in ascending
-    #if nor, descending.
-    #E.g., the least ranks are the
-    #most close attentions
-    # if distance_like holds, the least is the best (first)
-    #and order==1 (ascending)
-    ranks.of.tags<-apply(attention,2,
-                         function(x){
-                             data.table::frankv(x,ties.method='random',
-                                                na.last=TRUE,order=order)
-                         }
+  order <- ifelse(distance_like, 1, -1)
+  #if attention is distance_like, we will order in ascending
+  #if nor, descending.
+  #E.g., the least ranks are the
+  #most close attentions
+  # if distance_like holds, the least is the best (first)
+  #and order==1 (ascending)
+  ranks.of.tags <-
+    apply(
+      attention, 2,
+      function(x) {
+        data.table::frankv(x, ties.method = "random",
+                           na.last = TRUE, order = order)
+      }
     )
-    #we applied ranking column-by-column (collection-by-cloud)
-    rownames(ranks.of.tags)<-rownames(attention)
-    colnames(ranks.of.tags)<-colnames(attention)
-    #we reapply NA to the diagonal -- it will be used not to see at in the C++ u statistics calculation
-    #it also signals C++ that there are |C|-1 values rather that |C|
-    #there a no other source on NA's in ranks.of.tags
-    if (neglect_diagonal){diag(ranks.of.tags)<-NA}
-    ranks.of.tags
+  #we applied ranking column-by-column (collection-by-cloud)
+  rownames(ranks.of.tags) <- rownames(attention)
+  colnames(ranks.of.tags) <- colnames(attention)
+  #we reapply NA to the diagonal -- it will be used not to see
+  #at in the C++ u statistics calculation
+  #it also signals C++ that there are |C|-1 values rather that |C|
+  #there a no other source on NA's in ranks.of.tags
+  if (neglect_diagonal) {
+    diag(ranks.of.tags) <- NA
+  }
+  ranks.of.tags
 }
- 
