@@ -41,8 +41,8 @@ default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 }
 \value{
-A data.frame, rows are pairs of marker and friend,
-columns are: marker, friend, marker.index, friend.index and
+A data.frame, each row describe a pair of a marker and a
+friend. Columns are: marker, friend, marker.index, friend.index and
 friend.rank. Marker and friend are the names of the row and column
 respectively. Indices are their indices in the input matrix.
 The friend.ran is the rank of the column-friend in

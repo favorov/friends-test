@@ -13,13 +13,16 @@ best.step.fit(ranks, max.possible.rank)
 }
 \value{
 a list of four values: \cr
-\code{step.models} is return from \link{step.fit.ln.likelihoods} call the function start with
+\code{step.models} is return from \link{step.fit.ln.likelihoods} call,
+which the function starts with
 \code{best.step.rank} is the rank value that makes the best step;
 it is not obligatory one on the \code{ranks} value.\cr
-\code{collections.on.left} is the vector of the collections on the left of the best step
+\code{collections.on.left} is
+the vector of the collections on the left of the best step
 (including the step value). They are friends of the tag.\cr
 \code{collections.on.right} is vector of those on the right \cr
-\code{population.on.left} is how many ranks are on left of split; they are friends! \cr
+\code{population.on.left} is how many ranks are on left of split;
+they are friends! \cr
 }
 \description{
 finds the ML-best step model for one tag

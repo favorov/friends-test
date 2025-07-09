@@ -13,19 +13,23 @@ step.fit.ln.likelihoods(ranks, max.possible.rank)
 }
 \value{
 a list of three values: \cr
-\code{collections.order} is the order of ranks in, collection-by-collection\cr
-\code{ln.likelihoods} the ln of the likelihood of each of models corresponding
-to each split rank value in \eqn{1..max.possible.rank-1} and the last, correspond to just uniform\cr
+\code{collections.order} is the order of ranks in, column-by-column\cr
+\code{ln.likelihoods} the ln of the likelihood of each of models
+corresponding to each split rank value in \eqn{1..max.possible.rank-1}
+and the last, correspond to just uniform, no step\cr
 \code{k1.by.l1} contains \eqn{k_1}, that is the number of ranks on the
-on left of the step, including the split value, for split values \eqn{1..max.possible.rank};\cr
+on left of the step, including the split value, for split values
+\eqn{1..max.possible.rank};\cr
 }
 \description{
 fits possible bi-uniform step models for a set of descending
-(descending in each collection) ranks of the same tag in different collections
+(descending in each collection) ranks of the same tag
+in different collections
 (the \code{ranks} parameter)
 The input ranks are integers in \eqn{1..max.possible.rank}.
-Each of the split rank values \eqn{1 .. max.possible.rank-1} split all the ranks
-into two steps: "this or less" and "greater than this".
+Each of the split rank values \eqn{1 .. max.possible.rank-1}
+split all the ranks into two steps: "this or less" and
+"greater than this".
 }
 \details{
 The function fits the step (bi-uniform) model for each
