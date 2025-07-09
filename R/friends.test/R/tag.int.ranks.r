@@ -39,17 +39,17 @@ tag.int.ranks <- function(
   if (min(dims) < 2) {
     stop("The friends.test requires both dimentions of the
         A matrix to be more than 1")
-}
-if (neglect_diagonal) {
+  }
+  if (neglect_diagonal) {
     if (dims[1] == dims[2]) {
       diag(attention) <- NA
     } else {
       warning("neglect_diagonal can work only for square attention matrix")
       neglect_diagonal <- FALSE
     }
-}
-   
-    order<-ifelse(distance_like,1,-1)
+  }
+
+    order <- ifelse(distance_like, 1, -1)
     #if attention is distance_like, we will order in ascending
     #if nor, descending.
     #E.g., the least ranks are the

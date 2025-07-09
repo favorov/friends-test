@@ -31,14 +31,16 @@
 #' step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
 #' nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
 #' @export
-best.step.fit.bic<-function(ranks, max.possible.rank, prior.to.have.friends){
+best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends){
   step.models <- step.fit.ln.likelihoods(ranks,max.possible.rank)
- 
-  possible.step.ranks<-seq_len(max.possible.rank-1)
-  k1.by.l1<-step.models$k1.by.l1[possible.step.ranks]
-  possible.step.ranks<-possible.step.ranks[k1.by.l1>0 & k1.by.l1<length(ranks)]
+
+  possible.step.ranks <- seq_len(max.possible.rank - 1)
+  k1.by.l1 <- step.models$k1.by.l1[possible.step.ranks]
+  possible.step.ranks <- possible.step.ranks[
+    k1.by.l1 > 0 & k1.by.l1 < length(ranks)
+  ]
   #we assess only the steps that have nonzero left and right sets
-  
+
   #best.step.index<-which.max(step.models$ln.likelihoods[possible.step.ranks])
   #almost; we want the last value, so:
   possible.ln.likelihoods<-step.models$ln.likelihoods[possible.step.ranks]
