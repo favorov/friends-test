@@ -32,7 +32,7 @@
 #' nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
 #' @export
 best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
-  step.models <- step.fit.ln.likelihoods(ranks, max.possible.rank)
+  step.models <- friends.test::step.fit.ln.likelihoods(ranks, max.possible.rank)
 
   possible.step.ranks <- seq_len(max.possible.rank - 1)
   k1.by.l1 <- step.models$k1.by.l1[possible.step.ranks]

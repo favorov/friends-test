@@ -59,7 +59,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   if (is.null(dimnames(A)[[2]])) {
     colnames(A) <- seq_len(ncol(A))
   }
-  all_ranks <- tag.int.ranks(A)
+  all_ranks <- friends.test::tag.int.ranks(A)
 
   max.possible.rank <- dim(A)[1]
 
@@ -67,7 +67,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
     apply(
       all_ranks, 1,
       function(x) {
-        best.step.fit.bic(
+        friends.test::best.step.fit.bic(
           x,
           max.possible.rank = max.possible.rank,
           prior.to.have.friends = prior.to.have.friends

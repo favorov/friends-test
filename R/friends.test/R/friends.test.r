@@ -92,13 +92,13 @@ friends.test <- function(A = NULL, threshold = 0.05,
   }
 
   #rank all the A elements in columns
-  all_ranks <- tag.int.ranks(A)
+  all_ranks <- friends.test::tag.int.ranks(A)
 
   #calculate the p-values for null hypothesis for all the rows
 
   adj_nunif_pval <-
     p.adjust(apply(all_ranks, 1,
-                   unif.ks.test, uniform.max = uniform.max,
+                   friends.test::unif.ks.test, uniform.max = uniform.max,
                    simulate.p.value = FALSE,
                    B = 2000),
              method = p.adjust.method)
@@ -131,7 +131,9 @@ friends.test <- function(A = NULL, threshold = 0.05,
   best.fits.for.markers <-
     apply(
       marker_ranks, 1,
-      function(x) best.step.fit(x, max.possible.rank = max.possible.rank)
+      function(x) {
+        friends.test::best.step.fit(x, max.possible.rank = max.possible.rank)
+      }
     )
   #we filter to match
   #max.friends.n parameter here,
