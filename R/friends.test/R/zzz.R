@@ -4,7 +4,7 @@
     paste(
       "Welcome to friends.test, version",
       version,
-      "(Summer middle.) and stay tuned!"
+      "(Summer middle) and stay tuned!"
     )
   )
 }

@@ -2,7 +2,7 @@ Package: friends.test
 Type: Package
 Title: In a matrix, we look for columns that are friendly to a row
 Version: 0.99.17
-Date: 2025-05-31
+Date: 2025-06-11
 Encoding: UTF-8
 Authors@R: c(
     person("Alexandra","Suvorikova",email = "a.suvorikova@gmail.com",role=c("aut","ctb")),
