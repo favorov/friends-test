@@ -12,9 +12,10 @@ For each t we want to identify whether it is significantly more
 relevant for some c's than for the remaining c's.
 If it does, those c for which the t is relevant,
 are the t's friend. And, the t is the c's marker.
-For each tag, we want to identify the collection(s) that specifically prefer(s) the tag.
-We say that such a collection is a friend (or the best friend if it is the only) for the tag.
-The simplest example: imagine that only one collection pays attention to our tag.
+For each tag, we want to identify the column(s) that specifically prefer(s)
+the tag. We say that such a column is a friend (or the best friend if it is
+the only) for the tag.
+The simplest example: imagine that only one column pays attention to our tag.
 }
 \seealso{
 Useful links:

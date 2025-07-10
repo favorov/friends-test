@@ -19,7 +19,7 @@ default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 }
 \value{
-p-value for the K-S test comparing the ranks distribution with uniform
+p-value for the KS test comparing the ranks distribution with uniform
 }
 \description{
 returns the Kolomogorov-Smirnov p-value for uniformity of the values.
