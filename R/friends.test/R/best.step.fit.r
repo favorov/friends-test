@@ -21,11 +21,11 @@
 #' example(tag.int.ranks)
 #' step<-best.step.fit(TF.ranks[42,],genes.no)
 #' @export
-best.step.fit <- function(ranks,max.possible.rank) {
+best.step.fit <- function(ranks, max.possible.rank) {
   step.models <-
     friends.test::step.fit.ln.likelihoods(ranks, max.possible.rank)
 
-  possible.step.ranks <- seq_len(max.possible.rank-1)
+  possible.step.ranks <- seq_len(max.possible.rank - 1)
   k1.by.l1 <- step.models$k1.by.l1[possible.step.ranks]
   possible.step.ranks <-
     possible.step.ranks[k1.by.l1 > 0 & k1.by.l1 < length(ranks)]
