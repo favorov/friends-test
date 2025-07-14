@@ -50,7 +50,7 @@ The model applies to many problems in bioinformatics and statistics.
 [transctironal correlations](#toynet)     gene              genes coexpressed with a gene       transcription correlation
 fuzzy clustering                          object            cluster                             object weight in cluster
 transcription decomposition               transcript        transcription pattern               transcript's load in pattern
-weighted graph                            vertex            another vertex                      weight of edge between collection and tag
+weighted graph                            vertex            another vertex                      weight of edge between collection and row
 --------------------------------------    -------------     ----------------------------------  ----------------------------
 
 
@@ -104,7 +104,7 @@ friends.test.bic(regulation,prior.to.have.friends = .5,max.friends.n = 1)
 
 We see the expected Gene2-TF1 pair as well as the Gene1-TF1 pair, that is similar to the expected, Gene1 has rank of 3 in the TF1 collection.
 
-The lower is the prior to have friends for a tag (it is an obligatory parameter for `friends.test.bic`), the less marker-friend pairs we get. 
+The lower is the prior to have friends for a row (it is an obligatory parameter for `friends.test.bic`), the less marker-friend pairs we get. 
 
 ```{r}
 friends.test.bic(regulation,prior.to.have.friends = .33,max.friends.n = 1)
@@ -112,7 +112,7 @@ friends.test.bic(regulation,prior.to.have.friends = .33,max.friends.n = 1)
 friends.test.bic(regulation,prior.to.have.friends = .25,max.friends.n = 1)
 ```
 
-In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the tags that have more that one friendly collection, or in other words, we look only for the best friends. If we relax the restriction, we get:
+In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly collection, or in other words, we look only for the best friends. If we relax the restriction, we get:
 
 ```{r}
 friends.test.bic(regulation,prior.to.have.friends = .5, max.friends.n = "all")

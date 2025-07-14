@@ -7,11 +7,11 @@
 best.step.fit.bic(ranks, max.possible.rank, prior.to.have.friends)
 }
 \arguments{
-\item{ranks}{vector of ranks of a tag in different collections}
+\item{ranks}{vector of ranks of a row in different collections}
 
-\item{max.possible.rank}{number of tags, i.e. maximal rank}
+\item{max.possible.rank}{number of rows, i.e. maximal rank}
 
-\item{prior.to.have.friends}{The prior for a tag is important enough to
+\item{prior.to.have.friends}{The prior for a row is important enough to
 have friendly columns}
 }
 \value{
@@ -41,7 +41,7 @@ and non-step uniform model.
 See \link{friends.test} documentation for details.
 }
 \examples{
-example(tag.int.ranks)
+example(row.int.ranks)
 step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
 nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
 }

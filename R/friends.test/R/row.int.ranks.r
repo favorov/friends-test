@@ -1,8 +1,8 @@
 #'
-#' tag.int.ranks
+#' row.int.ranks
 #'
 #' Given the (\code{attention}) \eqn{|T| \times |C|} matrix,
-#' convert it to matrix of descending ranks of tags(rows) in
+#' convert it to matrix of descending ranks of rows in
 #' collections (columns).
 #' See [friends.test] documentation for details.
 #' @param attention original attention matrix
@@ -29,9 +29,9 @@
 #' rownames(regulation)<-gene.names
 #' colnames(regulation)<-TF.names
 #'
-#' TF.ranks<-tag.int.ranks(regulation)
+#' TF.ranks<-row.int.ranks(regulation)
 #' @export
-tag.int.ranks <- function(
+row.int.ranks <- function(
     attention = NULL,
     distance_like = FALSE,
     neglect_diagonal = FALSE) {
@@ -56,7 +56,7 @@ tag.int.ranks <- function(
   #most close attentions
   # if distance_like holds, the least is the best (first)
   #and order==1 (ascending)
-  ranks.of.tags <-
+  ranks.of.rows <-
     apply(
       attention, 2,
       function(x) {
@@ -65,14 +65,14 @@ tag.int.ranks <- function(
       }
     )
   #we applied ranking column-by-column (collection-by-cloud)
-  rownames(ranks.of.tags) <- rownames(attention)
-  colnames(ranks.of.tags) <- colnames(attention)
+  rownames(ranks.of.rows) <- rownames(attention)
+  colnames(ranks.of.rows) <- colnames(attention)
   #we reapply NA to the diagonal -- it will be used not to see
   #at in the C++ u statistics calculation
   #it also signals C++ that there are |C|-1 values rather that |C|
-  #there a no other source on NA's in ranks.of.tags
+  #there a no other source on NA's in ranks.of.rows
   if (neglect_diagonal) {
-    diag(ranks.of.tags) <- NA
+    diag(ranks.of.rows) <- NA
   }
-  ranks.of.tags
+  ranks.of.rows
 }

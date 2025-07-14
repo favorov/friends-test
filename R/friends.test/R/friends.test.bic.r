@@ -59,7 +59,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   if (is.null(dimnames(A)[[2]])) {
     colnames(A) <- seq_len(ncol(A))
   }
-  all_ranks <- friends.test::tag.int.ranks(A)
+  all_ranks <- friends.test::row.int.ranks(A)
 
   max.possible.rank <- dim(A)[1]
 
@@ -78,7 +78,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   #here, we filer out the rows where uniform model wins for
   #we also filter to match
   #max.friends.n parameter here,
-  #friends.test are cases where a tag is a marker in
+  #friends.test are cases where a row is a marker in
   #no more than max.friends.n collections
 
   #vapply is recommended by BioCheck as safer than sapply

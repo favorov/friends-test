@@ -1,8 +1,27 @@
 #'
-#' step.fit.ln.likelihoods
+##' (descending in each collection) ranks of the same row
+#' in different collections
+#' (the \code{ranks} parameter)
+#' The input ranks are integers in \eqn{1..max.possible.rank}.
+#' Each of the split rank values \eqn{1 .. max.possible.rank-1}
+#' split all the ranks into two steps: "this or less" and
+#' "greater than this".
+#'
+#' The function fits the step (bi-uniform) model for each
+#' integer splitting value in \eqn{1..max.possible.rank-1};
+#' the splitting value is in the maximal value in the left part
+#' of the ordering (the original ranks are descending, so best
+#' collections are in the left part) and calculates the likelihood.
+#' The last value with the index \eqn{max.possible.rank} is calculated for a
+#' non-step uniform model.
+
+#' See [friends.test] documentation for details.
+#'
+#' @param ranks vector of ranks of a row in different collections
+#' @param max.possible.rank number of rows, i.e. maximal rankhoods
 #'
 #' fits possible bi-uniform step models for a set of descending
-#' (descending in each collection) ranks of the same tag
+#' (descending in each collection) ranks of the same row
 #'  in different collections
 #' (the \code{ranks} parameter)
 #' The input ranks are integers in \eqn{1..max.possible.rank}.
@@ -20,8 +39,8 @@
 
 #' See [friends.test] documentation for details.
 #'
-#' @param ranks vector of ranks of a tag in different collections
-#' @param max.possible.rank number of tags, i.e. maximal rank
+#' @param ranks vector of ranks of a row in different collections
+#' @param max.possible.rank number of rows, i.e. maximal rank
 #' @return a list of three values: \cr
 #' \code{collections.order} is the order of ranks in, column-by-column\cr
 #' \code{ln.likelihoods} the ln of the likelihood of each of models
@@ -31,12 +50,12 @@
 #' on left of the step, including the split value, for split values
 #' \eqn{1..max.possible.rank};\cr
 #' @examples
-#' example(tag.int.ranks)
+#' example(row.int.ranks)
 #' steps<-step.fit.ln.likelihoods(TF.ranks[42,],genes.no)
 #' @export
 step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
   if (max.possible.rank < max(ranks)) {
-    stop("Tags_no parameter is the maximal possible rank,
+    stop("Rows_no parameter is the maximal possible rank,
     it cannot be less then max(ranks)!")
   }
   if (!all(ranks - floor(ranks) == 0)) {

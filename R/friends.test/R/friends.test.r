@@ -92,7 +92,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
   }
 
   #rank all the A elements in columns
-  all_ranks <- friends.test::tag.int.ranks(A)
+  all_ranks <- friends.test::row.int.ranks(A)
 
   #calculate the p-values for null hypothesis for all the rows
 
@@ -155,7 +155,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
         friend.rank = integer()
       )
     )
-  } #if no tag passed best test, return empty frame rather than NULL
+  } #if no row passed best test, return empty frame rather than NULL
 
 
   best.fits.for.markers <-

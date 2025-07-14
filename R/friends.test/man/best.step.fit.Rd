@@ -7,9 +7,9 @@
 best.step.fit(ranks, max.possible.rank)
 }
 \arguments{
-\item{ranks}{vector of ranks of a tag in different collections}
+\item{ranks}{vector of ranks of a row in different collections}
 
-\item{max.possible.rank}{number of tags, i.e. maximal rank}
+\item{max.possible.rank}{number of rows, i.e. maximal rank}
 }
 \value{
 a list of four values: \cr
@@ -19,18 +19,18 @@ which the function starts with
 it is not obligatory one on the \code{ranks} value.\cr
 \code{collections.on.left} is
 the vector of the collections on the left of the best step
-(including the step value). They are friends of the tag.\cr
+(including the step value). They are friends of the row.\cr
 \code{collections.on.right} is vector of those on the right \cr
 \code{population.on.left} is how many ranks are on left of split;
 they are friends! \cr
 }
 \description{
-finds the ML-best step model for one tag
+finds the ML-best step model for one row
 }
 \details{
 See \link{friends.test} documentation for details.
 }
 \examples{
-example(tag.int.ranks)
+example(row.int.ranks)
 step<-best.step.fit(TF.ranks[42,],genes.no)
 }

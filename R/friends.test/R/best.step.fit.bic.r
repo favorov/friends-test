@@ -8,7 +8,7 @@
 #' See [friends.test] documentation for details.
 #'
 #' @inheritParams step.fit.ln.likelihoods
-#' @param prior.to.have.friends The prior for a tag is important enough to
+#' @param prior.to.have.friends The prior for a row is important enough to
 #' have friendly columns
 #' @return a list of four values: \cr
 #' \code{step.models} is the value return by [step.fit.ln.likelihoods]
@@ -27,7 +27,7 @@
 #' all collections are listed in \code{collections.on.right} and
 #' \code{collections.on.left} is empty.
 #' @examples
-#' example(tag.int.ranks)
+#' example(row.int.ranks)
 #' step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
 #' nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
 #' @export
