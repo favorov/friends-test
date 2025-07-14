@@ -31,10 +31,10 @@ the worst of best friends.
 0.99.6 - Documentation updated; non-diagonal options added.   
 0.99.61 - Changing rank normalisation scheme.  
 0.99.62 - The math in rd is \eqn{}. NOTES from BiocCheck::BiocCheck.  
-0.99.63 - Switched to row + collection terminology.  
+0.99.63 - Switched to tag + collection terminology.  
 0.99.64 - friends.test output is dimensions is |T|x|C| for ranks, |T|x|C-1| for p-values and putative friends.  
 0.99.65 - create separate function for the first ranking, friends.test does not return the ranks any more; documentation is updated again.  
-0.99.7 - new functions appear for ks test of uniformity  of ranks of a row in different collections and for the likelihood of a step in the ranks (thanks to A. Kroshnin and A. Suvorikova).  
+0.99.7 - new functions appear for ks test of uniformity  of ranks of a tag in different collections and for the likelihood of a step in the ranks (thanks to A. Kroshnin and A. Suvorikova).  
 0.99.8 - added fields about the best step in the return.  
 0.99.9 - all the old tests (friends, best.friends) are removed.  
 0.99.10 - unit tests started; There are only NOTES in BiocCheck::BiocCheck again.  
