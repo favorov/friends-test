@@ -27,7 +27,7 @@ a \eqn{|T| x |C|} matrix of integer ranks in
 \description{
 Given the (\code{attention}) \eqn{|T| \times |C|} matrix,
 convert it to matrix of descending ranks of rows in
-collections (columns).
+columns (columns).
 See \link{friends.test} documentation for details.
 }
 \examples{

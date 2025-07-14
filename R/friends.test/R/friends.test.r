@@ -63,7 +63,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
     max.friends.n <- ncol(A)
   }
   if (max.friends.n < 1 || max.friends.n > ncol(A)) {
-    stop("max.friends.n must be between 1 and the number of collections.")
+    stop("max.friends.n must be between 1 and the number of columns.")
   }
   if (threshold < 0 || threshold > 1) {
     stop("threshold must be between 0 and 1.")
@@ -137,12 +137,12 @@ friends.test <- function(A = NULL, threshold = 0.05,
     )
   #we filter to match
   #max.friends.n parameter here,
-  #no more than max.friends.n collections
+  #no more than max.friends.n columns
   #vapply is recommended by BioCheck as safer than sapply
 
   filter_for_markers <-
     vapply(best.fits.for.markers, function(x) {
-      length(x$collections.on.left) <= max.friends.n
+      length(x$columns.on.left) <= max.friends.n
     }, logical(1))
 
   if (!length(best.fits.for.markers)) {
@@ -175,11 +175,11 @@ friends.test <- function(A = NULL, threshold = 0.05,
         x <- best.fits.for.markers[[n]]
         data.frame(
           marker = names(best.fits.for.markers)[n],
-          friend = colnames(marker_ranks)[x$collections.on.left],
+          friend = colnames(marker_ranks)[x$columns.on.left],
           marker.index = marker_indices[n],
-          friend.index = x$collections.on.left,
+          friend.index = x$columns.on.left,
           friend.rank = which(
-            x$step.models$collections.order %in% x$collections.on.left
+            x$step.models$columns.order %in% x$columns.on.left
           ),
           row.names = NULL
         )

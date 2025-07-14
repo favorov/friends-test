@@ -6,7 +6,7 @@
 #'
 #' See [friends.test] documentation for details.
 #'
-#' @param ranks vector of ranks of a row in different collections, \eqn{1 .. N})
+#' @param ranks vector of ranks of a row in different columns, \eqn{1 .. N})
 #' @param uniform.max the maximal rank in the uniform, default is NA which means
 #' that we take the max(ranks) as the maximal value
 #' @param simulate.p.value K-S by Monte-Carlo if \code{TRUE};

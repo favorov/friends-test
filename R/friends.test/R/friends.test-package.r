@@ -33,8 +33,8 @@
 #'
 #'
 #' [row.int.ranks] is use by all above to prepare the integer vector to test.
-#' They are ranks of attentian that a collection pays to different rows.
-#' The ranking happens inside different collections separately.
+#' They are ranks of attentian that a column pays to different rows.
+#' The ranking happens inside different columns separately.
 #' The ties are resolved at random, to keep the ranks integer.
 #'
 #' @importFrom utils packageDescription

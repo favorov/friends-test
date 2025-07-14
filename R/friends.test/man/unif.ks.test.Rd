@@ -7,7 +7,7 @@
 unif.ks.test(ranks, uniform.max = NA, simulate.p.value = FALSE, B = 2000)
 }
 \arguments{
-\item{ranks}{vector of ranks of a row in different collections, \eqn{1 .. N})}
+\item{ranks}{vector of ranks of a row in different columns, \eqn{1 .. N})}
 
 \item{uniform.max}{the maximal rank in the uniform, default is NA which means
 that we take the max(ranks) as the maximal value}

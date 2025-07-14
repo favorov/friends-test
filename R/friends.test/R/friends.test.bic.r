@@ -45,7 +45,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
     max.friends.n <- ncol(A)
   }
   if (max.friends.n < 1 || max.friends.n > ncol(A)) {
-    stop("max.friends.n must be between 1 and the number of collections.")
+    stop("max.friends.n must be between 1 and the number of columns.")
   }
   if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
     stop("friends.test.bic requires the prior.to.have.friends
@@ -79,7 +79,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
   #we also filter to match
   #max.friends.n parameter here,
   #friends.test are cases where a row is a marker in
-  #no more than max.friends.n collections
+  #no more than max.friends.n columns
 
   #vapply is recommended by BioCheck as safer than sapply
   filter.for.markers <- vapply(
@@ -112,11 +112,11 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
         x <- best.fits.for.markers[[n]]
         data.frame(
           marker = names(best.fits.for.markers)[n],
-          friend = colnames(all_ranks)[x$collections.on.left],
+          friend = colnames(all_ranks)[x$columns.on.left],
           marker.index = marker_indices[n],
-          friend.index = x$collections.on.left,
+          friend.index = x$columns.on.left,
           friend.rank = which(
-            x$step.models$collections.order %in% x$collections.on.left
+            x$step.models$columns.order %in% x$columns.on.left
           ),
           row.names = NULL
         )

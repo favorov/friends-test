@@ -3,7 +3,7 @@
 #'
 #' Given the (\code{attention}) \eqn{|T| \times |C|} matrix,
 #' convert it to matrix of descending ranks of rows in
-#' collections (columns).
+#' columns (columns).
 #' See [friends.test] documentation for details.
 #' @param attention original attention matrix
 #' @param distance_like if \code{TRUE}, ranks are ascending
@@ -64,7 +64,7 @@ row.int.ranks <- function(
                            na.last = TRUE, order = order)
       }
     )
-  #we applied ranking column-by-column (collection-by-cloud)
+  #we applied ranking column-by-column (column-by-column)
   rownames(ranks.of.rows) <- rownames(attention)
   colnames(ranks.of.rows) <- colnames(attention)
   #we reapply NA to the diagonal -- it will be used not to see

@@ -15,17 +15,17 @@
 #' call the function start with
 #' \code{best.step.rank} is the rank value that makes the best step;
 #' it is not obligatory one on the \code{ranks} value.\cr
-#' \code{collections.on.left} is the vector of the collections on the
+#' \code{columns.on.left} is the vector of the columns on the
 #' left of the best step (including the step value).
 #' They are friends of the row, and the row is thir marker.\cr
-#' \code{collections.on.right} is vector of those on the right \cr
+#' \code{columns.on.right} is vector of those on the right \cr
 #' \code{population.on.left} is how many (column) ranks are on left of split;
 #' they are friends! \cr
 #' if non-step uniform model wins and there are no friends,\cr
 #' then \code{best.step.rank==max.possible.rank},
 #' \code{population.on.left==0},
-#' all collections are listed in \code{collections.on.right} and
-#' \code{collections.on.left} is empty.
+#' all columns are listed in \code{columns.on.right} and
+#' \code{columns.on.left} is empty.
 #' @examples
 #' example(row.int.ranks)
 #' step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
@@ -58,11 +58,11 @@ best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
 
     population.on.left <- k1.by.l1[best.step.rank]
 
-    collections.on.left <-
-      step.models$collections.order[seq_len(population.on.left)]
+    columns.on.left <-
+      step.models$columns.order[seq_len(population.on.left)]
 
-    collections.on.right <-
-      step.models$collections.order[seq(population.on.left + 1,
+    columns.on.right <-
+      step.models$columns.order[seq(population.on.left + 1,
                                         length(ranks))]
   } else {
     #if we are here, the uniform won, no friends
@@ -71,16 +71,16 @@ best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
 
     population.on.left <- 0 #all
 
-    collections.on.left <- c() #empty -- no friends
+    columns.on.left <- c() #empty -- no friends
 
-    collections.on.right <- step.models$collections.order
+    columns.on.right <- step.models$columns.order
     #all
   }
 
   list(step.models = step.models,
     best.step.rank = best.step.rank,
-    collections.on.left = collections.on.left,
-    collections.on.right = collections.on.right,
+    columns.on.left = columns.on.left,
+    columns.on.right = columns.on.right,
     population.on.left = population.on.left
   )
 }

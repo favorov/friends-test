@@ -7,7 +7,7 @@
 best.step.fit(ranks, max.possible.rank)
 }
 \arguments{
-\item{ranks}{vector of ranks of a row in different collections}
+\item{ranks}{vector of ranks of a row in different columns}
 
 \item{max.possible.rank}{number of rows, i.e. maximal rank}
 }
@@ -17,10 +17,10 @@ a list of four values: \cr
 which the function starts with
 \code{best.step.rank} is the rank value that makes the best step;
 it is not obligatory one on the \code{ranks} value.\cr
-\code{collections.on.left} is
-the vector of the collections on the left of the best step
+\code{columns.on.left} is
+the vector of the columns on the left of the best step
 (including the step value). They are friends of the row.\cr
-\code{collections.on.right} is vector of those on the right \cr
+\code{columns.on.right} is vector of those on the right \cr
 \code{population.on.left} is how many ranks are on left of split;
 they are friends! \cr
 }

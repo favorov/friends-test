@@ -5,8 +5,8 @@ test_that("best.step.fit returns expected values for known input", {
   expect_true(result$best.step.rank %in% seq(1, 96))
   #split into 1 and all others
   expect_equal(result$population.on.left, 1)
-  expect_equal(result$collections.on.left, c(2))
-  expect_equal(result$collections.on.right, c(1, 3, 4, 5))
+  expect_equal(result$columns.on.left, c(2))
+  expect_equal(result$columns.on.right, c(1, 3, 4, 5))
 })
 
 
@@ -35,7 +35,7 @@ test_that("best.step.fit and independent code equal, c(1,2,3,4,5,6,7,8)", {
     }
   }
   stp.pos <- min(which(lkl == max(lkl)))
-  cols_no <- step.pos[stp.pos] #collections before jump
+  cols_no <- step.pos[stp.pos] #columns before jump
   bsf <- best.step.fit(ranks, row.lim) #best.friends
   expect_equal(bsf$population.on.left, cols_no)
 })
@@ -66,7 +66,7 @@ test_that("best.step.fit and independent code equal, c(1,1,1,1,6,6,6,6,6,6)", {
     }
   }
   stp.pos <- min(which(lkl == max(lkl)))
-  cols_no <- step.pos[stp.pos] #collections before jump
+  cols_no <- step.pos[stp.pos] #columns before jump
   bsf <- best.step.fit(ranks, row.lim) #best.friends
   expect_equal(bsf$population.on.left, cols_no)
 })
