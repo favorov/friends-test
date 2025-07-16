@@ -78,20 +78,20 @@ Let's illustrate the method with something supersimple.
 ```{r}
 regulation <-
   structure(
-            c(
-              0.2, 0.25, 0.1, 0.23, 0.3, 0.12, 0.14,
-              4, 3, 6, 1, 9, 7, 10,
-              3, 1, 5, 6, 3, 4, 11),
-            dim = c(7, 3),
-            dimnames =
-              list(
-                  c(
-                      "Gene1", "Gene2", "Gene3",
-                      "Gene4", "Gene5", "Gene6",
-                      "Gene7"
-                  ),
-                  c("TF1", "TF2", "TF3"))
-            )
+    c(
+      0.2, 0.25, 0.1, 0.23, 0.3, 0.12, 0.14,
+      4, 3, 6, 1, 9, 7, 10,
+      3, 1, 5, 6, 3, 4, 11),
+    dim = c(7, 3),
+    dimnames =
+    list(
+         c(
+           "Gene1", "Gene2", "Gene3",
+           "Gene4", "Gene5", "Gene6",
+           "Gene7"
+         ),
+         c("TF1", "TF2", "TF3"))
+  )
 noquote(regulation)
 ```
 What we want to identify is Gene2-TF1 pair. Gene2 is not the strongest downstream gene in the TF1 column (column), it is only the second, but, on the other hand its rank in other TF-based columns is much lower.
@@ -99,7 +99,7 @@ What we want to identify is Gene2-TF1 pair. Gene2 is not the strongest downstrea
 First, let's apply the Bayesian version of the method, `best.friends.bic`.
 
 ```{r}
-friends.test.bic(regulation,prior.to.have.friends = .5,max.friends.n = 1)
+friends.test.bic(regulation, prior.to.have.friends = .5, max.friends.n = 1)
 ```
 
 We see the expected Gene2-TF1 pair as well as the Gene1-TF1 pair, that is similar to the expected, Gene1 has rank of 3 in the TF1 column.
@@ -107,17 +107,20 @@ We see the expected Gene2-TF1 pair as well as the Gene1-TF1 pair, that is simila
 The lower is the prior to have friends for a row (it is an obligatory parameter for `friends.test.bic`), the less marker-friend pairs we get. 
 
 ```{r}
-friends.test.bic(regulation,prior.to.have.friends = .33,max.friends.n = 1)
+friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
 
-friends.test.bic(regulation,prior.to.have.friends = .25,max.friends.n = 1)
+friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
 ```
 
 In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get:
 
 ```{r}
-friends.test.bic(regulation,prior.to.have.friends = .5, max.friends.n = "all")
-friends.test.bic(regulation,prior.to.have.friends = .33, max.friends.n  = "all")
-friends.test.bic(regulation,prior.to.have.friends = .25, max.friends.n = "all")
+friends.test.bic(regulation, prior.to.have.friends = .5,
+                 max.friends.n = "all")
+friends.test.bic(regulation, prior.to.have.friends = .33,
+                 max.friends.n  = "all")
+friends.test.bic(regulation, prior.to.have.friends = .25,
+                 max.friends.n = "all")
 ```
 
 Note that `max.friends.n = "all"` is the default value for both `friends.test` (see below) and `friends.test.bic`.
@@ -127,13 +130,14 @@ Note that `max.friends.n = "all"` is the default value for both `friends.test` (
 Let's run the p-value-based option of the method on the same data. It is less sensitive on small dataset, so we use unpractical threshold for the p-value to see the result.
 
 ```{r}
-friends.test(regulation,threshold = .5,p.adjust.method = "no",max.friends.n = 1)
+friends.test(regulation, threshold = .5, p.adjust.method = "no",
+             max.friends.n = 1)
 ```
 
 And, again, if we relax the `max.friends.no` restriction, we will see more pairs, but now the friends are not required to be unique for a marker.
 
 ```{r}
-friends.test(regulation,threshold = .5,p.adjust.method = "no")
+friends.test(regulation, threshold = .5, p.adjust.method = "no")
 ```
 
 ## Session info

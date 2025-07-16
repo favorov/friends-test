@@ -63,7 +63,7 @@ best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
 
     columns.on.right <-
       step.models$columns.order[seq(population.on.left + 1,
-                                        length(ranks))]
+                                    length(ranks))]
   } else {
     #if we are here, the uniform won, no friends
 
