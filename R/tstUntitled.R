@@ -6,7 +6,7 @@
 #    collection=colnames(all_ranks)[best_friends[[x]]$collections.on.left]
 # )})
 rm(list=ls())
-library(best.friends)
+library(friends.test)
 library(dplyr)
 seventags <- t(readRDS("~/best-friends/R/7tags.rds"))
 seventags.ranks<-tag.int.ranks(seventags)

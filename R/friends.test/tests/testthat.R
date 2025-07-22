@@ -1,1 +1,1 @@
-testthat::test_package("best.friends")
+testthat::test_package("friends.test")
