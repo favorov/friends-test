@@ -4,3 +4,4 @@ RUN <<EOF
 Rscript -e "install.packages('remotes')"
 Rscript -e "remotes::install_github('favorov/friends.test')"
 EOF
+ENTRYPOINT [ "/bin/bash" ]
