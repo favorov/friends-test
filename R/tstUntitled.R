@@ -40,9 +40,14 @@ if (test.bic.inner) if (test.bic) {
   all.friends.inner <- apply(seventags.ranks, 1,
     function(x) best.step.fit.bic(x, max.rank, .5)
   )
-  best.friends.inner <- all.friends.inner[vapply(all.friends.inner, function(x) {
-    x$population.on.left > 0 && x$population.on.left <= best.no
-  }, logical(1))]
+  best.friends.inner <- all.friends.inner[
+    vapply(
+      all.friends.inner,
+      function(x) {
+        x$population.on.left > 0 && x$population.on.left <= best.no
+      }, logical(1)
+    )
+  ]
 }
 
 test.bf <- TRUE

@@ -1,10 +1,10 @@
 
 #if we want to normalize the matrix, nM<-M/rowSums(M)
 Morig <- M
-scale <- 1/2
+scale <- 1 / 2
 scaleMask <- mask
-scaleMask[selected_rows, ] = !mask[selected_rows]
-M[scaleMask] = M[scaleMask] * scale
+scaleMask[selected_rows, ] <- !mask[selected_rows]
+M[scaleMask] <-  M[scaleMask] * scale
 
 
 hM <- ComplexHeatmap::Heatmap(M,
@@ -46,8 +46,8 @@ friends.mat <- matrix(0, nrow = nrow(M), ncol = ncol(M))
 rownames(friends.mat) <- rownames(M)
 colnames(friends.mat) <- colnames(M)
 
-for (r in seq(nrow(friends))) {
-  friends.mat[friends[r, "marker"], friends[r, "friend"]] = 1
+for (r in seq_len(nrow(friends))) {
+  friends.mat[friends[r, "marker"], friends[r, "friend"]] <- 1
 }
 
 hfb <- ComplexHeatmap::Heatmap(
@@ -67,7 +67,7 @@ hfb <- ComplexHeatmap::Heatmap(
 
 pdf("mixture_and_friends_bic.pdf")
 plot(hM + hmask + hfb)
-#dev.off()
+#could be useful to close pdf: dev.off()
 
 friends <- friends.test::friends.test(M)
 
@@ -92,8 +92,8 @@ friends.mat <- matrix(0, nrow = nrow(M), ncol = ncol(M))
 rownames(friends.mat) <- rownames(M)
 colnames(friends.mat) <- colnames(M)
 
-for (r in seq(nrow(friends))) {
-  friends.mat[friends[r, "marker"], friends[r, "friend"]] = 1
+for (r in seq_len(nrow(friends))) {
+  friends.mat[friends[r, "marker"], friends[r, "friend"]] <- 1
 }
 
 hfb <- ComplexHeatmap::Heatmap(
