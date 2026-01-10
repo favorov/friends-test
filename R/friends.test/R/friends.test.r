@@ -1,7 +1,7 @@
 #'
 #' friends.test
 #'
-#' We have two sets:T (rows) and C (columns) and
+#' We have two sets: T (rows) and C (columns) and
 #' A real matrix A(t,c) that describes the strength of association
 #' between each t and each c; t is an element of T and c is an element of C.
 #' For each t we want to identify whether it is significantly more
@@ -27,12 +27,11 @@
 #' default is \code{FALSE}, see [stats::ks.test()]
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
 #' default is 2000, see [stats::ks.test()]
-#' @return A data.frame, each row describe a pair of a marker and a
-#' friend. Columns are: marker, friend, marker.index, friend.index and
-#' friend.rank. Marker and friend are the names of the row and column
-#' respectively. Indices are their indices in the input matrix.
-#' The friend.ran is the rank of the column-friend in
-#' the vector of ranks of the ranks of the row-marker in different columns.
+#' @return \code{Matrix}, _e.g._ sparse matrix, the same size as A,
+#' each nonzero element shows the rank of the friend for the marker, 
+#' from 1 (the best friend), then 2, 3, etc.
+#' If a row in A does not have friends,
+#' it is empty (zeroes-filled) in the result.
 #' @importFrom stats p.adjust
 #' @examples
 #' A <- matrix(c(10,6,7,8,9,

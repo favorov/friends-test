@@ -22,12 +22,11 @@ value. A value $n$ means that we filter out a row if it has more
 than $n$ friendly columns. 1 means we look only for unuque (best) friends.}
 }
 \value{
-A data.frame, each row describe a pair of a marker and a
-friend. Columns are: marker, friend, marker.index, friend.index and
-friend.rank. Marker and friend are the names of the row and column
-respectively. Indices are their indices in the input matrix.
-The friend.ran is the rank of the column-friend in
-the vector of ranks of the ranks of the row-marker in different columns.
+\code{Matrix}, \emph{e.g.} sparse matrix, the same size as A,
+each nonzero element shows the rank of the friend for the marker,
+from 1 (the best friend), then 2, 3, etc.
+If a row in A does not have friends,
+it is empty (zeroes-filled) in the result.
 }
 \description{
 We have two sets:T (rows) and C (columns) and
