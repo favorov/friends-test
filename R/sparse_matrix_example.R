@@ -19,7 +19,8 @@ cat("Initial sparse matrix:\n")
 print(sparse_mat)
 cat("\n")
 
-sparse_mat <- rbind(sparse_mat,sparse_mat)
+add_row <- c(0,0,1,0,0)
+sparse_mat <- rbind(sparse_mat, add_row)
 
 cat("Rbind sparse matrix:\n")
 print(sparse_mat)
