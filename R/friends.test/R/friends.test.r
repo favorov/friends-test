@@ -28,6 +28,12 @@
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
 #' default is 2000, see [stats::ks.test()]
 #' @return \code{Matrix}, _e.g._ sparse matrix, the same size as A,
+#' each nonzero element represent a marker+friend pair,
+#' and the value shows the rank of the friend for the marker,
+#' from 1 (the best friend), then 2, 3, etc.
+#' If a row in A does not have friends,
+#' it is empty (zeroes-filled) in the result.
+#' @return \code{Matrix}, _e.g._ sparse matrix, the same size as A,
 #' each nonzero element shows the rank of the friend for the marker, 
 #' from 1 (the best friend), then 2, 3, etc.
 #' If a row in A does not have friends,

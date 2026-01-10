@@ -23,7 +23,8 @@ than $n$ friendly columns. 1 means we look only for unuque (best) friends.}
 }
 \value{
 \code{Matrix}, \emph{e.g.} sparse matrix, the same size as A,
-each nonzero element shows the rank of the friend for the marker,
+each nonzero element represent a marker+friend pair,
+and the value shows the rank of the friend for the marker,
 from 1 (the best friend), then 2, 3, etc.
 If a row in A does not have friends,
 it is empty (zeroes-filled) in the result.

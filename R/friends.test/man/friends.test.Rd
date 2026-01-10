@@ -42,6 +42,13 @@ default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 }
 \value{
 \code{Matrix}, \emph{e.g.} sparse matrix, the same size as A,
+each nonzero element represent a marker+friend pair,
+and the value shows the rank of the friend for the marker,
+from 1 (the best friend), then 2, 3, etc.
+If a row in A does not have friends,
+it is empty (zeroes-filled) in the result.
+
+\code{Matrix}, \emph{e.g.} sparse matrix, the same size as A,
 each nonzero element shows the rank of the friend for the marker,
 from 1 (the best friend), then 2, 3, etc.
 If a row in A does not have friends,
