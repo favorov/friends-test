@@ -35,3 +35,19 @@ print(nonzero_rows)
 cat("\n=== Rows that are in summary ===\n")
 print(unique(sort(sparse_mat@i+1)))
 
+# Create an empty sparse matrix of known size
+cat("\n=== Empty sparse matrix (10 rows x 8 columns) ===\n")
+empty_sparse <- sparseMatrix(i = integer(0),
+                             j = integer(0),
+                             x = numeric(0),
+                             repr = "R",
+                             dims = c(10, 8))
+
+# Name rows as r_a...r_j and columns as c_a...c_h
+rownames(empty_sparse) <- paste0("r_", letters[1:10])
+colnames(empty_sparse) <- paste0("c_", letters[1:8])
+
+print(empty_sparse)
+cat("\nDimensions:", dim(empty_sparse), "\n")
+cat("Number of non-zero elements:", length(empty_sparse@x), "\n")
+
