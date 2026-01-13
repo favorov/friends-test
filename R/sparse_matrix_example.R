@@ -1,5 +1,5 @@
 # Sparse Matrix in Triplet Form Example
-# This script creates a sparse matrix, adds rows, and displays row 3 nonzero elements
+# This script creates a sparse matrix, adds rows, and displays
 
 library(Matrix)
 
@@ -19,7 +19,7 @@ cat("Initial sparse matrix:\n")
 print(sparse_mat)
 cat("\n")
 
-add_row <- c(0,0,1,0,0)
+add_row <- c(0, 0, 1, 0, 0)
 sparse_mat <- rbind(sparse_mat, add_row)
 
 cat("Rbind sparse matrix:\n")
@@ -51,9 +51,9 @@ print(empty_sparse)
 cat("\nDimensions:", dim(empty_sparse), "\n")
 cat("Number of non-zero elements:", length(empty_sparse@x), "\n")
 
-my_i <- c(1,2,2,7)
-my_j <- c(5,3,8,1)
-my_x <- c(11,12,13,14)
+my_i <- c(1, 2, 2, 7)
+my_j <- c(5, 3, 8, 1)
+my_x <- c(11, 12, 13, 14)
 
 # Set elements at (my_i, my_j) coordinates to my_x values in one command
 empty_sparse[cbind(my_i, my_j)] <- my_x
