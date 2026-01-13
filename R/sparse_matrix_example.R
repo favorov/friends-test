@@ -60,3 +60,12 @@ empty_sparse[cbind(my_i, my_j)] <- my_x
 
 cat("\n=== After setting values ===\n")
 print(empty_sparse)
+
+empty_sparse_f <- sparseMatrix(
+    i = integer(0),
+    j = integer(0),
+    x = numeric(0),
+    repr = "R",
+    dims = c(10, 8),
+    dimnames = c("marker", "friend")
+)
