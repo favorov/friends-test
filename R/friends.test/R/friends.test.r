@@ -151,6 +151,8 @@
         friend.ranks <- which(
               best.fit$step.models$columns.order %in% friends
             )
+        #cbind makes pairs (marker, friend) in rows
+        #then, the friend's rank is written to the matrix
         result[cbind(marker, friends)] <- friend.ranks
     }
     resulte <<- result #debug, to see
