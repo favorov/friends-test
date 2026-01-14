@@ -55,7 +55,7 @@ empty_sparse_f <- sparseMatrix(
     i = integer(0),
     j = integer(0),
     x = numeric(0),
-    repr = "R",
+    repr = "T",
     dims = c(10, 8),
     dimnames = list(marker = rownames(empty_sparse),
         friend = colnames(empty_sparse))
