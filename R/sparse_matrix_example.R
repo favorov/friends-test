@@ -70,3 +70,12 @@ empty_sparse_f[cbind(my_i, my_j)] <- my_x
 
 cat("\n=== After setting values ===\n")
 print(empty_sparse_f)
+
+my_i <- 4
+my_j <- c(5, 3, 8, 1)
+my_x <- c(11, 12, 13, 14)
+
+# Set elements at (my_i, my_j) coordinates to my_x values in one command
+empty_sparse_f[cbind(my_i, my_j)] <- my_x
+cat("\n=== After setting values in row 4 ===\n")
+print(empty_sparse_f)
