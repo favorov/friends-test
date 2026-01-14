@@ -23,11 +23,11 @@ non-uniformity of ranks.}
 \item{p.adjust.method}{Multiple testing correction method,
 see \link[stats]{p.adjust}.}
 
-\item{max.friends.n}{The maximal number of friends for a marker, the default
-is \code{dim(A)[2]\%/\%2}, that is rounded half of #of columns in A.
-The string "all" means "all friends", i.e. we do not filter by this parameter
-value. A value $n$ means that we filter out a row if it has more
-than $n$ friendly columns. 1 means we look only for unuque (best) friends.}
+\item{max.friends.n}{The maximal number of friends for a marker,
+the default is \code{dim(A)[2]\%/\%2}, rounded half of #of columns in A.
+The string "all" means "all friends", do not filter by this parameter.
+A value $n$ means that we filter out a row if it has more
+than $n$ friendly columns. 1 means we look only for unique (best) friends.}
 
 \item{uniform.max}{The maximum of the uniform distribution of the ranks we
 fit the null model, it can be the maximal possible rank that is common for
