@@ -51,21 +51,22 @@ print(empty_sparse)
 cat("\nDimensions:", dim(empty_sparse), "\n")
 cat("Number of non-zero elements:", length(empty_sparse@x), "\n")
 
-my_i <- c(1, 2, 2, 7)
-my_j <- c(5, 3, 8, 1)
-my_x <- c(11, 12, 13, 14)
-
-# Set elements at (my_i, my_j) coordinates to my_x values in one command
-empty_sparse[cbind(my_i, my_j)] <- my_x
-
-cat("\n=== After setting values ===\n")
-print(empty_sparse)
-
 empty_sparse_f <- sparseMatrix(
     i = integer(0),
     j = integer(0),
     x = numeric(0),
     repr = "R",
     dims = c(10, 8),
-    dimnames = c("marker", "friend")
+    dimnames = list(marker = rownames(empty_sparse),
+        friend = colnames(empty_sparse))
 )
+
+my_i <- c(1, 2, 2, 7)
+my_j <- c(5, 3, 8, 1)
+my_x <- c(11, 12, 13, 14)
+
+# Set elements at (my_i, my_j) coordinates to my_x values in one command
+empty_sparse_f[cbind(my_i, my_j)] <- my_x
+
+cat("\n=== After setting values ===\n")
+print(empty_sparse_f)
