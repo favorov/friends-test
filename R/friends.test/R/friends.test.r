@@ -98,7 +98,7 @@
     }
 
     #prepare the return sparse matrix
-    resulte <<- sparseMatrix(
+    result <- sparseMatrix(
       i = integer(0),
       j = integer(0),
       x = numeric(0),
@@ -107,10 +107,8 @@
       dimnames = list(marker = rownames(A),
           friend = colnames(A))
     )
-    print("*+")
     #rank all the A elements in columns
     all_ranks <- friends.test::row.int.ranks(A)
-    print("**+")
 
     #calculate the p-values for null hypothesis for all the rows
 
@@ -121,28 +119,26 @@
                     B = 2000),
               method = p.adjust.method)
 
-   print("***")
 
     is_marker <- (adj_nunif_pval <= threshold)
     #is it a marker?
+
     if (sum(is_marker) == 0) {
       message("No rows with non-uniform ranks found for given threshold.")
       return(result)
       #empty matrix return
     }
 
-    marker_ranks <- all_ranks[is_marker, , drop = FALSE]
-    #subset all_ranks to markers only
     marker_indices <- which(is_marker)
 
     #find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
-
+    print("*")
     #let's fill the result, calling the friends.test::best.step.fit
     #for all the marker_indices
     for(marker in marker_indices){
         best.fit <- friends.test::best.step.fit(
-          marker_ranks[marker],
+          all_ranks[marker,],
           max.possible.rank = max.possible.rank
         )
         if(length(best.fit$columns.on.left) <= max.friends.n){
@@ -160,6 +156,8 @@
     }
     resulte <<- result #debug, to see
 
+    marker_ranks <<- all_ranks[is_marker, , drop = FALSE]
+    #subset all_ranks to markers only
 
     #we make a list of fit structures (returned by best.step.fit)
     #per marker (marker row)
