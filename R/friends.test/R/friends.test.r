@@ -39,6 +39,7 @@
   #' If a row in A does not have friends,
   #' it is empty (zeroes-filled) in the result.
   #' @importFrom stats p.adjust
+  #' @importFrom Matrix sparseMatrix 
   #' @examples
   #' A <- matrix(c(10,6,7,8,9,
   #'                 9,10,6,7,8,
@@ -68,10 +69,10 @@
       max.friends.n <- ncol(A)
     }
     if (max.friends.n < 1 || max.friends.n > ncol(A)) {
-      stop("max.friends.n must be between 1 and the number of columns.")
+        stop("max.friends.n must be between 1 and the number of columns.")
     }
     if (threshold < 0 || threshold > 1) {
-      stop("threshold must be between 0 and 1.")
+        stop("threshold must be between 0 and 1.")
     }
     #case for uniform.max: M or m assign nrow(A) (max rank),
     #for C or c assign NA, any other fails
@@ -89,15 +90,15 @@
 
     #add names to A matrix rows if necessary
     if (is.null(dimnames(A)[[1]])) {
-      rownames(A) <- seq_len(nrow(A))
+        rownames(A) <- seq_len(nrow(A))
     }
     #add names to A matrix cols if necessary
     if (is.null(dimnames(A)[[2]])) {
-      colnames(A) <- seq_len(ncol(A))
+        colnames(A) <- seq_len(ncol(A))
     }
 
     #prepare the return sparse matrix
-    result <- sparseMatrix(
+    resulte <<- sparseMatrix(
       i = integer(0),
       j = integer(0),
       x = numeric(0),
@@ -106,9 +107,10 @@
       dimnames = list(marker = rownames(A),
           friend = colnames(A))
     )
-
+    print("*+")
     #rank all the A elements in columns
     all_ranks <- friends.test::row.int.ranks(A)
+    print("**+")
 
     #calculate the p-values for null hypothesis for all the rows
 
@@ -119,6 +121,7 @@
                     B = 2000),
               method = p.adjust.method)
 
+   print("***")
 
     is_marker <- (adj_nunif_pval <= threshold)
     #is it a marker?
