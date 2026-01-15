@@ -133,7 +133,6 @@
 
     #find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
-    print("*")
     #let's fill the result, calling the friends.test::best.step.fit
     #for all the marker_indices
     for(marker in marker_indices){
@@ -141,22 +140,22 @@
           all_ranks[marker,],
           max.possible.rank = max.possible.rank
         )
-        if(length(best.fit$columns.on.left) <= max.friends.n){
-            next #marker has too much friends 
+        if (length(best.fit$columns.on.left) > max.friends.n) {
+            next #marker has too much friends
         }
         #friends
         friends <- best.fit$columns.on.left
         #the ranks of friends, the best is 1
         friend.ranks <- which(
-              best.fit$step.models$columns.order %in% friends
-            )
+            best.fit$step.models$columns.order %in% friends
+        )
         #cbind makes pairs (marker, friend) in rows
         #then, the friend's rank is written to the matrix
         result[cbind(marker, friends)] <- friend.ranks
     }
     resulte <<- result #debug, to see
 
-    marker_ranks <<- all_ranks[is_marker, , drop = FALSE]
+    marker_ranks <- all_ranks[is_marker, , drop = FALSE]
     #subset all_ranks to markers only
 
     #we make a list of fit structures (returned by best.step.fit)
