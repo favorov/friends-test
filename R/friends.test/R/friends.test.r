@@ -39,7 +39,7 @@
   #' If a row in A does not have friends,
   #' it is empty (zeroes-filled) in the result.
   #' @importFrom stats p.adjust
-  #' @importFrom Matrix sparseMatrix 
+  #' @importFrom Matrix sparseMatrix
   #' @examples
   #' A <- matrix(c(10,6,7,8,9,
   #'                 9,10,6,7,8,
@@ -153,68 +153,6 @@
         #then, the friend's rank is written to the matrix
         result[cbind(marker, friends)] <- friend.ranks
     }
-    resulte <<- result #debug, to see
-
-    marker_ranks <- all_ranks[is_marker, , drop = FALSE]
-    #subset all_ranks to markers only
-
-    #we make a list of fit structures (returned by best.step.fit)
-    #per marker (marker row)
-    best.fits.for.markers <-
-      apply(
-        marker_ranks, 1,
-        function(x) {
-          friends.test::best.step.fit(x, max.possible.rank = max.possible.rank)
-        }
-      )
-
-    #let's fill the result
-
-
-    #we filter to match
-    #max.friends.n parameter here,
-    #no more than max.friends.n columns
-    #vapply is recommended by BioCheck as safer than sapply
-
-    filter_for_markers <-
-      vapply(best.fits.for.markers, function(x) {
-        length(x$columns.on.left) <= max.friends.n
-      }, logical(1))
-
-    if (!length(best.fits.for.markers)) {
-      return(result) 
-    } #if no row passed best test, return empty result
-
-
-    best.fits.for.markers <-
-      best.fits.for.markers[filter_for_markers]
-
-    marker_indices <-
-      marker_indices[filter_for_markers]
-
-    #filter marker ids and best fits together
-
-    #cycle though the best fits and ids
-
-    res_pre <-
-      lapply(
-        seq_len(length(best.fits.for.markers)),
-        function(n) {
-          x <- best.fits.for.markers[[n]]
-          data.frame(
-            marker = names(best.fits.for.markers)[n],
-            friend = colnames(marker_ranks)[x$columns.on.left],
-            marker.index = marker_indices[n],
-            friend.index = x$columns.on.left,
-            friend.rank = which(
-              x$step.models$columns.order %in% x$columns.on.left
-            ),
-            row.names = NULL
-          )
-        }
-      )
-
-    res <- do.call(rbind, res_pre)
-
-    res
+    
+    result
   }

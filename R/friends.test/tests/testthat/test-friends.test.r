@@ -15,14 +15,19 @@ test_that("best friend is determined correctly", {
   attention <- as.matrix(read.table(text = text, header = TRUE))
 
   friends <- friends.test(attention)
-  expect_equivalent(dim(friends), c(1, 5))
-  expect_equivalent(friends$marker, c("row5"))
-  expect_equivalent(friends$friend, c("coll5"))
-  expect_equivalent(friends$marker.index, c(5))
-  expect_equivalent(friends$friend.index, c(5))
-  expect_equivalent(friends$marker, rownames(attention)[friends$marker.index])
-  expect_equivalent(friends$friend, colnames(attention)[friends$friend.index])
-  expect_equivalent(friends$friend.rank, c(1))
+  expect_equivalent(dim(friends), dim(attention))
+  expected <- sparseMatrix(
+    i = integer(0),
+    j = integer(0),
+    x = numeric(0),
+    repr = "T",
+    dims = dim(attention),
+    dimnames = list(marker = rownames(attention),
+        friend = colnames(attention))
+    )
+    expected[5,5] <- 1
+    expect_equivalent(friends, expected)
+  
 })
 
 
@@ -38,14 +43,16 @@ test_that("passes non-diagonal diagonal test", {
   rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
   colnames(almost_diagon_mat) <- paste0("coll", 1:ncolls)
   friends <- friends.test(almost_diagon_mat)
-  expect_equivalent(dim(friends), c(ncolls, 5))
-  expect_equivalent(friends$marker, paste0(c("row"), 1:ncolls))
-  expect_equivalent(friends$friend, paste0(c("coll"), 1:ncolls))
-  expect_equivalent(friends$marker.index, 1:ncolls)
-  expect_equivalent(friends$friend.index, 1:ncolls)
-  expect_equivalent(friends$friend.rank, rep(1, ncolls))
-  expect_equivalent(friends$marker,
-                    rownames(almost_diagon_mat)[friends$marker.index])
-  expect_equivalent(friends$friend,
-                    colnames(almost_diagon_mat)[friends$friend.index])
+  expect_equivalent(dim(friends), dim(almost_diagon_mat))
+  expected <- sparseMatrix(
+    i = integer(0),
+    j = integer(0),
+    x = numeric(0),
+    repr = "T",
+    dims = dim(almost_diagon_mat),
+    dimnames = list(marker = rownames(almost_diagon_mat),
+        friend = colnames(almost_diagon_mat))
+    )
+  expected[cbind(1:10, 1:10)] <- 1  
+  expect_equivalent(friends, expected)
 })
