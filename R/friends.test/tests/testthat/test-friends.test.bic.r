@@ -15,24 +15,23 @@ test_that("best friend is determined correctly", {
   attention <- as.matrix(read.table(text = text, header = TRUE))
 
   friends <- friends.test.bic(attention, .25, max.friends.n = 1)
-  expect_equivalent(dim(friends), c(1, 5))
-  expect_equivalent(friends$marker, c("row5"))
-  expect_equivalent(friends$friend, c("coll5"))
-  expect_equivalent(friends$marker.index, c(5))
-  expect_equivalent(friends$friend.index, c(5))
-  expect_equivalent(friends$marker, rownames(attention)[friends$marker.index])
-  expect_equivalent(friends$friend, colnames(attention)[friends$friend.index])
-  expect_equivalent(friends$friend.rank, c(1))
+  expect_equivalent(dim(friends), dim(attention))
+  expected <- sparseMatrix(
+    i = integer(0),
+    j = integer(0),
+    x = numeric(0),
+    repr = "T",
+    dims = dim(attention),
+    dimnames = list(marker = rownames(attention),
+        friend = colnames(attention))
+    )
+    expected[5,5] <- 1
+    expect_equivalent(friends, expected)
 
-  friends <- friends.test.bic(attention, .5, max.friends.n = 1)
-  expect_equivalent(dim(friends), c(2, 5))
-  expect_equivalent(friends$marker, c("row3", "row5"))
-  expect_equivalent(friends$friend, c("coll4", "coll5"))
-  expect_equivalent(friends$marker.index, c(3, 5))
-  expect_equivalent(friends$friend.index, c(4, 5))
-  expect_equivalent(friends$marker, rownames(attention)[friends$marker.index])
-  expect_equivalent(friends$friend, colnames(attention)[friends$friend.index])
-  expect_equivalent(friends$friend.rank, c(1, 1))
+    friends <- friends.test.bic(attention, .5, max.friends.n = 1)
+    expect_equivalent(dim(friends), dim(attention))
+    expected[3,4] <- 1 #we expect 2 now
+    expect_equivalent(friends, expected)
 })
 
 # best.friends method is not illustrated well using square diagonal matrices
@@ -45,22 +44,25 @@ almost_diagon_mat[1:ncolls, ] <- runif(ncolls * ncolls)
 diag(almost_diagon_mat) <- 19
 rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
 colnames(almost_diagon_mat) <- paste0("coll", 1:ncolls)
-probe <- data.frame(
-  marker = paste0(c("row"), 1:ncolls),
-  friend = paste0(c("coll"), 1:ncolls),
-  marker.index = 1:ncolls,
-  friend.index = 1:ncolls,
-  friend.rank = rep(1, ncolls)
+probe <- sparseMatrix(
+    i = integer(0),
+    j = integer(0),
+    x = numeric(0),
+    repr = "T",
+    dims = dim(almost_diagon_mat),
+    dimnames = list(marker = rownames(almost_diagon_mat),
+        friend = colnames(almost_diagon_mat))
 )
+probe[cbind(1:10, 1:10)] <- 1  
 
 
 test_that("passes non-diagonal diagonal test with low prior to have friend", {
-  res <- friends.test.bic(almost_diagon_mat, .001)
-  expect_equivalent(res, probe)
+    res <- friends.test.bic(almost_diagon_mat, .001)
+    expect_equivalent(res, probe)
 })
 
 test_that("passes non-diagonal diagonal test with high prior to have friend", {
   res <- friends.test.bic(almost_diagon_mat, .5)
-  expect_equivalent(dplyr::left_join(probe, res), probe)
+  expect_equivalent(((res!=0) & (probe!=0)) , (probe != 0))
   # we test that probe is contained in res
 })

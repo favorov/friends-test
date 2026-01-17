@@ -63,69 +63,43 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
 
   max.possible.rank <- dim(A)[1]
 
-  best.fits.for.rows <-
-    apply(
-      all_ranks, 1,
-      function(x) {
-        friends.test::best.step.fit.bic(
-          x,
-          max.possible.rank = max.possible.rank,
-          prior.to.have.friends = prior.to.have.friends
-        )
-      }
-    )
-
-  #here, we filer out the rows where uniform model wins for
-  #we also filter to match
-  #max.friends.n parameter here,
-  #friends.test are cases where a row is a marker in
-  #no more than max.friends.n columns
-
-  #vapply is recommended by BioCheck as safer than sapply
-  filter.for.markers <- vapply(
-    best.fits.for.rows,
-    function(x) {
-      x$population.on.left > 0 && x$population.on.left <= max.friends.n
-    },
-    logical(1)
-  )
-
-  if (!sum(filter.for.markers)) {
-    return(
-      data.frame(
-        marker = character(),
-        friend = character(),
-        marker.index = integer(),
-        friend.index = integer(),
-        friend.rank = integer()
+  #prepare the return sparse matrix
+  result <- sparseMatrix(
+      i = integer(0),
+      j = integer(0),
+      x = numeric(0),
+      repr = "T",
+      dims = dim(A),
+      dimnames = list(
+          marker = rownames(A),
+          friend = colnames(A)
       )
-    )
-  } #if no row passed best test, return empty frame rather than NULL
-
-  best.fits.for.markers <- best.fits.for.rows[filter.for.markers]
-  marker_indices <- which(filter.for.markers)
-
-  res_pre <-
-    lapply(
-      seq_len(length(best.fits.for.markers)),
-      function(n) {
-        x <- best.fits.for.markers[[n]]
-        data.frame(
-          marker = names(best.fits.for.markers)[n],
-          friend = colnames(all_ranks)[x$columns.on.left],
-          marker.index = marker_indices[n],
-          friend.index = x$columns.on.left,
-          friend.rank = which(
-            x$step.models$columns.order %in% x$columns.on.left
-          ),
-          row.names = NULL
+  )
+  for (marker in seq_len(nrow(A))) {
+        step <- friends.test::best.step.fit.bic(
+            all_ranks[marker, ],
+            max.possible.rank = max.possible.rank,
+            prior.to.have.friends = prior.to.have.friends
         )
-      }
-    )
-
-
-
-  res <- do.call(rbind, res_pre)
-
-  res
+        if (
+            step$population.on.left == 0 ||
+                length(step$columns.on.left) > max.friends.n
+        ) {
+            next
+            # here, we filer out the rows where
+            # uniform model wins for
+            # or
+            # toomuch friends if we filter for it
+        }
+        # friends
+        friends <- step$columns.on.left
+        # the ranks of friends, the best is 1
+        friend.ranks <- which(
+            step$step.models$columns.order %in% friends
+        )
+        # cbind makes pairs (marker, friend) in rows
+        # then, the friend's rank is written to the matrix
+        result[cbind(marker, friends)] <- friend.ranks
+    }
+    result
 }

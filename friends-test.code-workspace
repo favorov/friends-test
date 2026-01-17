@@ -13,6 +13,7 @@
 		"editor.tabSize": 4,
         "editor.insertSpaces": true,
         "editor.detectIndentation": false,
+        "r.lsp.diagnostics": true,
 		"accessibility.signalOptions.volume": 0,
 		"workbench.colorTheme": "Default Light Modern"
 	}
