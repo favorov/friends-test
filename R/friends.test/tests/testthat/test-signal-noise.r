@@ -46,12 +46,7 @@ test_that("Signal-noise test for ks", {
   signoise <- sig.noise.obj()
 
   friends <- friends.test(signoise[["M"]])
-  friends.mask <- matrix(FALSE, nrow = nrow(signoise[["M"]]),
-                         ncol = ncol(signoise[["M"]]))
-  for (i in seq_len(nrow(friends))) {
-    friends.mask[as.numeric(friends[i, "marker"]),
-                 as.numeric(friends[i, "friend"])] <- TRUE
-  }
+  friends.mask <- (friends != 0)
 
   err <- compute_error(signoise[["mask"]], friends.mask)
   expect_true(err[["TP"]] > 0.1, #not a superresult
