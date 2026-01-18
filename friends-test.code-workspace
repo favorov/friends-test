@@ -15,6 +15,6 @@
         "editor.detectIndentation": false,
         "r.lsp.diagnostics": true,
 		"accessibility.signalOptions.volume": 0,
-		"workbench.colorTheme": "Default Light Modern"
+		"workbench.colorTheme": "Default Dark Modern"
 	}
 }
