@@ -64,17 +64,21 @@ If it does, those c for which the t is relevant,
 are the t's friend. And, the t is the c's marker.
 }
 \examples{
-A <- matrix(c(10,6,7,8,9,
-                9,10,6,7,8,
-                8,9,10,6,7,
-                7,8,9,10,6,
-                6,7,8,9,10,
-                20,0,0,0,0),
-                nrow=6, ncol=5, byrow=TRUE)
+A <- matrix(
+    c(
+        10, 6, 7, 8, 9,
+        9, 10, 6, 7, 8,
+        8, 9, 10, 6, 7,
+        7, 8, 9, 10, 6,
+        6, 7, 8, 9, 10,
+        20, 0, 0, 0, 0
+    ),
+    nrow = 6, ncol = 5, byrow = TRUE
+)
 A
 friends.test(A, threshold = .05)
 friends.test(A, threshold = .0001)
-friends.test(A, threshold = .05, uniform.max='m')
-friends.test(A, threshold = .0001, uniform.max='m')
+friends.test(A, threshold = .05, uniform.max = "m")
+friends.test(A, threshold = .0001, uniform.max = "m")
 
 }
