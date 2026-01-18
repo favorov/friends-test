@@ -5,5 +5,7 @@ linters: linters_with_defaults(
     assignment_as_infix = TRUE
     ),
   object_length_linter = NULL,
-  brace_linter(allow_single_line = TRUE)
+  object_name_linter = NULL,
+  brace_linter(allow_single_line = TRUE),
+  cyclocomp_linter(complexity_limit = 60L)
   )
