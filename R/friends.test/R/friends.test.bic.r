@@ -23,59 +23,63 @@
 #' If a row in A does not have friends,
 #' it is empty (zeroes-filled) in the result.
 #' @examples
-#' A <- matrix(c(10,6,7,8,9,
-#'                 9,10,6,7,8,
-#'                 8,9,10,6,7,
-#'                 7,8,9,10,6,
-#'                 6,7,8,9,10,
-#'                 20,0,0,0,0),
-#'                 nrow=6, ncol=5, byrow=TRUE)
+#' A <- matrix(
+#'     c(
+#'         10, 6, 7, 8, 9,
+#'         9, 10, 6, 7, 8,
+#'         8, 9, 10, 6, 7,
+#'         7, 8, 9, 10, 6,
+#'         6, 7, 8, 9, 10,
+#'         20, 0, 0, 0, 0
+#'     ),
+#'     nrow = 6, ncol = 5, byrow = TRUE
+#' )
 #' A
-#' friends.test.bic(A, prior.to.have.friends=0.5)
-#' friends.test.bic(A, prior.to.have.friends=0.001)
+#' friends.test.bic(A, prior.to.have.friends = 0.5)
+#' friends.test.bic(A, prior.to.have.friends = 0.001)
 #' @export
 #'
 friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
                              max.friends.n = dim(A)[2] %/% 2) {
-  #parameter checks
-  #parameter checks
-  if (is.na(max.friends.n) || max.friends.n == "all" ||
+    # parameter checks
+    # parameter checks
+    if (is.na(max.friends.n) || max.friends.n == "all" ||
         max.friends.n == "al" || max.friends.n == "a" ||
         is.null(max.friends.n) || !as.logical(max.friends.n)) {
-    max.friends.n <- ncol(A)
-  }
-  if (max.friends.n < 1 || max.friends.n > ncol(A)) {
-    stop("max.friends.n must be between 1 and the number of columns.")
-  }
-  if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
-    stop("friends.test.bic requires the prior.to.have.friends
+        max.friends.n <- ncol(A)
+    }
+    if (max.friends.n < 1 || max.friends.n > ncol(A)) {
+        stop("max.friends.n must be between 1 and the number of columns.")
+    }
+    if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
+        stop("friends.test.bic requires the prior.to.have.friends
           value to be explicitely provided and to be a prior.")
-  }
-  #add names to A matrix rows if necessary
-  if (is.null(dimnames(A)[[1]])) {
-    rownames(A) <- seq_len(nrow(A))
-  }
-  #add names to A matrix cols if necessary
-  if (is.null(dimnames(A)[[2]])) {
-    colnames(A) <- seq_len(ncol(A))
-  }
-  all_ranks <- friends.test::row.int.ranks(A)
+    }
+    # add names to A matrix rows if necessary
+    if (is.null(dimnames(A)[[1]])) {
+        rownames(A) <- seq_len(nrow(A))
+    }
+    # add names to A matrix cols if necessary
+    if (is.null(dimnames(A)[[2]])) {
+        colnames(A) <- seq_len(ncol(A))
+    }
+    all_ranks <- friends.test::row.int.ranks(A)
 
-  max.possible.rank <- dim(A)[1]
+    max.possible.rank <- dim(A)[1]
 
-  #prepare the return sparse matrix
-  result <- sparseMatrix(
-      i = integer(0),
-      j = integer(0),
-      x = numeric(0),
-      repr = "T",
-      dims = dim(A),
-      dimnames = list(
-          marker = rownames(A),
-          friend = colnames(A)
-      )
-  )
-  for (marker in seq_len(nrow(A))) {
+    # prepare the return sparse matrix
+    result <- sparseMatrix(
+        i = integer(0),
+        j = integer(0),
+        x = numeric(0),
+        repr = "T",
+        dims = dim(A),
+        dimnames = list(
+            marker = rownames(A),
+            friend = colnames(A)
+        )
+    )
+    for (marker in seq_len(nrow(A))) {
         step <- friends.test::best.step.fit.bic(
             all_ranks[marker, ],
             max.possible.rank = max.possible.rank,
