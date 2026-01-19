@@ -42,6 +42,6 @@ See \link{friends.test} documentation for details.
 }
 \examples{
 example(row.int.ranks)
-step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
-nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
+step <- best.step.fit.bic(TF.ranks[42, ], genes.no, 0.5)
+nostep <- best.step.fit.bic(TF.ranks[42, ], genes.no, 1E-50)
 }

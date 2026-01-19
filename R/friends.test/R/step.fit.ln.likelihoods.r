@@ -51,53 +51,54 @@
 #' \eqn{1..max.possible.rank};\cr
 #' @examples
 #' example(row.int.ranks)
-#' steps<-step.fit.ln.likelihoods(TF.ranks[42,],genes.no)
+#' steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
 #' @export
 step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
-  if (max.possible.rank < max(ranks)) {
-    stop("Rows_no parameter is the maximal possible rank,
+    if (max.possible.rank < max(ranks)) {
+        stop("Rows_no parameter is the maximal possible rank,
     it cannot be less then max(ranks)!")
-  }
-  if (!all(ranks - floor(ranks) == 0)) {
-    stop("Ranks are to be integer!")
-  }
-  if (!all(ranks >= 1)) {
-    stop("Ranks are to be integer!")
-  }
-  if (!is.null(dim(ranks))) {
-    warning("Ranks has not-NULL dim(), it is not a vector.\n")
-  }
-
-
-  columns.order <- order(ranks)
-  ranks <- ranks[columns.order]
-  ln.likelihoods <- rep(0, max.possible.rank)
-  k1.by.l1 <- rep(0, max.possible.rank)
-  k <- length(ranks)
-  k1 <- 0
-  #l1==max.possible.rank is "no step"
-  for (l1 in seq_len(max.possible.rank - 1)) {
-    #we enumerate models by their l_i parameter
-    while (k1 < k && ranks[k1 + 1] <= l1) {
-      k1 <- k1 + 1
-    }#l1 has hit next rank value
-    k1.by.l1[l1] <- k1
-    p1 <- k1 / k
-    if (p1 > 0) {
-      ln.likelihoods[l1] <-
-        ln.likelihoods[l1] + k1 * log(p1 / l1)
     }
-    if (p1 < 1) {
-      ln.likelihoods[l1] <-
-        ln.likelihoods[l1] + (k - k1) * log((1 - p1) / (max.possible.rank - l1))
+    if (!all(ranks - floor(ranks) == 0)) {
+        stop("Ranks are to be integer!")
     }
-  }
-  ln.likelihoods[max.possible.rank] <- k * log(1 / max.possible.rank)
-  k1.by.l1[max.possible.rank] <- k
+    if (!all(ranks >= 1)) {
+        stop("Ranks are to be integer!")
+    }
+    if (!is.null(dim(ranks))) {
+        warning("Ranks has not-NULL dim(), it is not a vector.\n")
+    }
 
-  list(
-    columns.order = columns.order,
-    ln.likelihoods = ln.likelihoods,
-    k1.by.l1 = k1.by.l1
-  )
+
+    columns.order <- order(ranks)
+    ranks <- ranks[columns.order]
+    ln.likelihoods <- rep(0, max.possible.rank)
+    k1.by.l1 <- rep(0, max.possible.rank)
+    k <- length(ranks)
+    k1 <- 0
+    # l1==max.possible.rank is "no step"
+    for (l1 in seq_len(max.possible.rank - 1)) {
+        # we enumerate models by their l_i parameter
+        while (k1 < k && ranks[k1 + 1] <= l1) {
+            k1 <- k1 + 1
+        } # l1 has hit next rank value
+        k1.by.l1[l1] <- k1
+        p1 <- k1 / k
+        if (p1 > 0) {
+            ln.likelihoods[l1] <-
+                ln.likelihoods[l1] + k1 * log(p1 / l1)
+        }
+        if (p1 < 1) {
+            ln.likelihoods[l1] <-
+                ln.likelihoods[l1] +
+                (k - k1) * log((1 - p1) / (max.possible.rank - l1))
+        }
+    }
+    ln.likelihoods[max.possible.rank] <- k * log(1 / max.possible.rank)
+    k1.by.l1[max.possible.rank] <- k
+
+    list(
+        columns.order = columns.order,
+        ln.likelihoods = ln.likelihoods,
+        k1.by.l1 = k1.by.l1
+    )
 }

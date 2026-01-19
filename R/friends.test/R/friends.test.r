@@ -68,8 +68,9 @@ friends.test <- function(A = NULL, threshold = 0.05,
                          B = 2000) {
     # parameter checks
     if (is.na(max.friends.n) || max.friends.n == "all" ||
-        max.friends.n == "al" || max.friends.n == "a" ||
-        is.null(max.friends.n) || !as.logical(max.friends.n)) {
+            max.friends.n == "al" || max.friends.n == "a" ||
+            is.null(max.friends.n) || !as.logical(max.friends.n)
+    ) {
         max.friends.n <- ncol(A)
     }
     if (max.friends.n < 1 || max.friends.n > ncol(A)) {

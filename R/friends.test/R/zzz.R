@@ -1,13 +1,14 @@
 .onAttach <- function(libname, pkgname) {
-  version <- packageDescription("friends.test", fields = "Version")
-  packageStartupMessage(
-    paste(
-      "Welcome to friends.test, version",
-      version,"\n(.\u05D8\u05E0\u05E2\u05D0\u05B8\u05E0",
-      "\u05DF\u05D9\u05D5\u05E9", "\u05D6\u05D9\u05D0",
-      "\u05D2\u05E0\u05D9\u05DC\u05D9\u05E8\u05E4\u05BF",
-      "\u05E8\u05E2\u05D3"," Der friling is shoyn noent.)")
-  )
+    version <- packageDescription("friends.test", fields = "Version")
+    packageStartupMessage(
+        paste(
+            "Welcome to friends.test, version",
+            version, "\n(.\u05D8\u05E0\u05E2\u05D0\u05B8\u05E0",
+            "\u05DF\u05D9\u05D5\u05E9", "\u05D6\u05D9\u05D0",
+            "\u05D2\u05E0\u05D9\u05DC\u05D9\u05E8\u05E4\u05BF",
+            "\u05E8\u05E2\u05D3", " Der friling is shoyn noent.)"
+        )
+    )
 }
 # \u00E1 is á
 # \u00E3 is ã

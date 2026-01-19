@@ -30,5 +30,5 @@ See \link{friends.test} documentation for details.
 }
 \examples{
 example(row.int.ranks)
-ks.p.vals<-apply(TF.ranks,1,"unif.ks.test")
+ks.p.vals <- apply(TF.ranks, 1, "unif.ks.test")
 }

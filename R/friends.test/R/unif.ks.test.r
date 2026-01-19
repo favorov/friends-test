@@ -17,33 +17,35 @@
 #' @importFrom stats ks.test
 #' @examples
 #' example(row.int.ranks)
-#' ks.p.vals<-apply(TF.ranks,1,"unif.ks.test")
+#' ks.p.vals <- apply(TF.ranks, 1, "unif.ks.test")
 #' @export
 unif.ks.test <- function(ranks,
                          uniform.max = NA,
                          simulate.p.value = FALSE,
                          B = 2000) {
-  jranks <- jitter(ranks, amount = 0.1E-6)
-  jrmin <- min(jranks)
-  if (is.na(uniform.max)) {
-    jrmax <- max(jranks)
-  } else {
-    jrmax <- uniform.max
-  }
-  jranks_mapped <- (jranks - jrmin) / (jrmax - jrmin)
-  res <- ks.test(jranks_mapped, "punif")
-  res$p.value
+    jranks <- jitter(ranks, amount = 0.1E-6)
+    jrmin <- min(jranks)
+    if (is.na(uniform.max)) {
+        jrmax <- max(jranks)
+    } else {
+        jrmax <- uniform.max
+    }
+    jranks_mapped <- (jranks - jrmin) / (jrmax - jrmin)
+    res <- ks.test(jranks_mapped, "punif")
+    res$p.value
 
-  ranks <- jitter(ranks, amount = 0.1E-6)
-  left_end <- min(ranks)
-  if (is.na(uniform.max)) {
-    right_end <- max(jranks)
-  } else {
-    right_end <- uniform.max
-  }
+    ranks <- jitter(ranks, amount = 0.1E-6)
+    left_end <- min(ranks)
+    if (is.na(uniform.max)) {
+        right_end <- max(jranks)
+    } else {
+        right_end <- uniform.max
+    }
 
-  res <- ks.test(ranks, "punif", min = left_end, max = right_end,
-                 simulate.p.value = simulate.p.value,
-                 B = B)
-  return(res$p.value)
+    res <- ks.test(ranks, "punif",
+        min = left_end, max = right_end,
+        simulate.p.value = simulate.p.value,
+        B = B
+    )
+    return(res$p.value)
 }

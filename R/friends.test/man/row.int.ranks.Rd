@@ -31,20 +31,20 @@ columns (columns).
 See \link{friends.test} documentation for details.
 }
 \examples{
-genes.no<-100
-TFs.no<-50
-gene.names<-
-    paste0("gene_",as.character(seq( from = 1, to = genes.no )))
-TF.names<-
-    paste0("TF_",as.character(seq( from = 1, to = TFs.no )))
-regulation<-matrix(rep(1,TFs.no*genes.no),
-    ncol=TFs.no,byrow=FALSE
+genes.no <- 100
+TFs.no <- 50
+gene.names <-
+    paste0("gene_", as.character(seq(from = 1, to = genes.no)))
+TF.names <-
+    paste0("TF_", as.character(seq(from = 1, to = TFs.no)))
+regulation <- matrix(rep(1, TFs.no * genes.no),
+    ncol = TFs.no, byrow = FALSE
 )
-#we fill it with ones, now let's fill the regulation of gene 42
-#by the first 1/2 TFs  with 2
-regulation[42,seq(1,TFs.no/2)]=2
-rownames(regulation)<-gene.names
-colnames(regulation)<-TF.names
+# we fill it with ones, now let's fill the regulation of gene 42
+# by the first 1/2 TFs  with 2
+regulation[42, seq(1, TFs.no / 2)] <- 2
+rownames(regulation) <- gene.names
+colnames(regulation) <- TF.names
 
-TF.ranks<-row.int.ranks(regulation)
+TF.ranks <- row.int.ranks(regulation)
 }

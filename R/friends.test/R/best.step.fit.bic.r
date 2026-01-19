@@ -28,59 +28,65 @@
 #' \code{columns.on.left} is empty.
 #' @examples
 #' example(row.int.ranks)
-#' step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
-#' nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
+#' step <- best.step.fit.bic(TF.ranks[42, ], genes.no, 0.5)
+#' nostep <- best.step.fit.bic(TF.ranks[42, ], genes.no, 1E-50)
 #' @export
 best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
-  step.models <- friends.test::step.fit.ln.likelihoods(ranks, max.possible.rank)
+    step.models <- friends.test::step.fit.ln.likelihoods(
+        ranks,
+        max.possible.rank
+    )
 
-  possible.step.ranks <- seq_len(max.possible.rank - 1)
-  k1.by.l1 <- step.models$k1.by.l1[possible.step.ranks]
-  possible.step.ranks <- possible.step.ranks[
-    k1.by.l1 > 0 & k1.by.l1 < length(ranks)
-  ]
-  #we assess only the steps that have nonzero left and right sets
+    possible.step.ranks <- seq_len(max.possible.rank - 1)
+    k1.by.l1 <- step.models$k1.by.l1[possible.step.ranks]
+    possible.step.ranks <- possible.step.ranks[
+        k1.by.l1 > 0 & k1.by.l1 < length(ranks)
+    ]
+    # we assess only the steps that have nonzero left and right sets
 
-  possible.ln.likelihoods <-
-    step.models$ln.likelihoods[possible.step.ranks]
-  max.ln.l <- max(possible.ln.likelihoods)
-  #here, we compare the best ln posterior
-  #with the uniform model posterior,
-  #and here we use the prior.to.have.friends
-  if (max.ln.l + log(prior.to.have.friends) >=
-        step.models$ln.likelihoods[max.possible.rank] +
-          log(1 - prior.to.have.friends)) {
-    #if we are here, the step model won
-    best.step.index <- max(which(possible.ln.likelihoods == max.ln.l))
-    #the index in possible.step_ranks (and possible.ln.likelihoods);
-    #we need the rank itself
-    best.step.rank <- possible.step.ranks[best.step.index]
+    possible.ln.likelihoods <-
+        step.models$ln.likelihoods[possible.step.ranks]
+    max.ln.l <- max(possible.ln.likelihoods)
+    # here, we compare the best ln posterior
+    # with the uniform model posterior,
+    # and here we use the prior.to.have.friends
+    if (max.ln.l + log(prior.to.have.friends) >=
+            step.models$ln.likelihoods[max.possible.rank] +
+                log(1 - prior.to.have.friends)) {
+        # if we are here, the step model won
+        best.step.index <- max(which(possible.ln.likelihoods == max.ln.l))
+        # the index in possible.step_ranks (and possible.ln.likelihoods);
+        # we need the rank itself
+        best.step.rank <- possible.step.ranks[best.step.index]
 
-    population.on.left <- k1.by.l1[best.step.rank]
+        population.on.left <- k1.by.l1[best.step.rank]
 
-    columns.on.left <-
-      step.models$columns.order[seq_len(population.on.left)]
+        columns.on.left <-
+            step.models$columns.order[seq_len(population.on.left)]
 
-    columns.on.right <-
-      step.models$columns.order[seq(population.on.left + 1,
-                                    length(ranks))]
-  } else {
-    #if we are here, the uniform won, no friends
+        columns.on.right <-
+            step.models$columns.order[seq(
+                population.on.left + 1,
+                length(ranks)
+            )]
+    } else {
+        # if we are here, the uniform won, no friends
 
-    best.step.rank <- max.possible.rank
+        best.step.rank <- max.possible.rank
 
-    population.on.left <- 0 #all
+        population.on.left <- 0 # all
 
-    columns.on.left <- c() #empty -- no friends
+        columns.on.left <- c() # empty -- no friends
 
-    columns.on.right <- step.models$columns.order
-    #all
-  }
+        columns.on.right <- step.models$columns.order
+        # all
+    }
 
-  list(step.models = step.models,
-    best.step.rank = best.step.rank,
-    columns.on.left = columns.on.left,
-    columns.on.right = columns.on.right,
-    population.on.left = population.on.left
-  )
+    list(
+        step.models = step.models,
+        best.step.rank = best.step.rank,
+        columns.on.left = columns.on.left,
+        columns.on.right = columns.on.right,
+        population.on.left = population.on.left
+    )
 }

@@ -39,5 +39,5 @@ See \link{friends.test} documentation for details.
 }
 \examples{
 example(row.int.ranks)
-steps<-step.fit.ln.likelihoods(TF.ranks[42,],genes.no)
+steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
 }

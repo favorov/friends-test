@@ -32,5 +32,5 @@ See \link{friends.test} documentation for details.
 }
 \examples{
 example(row.int.ranks)
-step<-best.step.fit(TF.ranks[42,],genes.no)
+step <- best.step.fit(TF.ranks[42, ], genes.no)
 }
