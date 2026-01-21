@@ -11,11 +11,11 @@
 #'
 #' @param A original association matrix
 #' @param prior.to.have.friends The prior for a row to have friendly columns.
-#' @param max.friends.n The maximal number of friends for a marker,
-#' the default is \code{dim(A)[2]\%/\%2}, rounded half of #of columns in A.
-#' The string "all" means "all friends", do not filter by this parameter.
+#' @param max.friends.n The maximal number of friends for a marker.
 #' A value $n$ means that we filter out a row if it has more
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
+#' The string "all" (default) means the same as \code{ncols(A)} value,
+#' do not filter markers by this parameter
 #' @return \code{Matrix}, _e.g._ sparse matrix, the same size as A,
 #' each nonzero element represent a marker+friend pair,
 #' and the value shows the rank of the friend for the marker,

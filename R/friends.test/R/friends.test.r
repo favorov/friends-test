@@ -14,11 +14,11 @@
 #' non-uniformity of ranks.
 #' @param p.adjust.method Multiple testing correction method,
 #' see \link[stats]{p.adjust}.
-#' @param max.friends.n The maximal number of friends for a marker,
-#' the default is \code{dim(A)[2]\%/\%2}, rounded half of #of columns in A.
-#' The string "all" means "all friends", do not filter by this parameter.
+#' @param max.friends.n The maximal number of friends for a marker.
 #' A value $n$ means that we filter out a row if it has more
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
+#' The string "all" (default) means the same as \code{ncols(A)} value,
+#' do not filter markers by this parameter.
 #' @param uniform.max The maximum of the uniform distribution of the ranks we
 #' fit the null model, it can be the maximal possible rank that is common for
 #' all rows and equals the number of rows \code{'c'} or the maximal observed
@@ -62,7 +62,7 @@
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
                          p.adjust.method = "BH",
-                         max.friends.n = dim(A)[2] %/% 2,
+                         max.friends.n = "all",
                          uniform.max = "m",
                          simulate.p.value = FALSE,
                          B = 2000) {
