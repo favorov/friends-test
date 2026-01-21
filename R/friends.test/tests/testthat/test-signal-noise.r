@@ -45,7 +45,10 @@ test_that("Signal-noise test for ks", {
 
     signoise <- sig.noise.obj()
 
-    friends <- friends.test(signoise[["M"]])
+    friends <- friends.test(
+        signoise[["M"]],
+        max.friends.n = ncol(signoise[["M"]]) / 2
+    )
     friends.mask <- (friends != 0)
 
     err <- compute_error(signoise[["mask"]], friends.mask)
