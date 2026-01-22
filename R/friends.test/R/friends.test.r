@@ -118,8 +118,9 @@ friends.test <- function(A = NULL, threshold = 0.05,
     # rank all the A elements in columns
     all_ranks <- friends.test::row.int.ranks(A)
 
-    # calculate the p-values for null hypothesis for all the rows
-
+    # calculate the p-values for null hypothesis for all the rank rows
+    # pipeline : array tp list, list to double vector of p-values
+    # adjust p-value
     adj_nunif_pval <-
         all_ranks |>
         purrr::array_branch(1) |>
@@ -132,14 +133,6 @@ friends.test <- function(A = NULL, threshold = 0.05,
         p.adjust(
             method = p.adjust.method
         )
-
-    #run ut all in purrr style
-
-    ijrlist <-
-        all_ranks |>
-        purrr::map(\(ranks) {
-            NULL
-        })
 
 
     is_marker <- (adj_nunif_pval <= threshold)
@@ -155,6 +148,31 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
     # find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
+
+    #run ut all in purrr style
+    #return: list of trios i, j, rank -- rows of dataframe
+    ijrlist <-
+        all_ranks |>
+        purrr::map(\(ranks) {
+            step <- friends.test::best.step.fit(
+                ranks,
+                max.possible.rank = max.possible.rank
+            )
+            if (length(step$columns.on.left) > max.friends.n) {
+                next # marker has too much friends
+            }
+            # friends
+            friends <- step$columns.on.left
+            # the ranks of friends, the best is 1
+            friend.ranks <- which(
+                step$step.models$columns.order %in% friends
+            )
+            # cbind makes pairs (marker, friend) in rows
+            # then, the friend's rank is written to the matrix
+        })
+
+
+
     # let's fill the result, calling the friends.test::best.step.fit
     # for all the marker_indices
     for (marker in marker_indices) {
