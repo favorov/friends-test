@@ -195,26 +195,5 @@ friends.test <- function(A = NULL, threshold = 0.05,
         result[cbind(marker, friends)] <- friend.ranks
     }
 
-    # let's fill the result, calling the friends.test::best.step.fit
-    # for all the marker_indices
-    #for (marker in marker_indices) {
-    #    step <- friends.test::best.step.fit(
-    #        all_ranks[marker, ],
-    #        max.possible.rank = max.possible.rank
-    #    )
-    #    if (length(step$columns.on.left) > max.friends.n) {
-    #        next # marker has too much friends
-    #    }
-    #    # friends
-    #    friends <- step$columns.on.left
-    #    # the ranks of friends, the best is 1
-    #    friend.ranks <- which(
-    #        step$step.models$columns.order %in% friends
-    #    )
-    #    # cbind makes pairs (marker, friend) in rows
-    #    # then, the friend's rank is written to the matrix
-    #    result[cbind(marker, friends)] <- friend.ranks
-    #}
-
     result
 }
