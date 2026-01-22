@@ -42,8 +42,7 @@
 #' @export
 #'
 friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
-                             max.friends.n = dim(A)[2] %/% 2) {
-    # parameter checks
+                             max.friends.n = "all") {
     # parameter checks
     if (is.na(max.friends.n) || max.friends.n == "all" ||
             max.friends.n == "al" || max.friends.n == "a" ||
