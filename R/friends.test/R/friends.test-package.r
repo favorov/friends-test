@@ -41,6 +41,6 @@
 #' @importFrom data.table frankv
 #' @importFrom stats p.adjust
 #' @importFrom Matrix sparseMatrix
-#' @importFrom purrr array_branch map map_dbl
+#' @importFrom purrr array_branch map map_dbl map2
 #'
 NULL
