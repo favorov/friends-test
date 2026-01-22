@@ -58,6 +58,7 @@
 #'
 #' @importFrom stats p.adjust
 #' @importFrom Matrix sparseMatrix
+#' @importFrom purrr array_branch map
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
@@ -114,6 +115,14 @@ friends.test <- function(A = NULL, threshold = 0.05,
             friend = colnames(A)
         )
     )
+    #run ut all in purrr style
+
+    ijrlist <-
+        friends.test::row.int.ranks(A) |>
+        purrr::map(\(ranks) {
+            NULL
+        })
+
     # rank all the A elements in columns
     all_ranks <- friends.test::row.int.ranks(A)
 
