@@ -58,7 +58,7 @@
 #'
 #' @importFrom stats p.adjust
 #' @importFrom Matrix sparseMatrix
-#' @importFrom purrr array_branch map map_dbl
+#' @importFrom purrr array_branch map map_dbl map2
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
@@ -123,13 +123,17 @@ friends.test <- function(A = NULL, threshold = 0.05,
     # adjust p-value
     adj_nunif_pval <-
         all_ranks |>
+        #convert the array to list of rows
         purrr::array_branch(1) |>
-        purrr::map_dbl(
-            friends.test::unif.ks.test,
-            uniform.max = uniform.max,
-            simulate.p.value = FALSE,
-            B = 2000
-        ) |>
+        #apply friends.test::unif.ks.test to each
+        purrr::map_dbl(\(ranks) {
+            friends.test::unif.ks.test(
+                ranks,
+                uniform.max = uniform.max,
+                simulate.p.value = FALSE,
+                B = 2000
+            )
+        }) |>
         p.adjust(
             method = p.adjust.method
         )
@@ -150,16 +154,22 @@ friends.test <- function(A = NULL, threshold = 0.05,
     max.possible.rank <- dim(A)[1]
 
     #run ut all in purrr style
-    #return: list of trios i, j, rank -- rows of dataframe
+    #return: list of dataframes,
+    #trios i, j, rank -- rows of dataframe
     ijrlist <-
-        all_ranks |>
-        purrr::map(\(ranks) {
+        all_ranks[marker_indices, , drop = FALSE] |>
+        purrr::array_branch(1) |>
+        #we have a list of nonuniform row ranks;
+        #we are sure it is a list
+        #we pass it to map2,
+        #with .y as the row numbers in A
+        purrr::map2(which(is_marker), \(ranks, i) {
             step <- friends.test::best.step.fit(
                 ranks,
                 max.possible.rank = max.possible.rank
             )
             if (length(step$columns.on.left) > max.friends.n) {
-                next # marker has too much friends
+                return(NULL) # marker has too much friends
             }
             # friends
             friends <- step$columns.on.left
@@ -167,32 +177,41 @@ friends.test <- function(A = NULL, threshold = 0.05,
             friend.ranks <- which(
                 step$step.models$columns.order %in% friends
             )
-            # cbind makes pairs (marker, friend) in rows
-            # then, the friend's rank is written to the matrix
+            data.frame(
+                i = i,
+                j = friends,
+                r = friend.ranks
+            )
         })
 
-
+    #now, we put all trios to the result
+    #we did the list of trios as an intermediate
+    #because it can be prepard in parallel, reduce is here
+    for (ind in seq_along(ijrlist)) {
+        result[ijrlist[[ind]][, c(1, 2)]] <-
+            ijrlist[[ind]][, 3]
+    }
 
     # let's fill the result, calling the friends.test::best.step.fit
     # for all the marker_indices
-    for (marker in marker_indices) {
-        step <- friends.test::best.step.fit(
-            all_ranks[marker, ],
-            max.possible.rank = max.possible.rank
-        )
-        if (length(step$columns.on.left) > max.friends.n) {
-            next # marker has too much friends
-        }
-        # friends
-        friends <- step$columns.on.left
-        # the ranks of friends, the best is 1
-        friend.ranks <- which(
-            step$step.models$columns.order %in% friends
-        )
-        # cbind makes pairs (marker, friend) in rows
-        # then, the friend's rank is written to the matrix
-        result[cbind(marker, friends)] <- friend.ranks
-    }
+    #for (marker in marker_indices) {
+    #    step <- friends.test::best.step.fit(
+    #        all_ranks[marker, ],
+    #        max.possible.rank = max.possible.rank
+    #    )
+    #    if (length(step$columns.on.left) > max.friends.n) {
+    #        next # marker has too much friends
+    #    }
+    #    # friends
+    #    friends <- step$columns.on.left
+    #    # the ranks of friends, the best is 1
+    #    friend.ranks <- which(
+    #        step$step.models$columns.order %in% friends
+    #    )
+    #    # cbind makes pairs (marker, friend) in rows
+    #    # then, the friend's rank is written to the matrix
+    #    result[cbind(marker, friends)] <- friend.ranks
+    #}
 
     result
 }
