@@ -189,9 +189,9 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #because it can be prepard in parallel, reduce is here
     for (ind in seq_along(ijrlist)) {
         if (is.null(ijrlist[[ind]])) next
-        marker <- ijrlist[[ind]][,1]
-        friends <- ijrlist[[ind]][,2]
-        friend.ranks <- ijrlist[[ind]][,3]
+        marker <- ijrlist[[ind]][, 1]
+        friends <- ijrlist[[ind]][, 2]
+        friend.ranks <- ijrlist[[ind]][, 3]
         result[cbind(marker, friends)] <- friend.ranks
     }
 
