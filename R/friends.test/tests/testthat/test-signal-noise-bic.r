@@ -45,7 +45,11 @@ test_that("Signal-noise test for bic", {
 
     signoise <- sig.noise.obj()
 
-    friends <- friends.test.bic(signoise[["M"]], prior.to.have.friends = 0.01)
+    friends <- friends.test.bic(
+        signoise[["M"]],
+        prior.to.have.friends = 0.01,
+        max.friends.n = ncol(signoise[["M"]]) / 2
+    )
     friends.mask <- (friends != 0)
 
     err <- compute_error(signoise[["mask"]], friends.mask)
