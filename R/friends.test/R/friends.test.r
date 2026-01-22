@@ -38,8 +38,6 @@
 #' from 1 (the best friend), then 2, 3, etc.
 #' If a row in A does not have friends,
 #' it is empty (zeroes-filled) in the result.
-#' @importFrom stats p.adjust
-#' @importFrom Matrix sparseMatrix
 #' @examples
 #' A <- matrix(
 #'     c(
@@ -58,6 +56,8 @@
 #' friends.test(A, threshold = .05, uniform.max = "m")
 #' friends.test(A, threshold = .0001, uniform.max = "m")
 #'
+#' @importFrom stats p.adjust
+#' @importFrom Matrix sparseMatrix
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
@@ -103,7 +103,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
     }
 
     # prepare the return sparse matrix
-    result <- sparseMatrix(
+    result <- Matrix::sparseMatrix(
         i = integer(0),
         j = integer(0),
         x = numeric(0),

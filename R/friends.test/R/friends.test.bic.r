@@ -37,6 +37,8 @@
 #' A
 #' friends.test.bic(A, prior.to.have.friends = 0.5)
 #' friends.test.bic(A, prior.to.have.friends = 0.001)
+#' @importFrom stats p.adjust
+#' @importFrom Matrix sparseMatrix
 #' @export
 #'
 friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
@@ -69,7 +71,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
     max.possible.rank <- dim(A)[1]
 
     # prepare the return sparse matrix
-    result <- sparseMatrix(
+    result <- Matrix::sparseMatrix(
         i = integer(0),
         j = integer(0),
         x = numeric(0),
