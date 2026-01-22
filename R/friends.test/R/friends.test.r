@@ -188,8 +188,11 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #we did the list of trios as an intermediate
     #because it can be prepard in parallel, reduce is here
     for (ind in seq_along(ijrlist)) {
-        result[ijrlist[[ind]][, c(1, 2)]] <-
-            ijrlist[[ind]][, 3]
+        if (is.null(ijrlist[[ind]])) next
+        marker <- ijrlist[[ind]][,1]
+        friends <- ijrlist[[ind]][,2]
+        friend.ranks <- ijrlist[[ind]][,3]
+        result[cbind(marker, friends)] <- friend.ranks
     }
 
     # let's fill the result, calling the friends.test::best.step.fit
