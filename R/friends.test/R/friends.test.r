@@ -58,7 +58,7 @@
 #'
 #' @importFrom stats p.adjust
 #' @importFrom Matrix sparseMatrix
-#' @importFrom purrr array_branch map
+#' @importFrom purrr array_branch map map_dbl
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
@@ -115,29 +115,31 @@ friends.test <- function(A = NULL, threshold = 0.05,
             friend = colnames(A)
         )
     )
-    #run ut all in purrr style
-
-    ijrlist <-
-        friends.test::row.int.ranks(A) |>
-        purrr::map(\(ranks) {
-            NULL
-        })
-
     # rank all the A elements in columns
     all_ranks <- friends.test::row.int.ranks(A)
 
     # calculate the p-values for null hypothesis for all the rows
 
     adj_nunif_pval <-
+        all_ranks |>
+        purrr::array_branch(1) |>
+        purrr::map_dbl(
+            friends.test::unif.ks.test,
+            uniform.max = uniform.max,
+            simulate.p.value = FALSE,
+            B = 2000
+        ) |>
         p.adjust(
-            apply(all_ranks, 1,
-                friends.test::unif.ks.test,
-                uniform.max = uniform.max,
-                simulate.p.value = FALSE,
-                B = 2000
-            ),
             method = p.adjust.method
         )
+
+    #run ut all in purrr style
+
+    ijrlist <-
+        all_ranks |>
+        purrr::map(\(ranks) {
+            NULL
+        })
 
 
     is_marker <- (adj_nunif_pval <= threshold)
