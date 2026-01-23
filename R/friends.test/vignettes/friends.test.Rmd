@@ -9,7 +9,7 @@ vignette: >
  %\VignetteDepends{devtools}
 ---
 <!--  tried below html_vignette, did no work
-      theme: Bootstrap
+      theme: Nonuniformity test
       toc: true
       toc_depth: 2 -->
 
@@ -30,7 +30,7 @@ vignette: >
 
 
 # Introduction
-There is a simple intuition of what it means to be a friend. A friend of Augustus cares about Augustus more than about other people. And, if we see Augustus, then we infer to see friends(s) of Augustus also. Let’s translate it into statistical language.
+There is a simple intuition of what it means to be a friend. A friend of Augustus cares about Augustus more than about other people. And, if we see Augustus, then we infer to see friends(s) of Augustus also. Please refer to [our Arxive publication](https://arxiv.org/abs/2512.24843) for more formal introduction.
 
 Consider a set of genes and their loads in a set of expression patterns. Each pattern represents a biological process by the expression levels of the involved genes. 
 
@@ -61,8 +61,6 @@ Let's denote the rank of the $i$-th rows's attention association with $j$-the co
 
 The main idea of the test is that if a row $t_i$ is not preferred by any column(s), the distribution of the ranks of the row in all the columns $r(t_i,c_j)$ behaves like $j$  i.i.d integers that are uniformely distributed in $1..n$
 
-
-Please see our manuscript [] for more details.
 
 
 ## Toy example: Bayesian option
