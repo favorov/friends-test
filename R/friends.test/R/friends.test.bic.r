@@ -66,9 +66,7 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
         colnames(A) <- seq_len(ncol(A))
     }
     all_ranks <- friends.test::row.int.ranks(A)
-
     max.possible.rank <- dim(A)[1]
-
     # prepare the return sparse matrix
     result <- Matrix::sparseMatrix(
         i = integer(0),
@@ -81,31 +79,54 @@ friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,
             friend = colnames(A)
         )
     )
-    for (marker in seq_len(nrow(A))) {
-        step <- friends.test::best.step.fit.bic(
-            all_ranks[marker, ],
-            max.possible.rank = max.possible.rank,
-            prior.to.have.friends = prior.to.have.friends
-        )
-        if (
-            step$population.on.left == 0 ||
-                length(step$columns.on.left) > max.friends.n
-        ) {
-            next
-            # here, we filer out the rows where
-            # uniform model wins for
-            # or
-            # toomuch friends if we filter for it
-        }
-        # friends
-        friends <- step$columns.on.left
-        # the ranks of friends, the best is 1
-        friend.ranks <- which(
-            step$step.models$columns.order %in% friends
-        )
-        # cbind makes pairs (marker, friend) in rows
-        # then, the friend's rank is written to the matrix
+    #run ut all in purrr style
+    #return: list of dataframes,
+    #trios i, j, rank -- rows of dataframe
+    ijrlist <-
+        all_ranks |>
+        purrr::array_branch(1) |>
+        #we have a list of nonuniform row ranks;
+        #we are sure it is a list
+        #we pass it to map2,
+        #with .y as the row numbers in A
+        purrr::map2(seq_len(nrow(A)), \(ranks, i) {
+            step <- friends.test::best.step.fit.bic(
+                ranks,
+                max.possible.rank = max.possible.rank,
+                prior.to.have.friends = prior.to.have.friends
+            )
+            frn <- length(step$columns.on.left)
+            if (frn == 0 || frn > max.friends.n) {
+                return(NULL)
+                # here, we filer out the rows where
+                # uniform model wins
+                # (and so there is nothing to left of the step)
+                # or
+                # there are too much friends if we filter for it
+            }
+            # friends
+            friends <- step$columns.on.left
+            # the ranks of friends, the best is 1
+            friend.ranks <- which(
+                step$step.models$columns.order %in% friends
+            )
+            data.frame(
+                i = i,
+                j = friends,
+                r = friend.ranks
+            )
+        })
+
+    #now, we put all trios to the result
+    #we did the list of trios as an intermediate
+    #because it can be prepard in parallel, reduce is here
+    for (ind in seq_along(ijrlist)) {
+        if (is.null(ijrlist[[ind]])) next
+        marker <- ijrlist[[ind]][, 1]
+        friends <- ijrlist[[ind]][, 2]
+        friend.ranks <- ijrlist[[ind]][, 3]
         result[cbind(marker, friends)] <- friend.ranks
     }
+
     result
 }
