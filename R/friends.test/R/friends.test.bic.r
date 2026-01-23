@@ -15,7 +15,10 @@
 #' A value $n$ means that we filter out a row if it has more
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
 #' The string "all" (default) means the same as \code{ncols(A)} value,
-#' do not filter markers by this parameter
+#' do not filter markers by this parameter.
+#' @param .progress the .progress is passed to \code{purrr} functions
+#' The default is \code{.FALSE}.
+#' If it is not, non-\code{purr} parts also shows progress.
 #' @return \code{Matrix}, _e.g._ sparse matrix, the same size as A,
 #' each nonzero element represent a marker+friend pair,
 #' and the value shows the rank of the friend for the marker,
