@@ -35,21 +35,19 @@ all rows and equals the number of rows \code{'c'} or the maximal observed
 rank for the row we test now, \code{'m'} (default).}
 
 \item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
-default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
+default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}.}
 
 \item{B}{number of or replicates if \code{simulate.p.value=TRUE}
-default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
+default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}.}
+
+\item{.progress}{the .progress is passed to \code{purrr} functions
+The default is \code{.FALSE}.
+If it is not, non-\code{purr} parts also shows progress.}
 }
 \value{
 \code{Matrix}, \emph{e.g.} sparse matrix, the same size as A,
 each nonzero element represent a marker+friend pair,
 and the value shows the rank of the friend for the marker,
-from 1 (the best friend), then 2, 3, etc.
-If a row in A does not have friends,
-it is empty (zeroes-filled) in the result.
-
-\code{Matrix}, \emph{e.g.} sparse matrix, the same size as A,
-each nonzero element shows the rank of the friend for the marker,
 from 1 (the best friend), then 2, 3, etc.
 If a row in A does not have friends,
 it is empty (zeroes-filled) in the result.
