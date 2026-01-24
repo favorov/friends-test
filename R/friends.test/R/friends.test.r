@@ -120,14 +120,14 @@ friends.test <- function(A = NULL, threshold = 0.05,
     # rank all the A elements in columns
     if (.progress) cli::cli_progress_step("Ranking...")
     all_ranks <- friends.test::row.int.ranks(A)
-    if (.progress) cli::cli_progress_message("")
 
     # calculate the p-values for null hypothesis for all the rank rows
     # pipeline : array tp list, list to double vector of p-values
     # adjust p-value
     the.progress <- .progress
     if (.progress) {
-        the.progress <- list(name = "Filtering out uniforms", clear = FALSE)
+        cli::cli_progress_step("Filtering out uniforms...")
+        the.progress <- list(name = "Filtering out uniforms...")
     }
     adj_nunif_pval <-
         all_ranks |>
@@ -147,6 +147,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
             method = p.adjust.method
         )
 
+    if (.progress) cli::cli_progress_message("")
 
     is_marker <- (adj_nunif_pval <= threshold)
     # is it a marker?
@@ -161,7 +162,10 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
     # find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
-    if (.progress) the.progress$name <- "Identifying friends"
+    if (.progress) {
+        cli::cli_progress_step("Identifying friends...")
+        the.progress$name <- "Identifying friends..." 
+    }
     #run ut all in purrr style
     #return: list of dataframes,
     #trios i, j, rank -- rows of dataframe
@@ -197,13 +201,17 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #now, we put all trios to the result
     #we did the list of trios as an intermediate
     #because it can be prepard in parallel, reduce is here
-    cli::cli_progress_step("Reducing...")
-    for (ind in seq_along(ijrlist)) {
+    if (.progress) {
+        cli::cli_progress_step("Reducing...")
+        cli::cli_progress_bar("Reducing...", total = length(ijrlist))
+    }
+    for (ind in ijrlist) {
         if (is.null(ijrlist[[ind]])) next
         marker <- ijrlist[[ind]][, 1]
         friends <- ijrlist[[ind]][, 2]
         friend.ranks <- ijrlist[[ind]][, 3]
         result[cbind(marker, friends)] <- friend.ranks
+        if (.progress) cli::cli_progress_update()
     }
     if (.progress) cli::cli_progress_message("")
     result
