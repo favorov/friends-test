@@ -64,8 +64,13 @@ friends.test <- function(A = NULL, threshold = 0.05,
                          max.friends.n = "all",
                          uniform.max = "m",
                          simulate.p.value = FALSE,
-                         B = 2000) {
+                         B = 2000,
+                         .progress = FALSE) {
     # parameter checks
+    if (is.null(A) || (length(dim(A)) != 2))  {
+        stop("The first parameter is to be a non-empty 2D matrix-like thing.")
+    }
+
     if (is.na(max.friends.n) || max.friends.n == "all" ||
             max.friends.n == "al" || max.friends.n == "a" ||
             is.null(max.friends.n) || !as.logical(max.friends.n)
@@ -88,9 +93,6 @@ friends.test <- function(A = NULL, threshold = 0.05,
         stop("uniform.max must be either 'm', 'M', 'c', 'C' or numeric.")
     }
 
-    if (is.null(A) || !is.matrix(A)) {
-        stop("A must be a non-empty matrix.")
-    }
 
     # add names to A matrix rows if necessary
     if (is.null(dimnames(A)[[1]])) {
@@ -114,11 +116,17 @@ friends.test <- function(A = NULL, threshold = 0.05,
         )
     )
     # rank all the A elements in columns
+    if (.progress) cli::cli_progress_step("Ranking...")
     all_ranks <- friends.test::row.int.ranks(A)
+    if (.progress) cli::cli_progress_message("")
 
     # calculate the p-values for null hypothesis for all the rank rows
     # pipeline : array tp list, list to double vector of p-values
     # adjust p-value
+    the.progress <- .progress
+    if (.progress) {
+        the.progress <- list(name="Filtering out uniforms", clear = FALSE)
+    }
     adj_nunif_pval <-
         all_ranks |>
         #convert the array to list of rows
@@ -131,7 +139,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
                 simulate.p.value = FALSE,
                 B = 2000
             )
-        }) |>
+        }, .progress = the.progress
+        ) |>
         p.adjust(
             method = p.adjust.method
         )
@@ -150,7 +159,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
     # find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
-
+    if (.progress) the.progress$name <- "Identifying friends"
     #run ut all in purrr style
     #return: list of dataframes,
     #trios i, j, rank -- rows of dataframe
@@ -180,11 +189,13 @@ friends.test <- function(A = NULL, threshold = 0.05,
                 j = friends,
                 r = friend.ranks
             )
-        })
+        }, .progress = the.progress
+        )
 
     #now, we put all trios to the result
     #we did the list of trios as an intermediate
     #because it can be prepard in parallel, reduce is here
+    cli::cli_progress_step("Reducing...")
     for (ind in seq_along(ijrlist)) {
         if (is.null(ijrlist[[ind]])) next
         marker <- ijrlist[[ind]][, 1]
@@ -192,6 +203,6 @@ friends.test <- function(A = NULL, threshold = 0.05,
         friend.ranks <- ijrlist[[ind]][, 3]
         result[cbind(marker, friends)] <- friend.ranks
     }
-
+    if (.progress) cli::cli_progress_message("")
     result
 }

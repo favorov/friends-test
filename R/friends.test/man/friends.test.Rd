@@ -11,7 +11,8 @@ friends.test(
   max.friends.n = "all",
   uniform.max = "m",
   simulate.p.value = FALSE,
-  B = 2000
+  B = 2000,
+  .progress = FALSE
 )
 }
 \arguments{
