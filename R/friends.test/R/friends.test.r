@@ -103,6 +103,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
         colnames(A) <- seq_len(ncol(A))
     }
 
+    if (.progress) options(cli.progress_show_after = 0)
+
     # prepare the return sparse matrix
     result <- Matrix::sparseMatrix(
         i = integer(0),
@@ -125,7 +127,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
     # adjust p-value
     the.progress <- .progress
     if (.progress) {
-        the.progress <- list(name="Filtering out uniforms", clear = FALSE)
+        the.progress <- list(name = "Filtering out uniforms", clear = FALSE)
     }
     adj_nunif_pval <-
         all_ranks |>
