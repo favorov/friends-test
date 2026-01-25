@@ -203,15 +203,20 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #because it can be prepard in parallel, reduce is here
     if (.progress) {
         cli::cli_progress_step("Reducing...")
-        cli::cli_progress_bar("Reducing...", total = length(ijrlist))
+        id <- cli::cli_progress_bar(
+            "Reducing...",
+            total = length(ijrlist),
+            current = FALSE
+        )
     }
-    for (ind in ijrlist) {
-        if (is.null(ijrlist[[ind]])) next
-        marker <- ijrlist[[ind]][, 1]
-        friends <- ijrlist[[ind]][, 2]
-        friend.ranks <- ijrlist[[ind]][, 3]
+    for (ijrs in ijrlist) {
+        if (.progress) cli::cli_progress_update(id = id)
+        if (is.null(ijrs)) next
+        if (dim(ijrs)[1] == 0) next
+        marker <- ijrs[, 1]
+        friends <- ijrs[, 2]
+        friend.ranks <- ijrs[, 3]
         result[cbind(marker, friends)] <- friend.ranks
-        if (.progress) cli::cli_progress_update()
     }
     if (.progress) cli::cli_progress_message("")
     result
