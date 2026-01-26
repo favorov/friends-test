@@ -15,19 +15,11 @@ test_that("best friend is determined correctly", {
     attention <- as.matrix(read.table(text = text, header = TRUE))
 
     friends <- friends.test(attention)
-    expect_equivalent(dim(friends), dim(attention))
-    expected <- sparseMatrix(
-        i = integer(0),
-        j = integer(0),
-        x = numeric(0),
-        repr = "T",
-        dims = dim(attention),
-        dimnames = list(
-            marker = rownames(attention),
-            friend = colnames(attention)
+    expected <- list(
+        row5 = list(
+            col5 = c(i = 5, j = 5, r = 1)
         )
     )
-    expected[5, 5] <- 1
     expect_equivalent(friends, expected)
 })
 
@@ -42,20 +34,39 @@ test_that("passes non-diagonal diagonal test", {
     almost_diagon_mat[1:ncolls, ] <- runif(ncolls * ncolls)
     diag(almost_diagon_mat) <- 19
     rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
-    colnames(almost_diagon_mat) <- paste0("coll", 1:ncolls)
+    colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
     friends <- friends.test(almost_diagon_mat)
-    expect_equivalent(dim(friends), dim(almost_diagon_mat))
-    expected <- sparseMatrix(
-        i = integer(0),
-        j = integer(0),
-        x = numeric(0),
-        repr = "T",
-        dims = dim(almost_diagon_mat),
-        dimnames = list(
-            marker = rownames(almost_diagon_mat),
-            friend = colnames(almost_diagon_mat)
+    expected <- list(
+        row1 = list(
+            col1 = c(i = 1, j = 1, r = 1)
+        ),
+        row2 = list(
+            col2 = c(i = 2, j = 2, r = 1)
+        ),
+        row3 = list(
+            col3 = c(i = 3, j = 3, r = 1)
+        ),
+        row4 = list(
+            col4 = c(i = 4, j = 4, r = 1)
+        ),
+        row5 = list(
+            col5 = c(i = 5, j = 5, r = 1)
+        ),
+        row6 = list(
+            col6 = c(i = 6, j = 6, r = 1)
+        ),
+        row7 = list(
+            col7 = c(i = 7, j = 7, r = 1)
+        ),
+        row8 = list(
+            col8 = c(i = 8, j = 8, r = 1)
+        ),
+        row9 = list(
+            col9 = c(i = 9, j = 9, r = 1)
+        ),
+        row10 = list(
+            col10 = c(i = 10, j = 10, r = 1)
         )
     )
-    expected[cbind(1:10, 1:10)] <- 1
     expect_equivalent(friends, expected)
 })
