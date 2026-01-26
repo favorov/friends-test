@@ -1,12 +1,12 @@
 test_that("no errors in simplest case", {
     mat <- diag(nrow = 5, ncol = 5)
     rownames(mat) <- paste0("row", 1:5)
-    colnames(mat) <- paste0("coll", 1:5)
+    colnames(mat) <- paste0("col", 1:5)
     expect_no_error(friends.test(mat))
 })
 
 test_that("best friend is determined correctly", {
-    text <- "    coll1     coll2     coll3      coll4     coll5
+    text <- "    col1     col2     col3      col4     col5
             row1 0.1765568 0.7176185 0.2121425 0.01339033 0.5995658
             row2 0.6870228 0.9919061 0.6516738 0.38238796 0.4935413
             row3 0.3841037 0.3800352 0.1255551 0.86969085 0.1862176
@@ -17,7 +17,7 @@ test_that("best friend is determined correctly", {
     friends <- friends.test(attention)
     expected <- list(
         row5 = list(
-            col5 = c(i = 5, j = 5, r = 1)
+            col5 = c(marker = 5, friend = 5, rank = 1)
         )
     )
     expect_equivalent(friends, expected)
@@ -38,34 +38,34 @@ test_that("passes non-diagonal diagonal test", {
     friends <- friends.test(almost_diagon_mat)
     expected <- list(
         row1 = list(
-            col1 = c(i = 1, j = 1, r = 1)
+            col1 = c(marker = 1, friend = 1, rank = 1)
         ),
         row2 = list(
-            col2 = c(i = 2, j = 2, r = 1)
+            col2 = c(marker = 2, friend = 2, rank = 1)
         ),
         row3 = list(
-            col3 = c(i = 3, j = 3, r = 1)
+            col3 = c(marker = 3, friend = 3, rank = 1)
         ),
         row4 = list(
-            col4 = c(i = 4, j = 4, r = 1)
+            col4 = c(marker = 4, friend = 4, rank = 1)
         ),
         row5 = list(
-            col5 = c(i = 5, j = 5, r = 1)
+            col5 = c(marker = 5, friend = 5, rank = 1)
         ),
         row6 = list(
-            col6 = c(i = 6, j = 6, r = 1)
+            col6 = c(marker = 6, friend = 6, rank = 1)
         ),
         row7 = list(
-            col7 = c(i = 7, j = 7, r = 1)
+            col7 = c(marker = 7, friend = 7, rank = 1)
         ),
         row8 = list(
-            col8 = c(i = 8, j = 8, r = 1)
+            col8 = c(marker = 8, friend = 8, rank = 1)
         ),
         row9 = list(
-            col9 = c(i = 9, j = 9, r = 1)
+            col9 = c(marker = 9, friend = 9, rank = 1)
         ),
         row10 = list(
-            col10 = c(i = 10, j = 10, r = 1)
+            col10 = c(marker = 10, friend = 10, rank = 1)
         )
     )
     expect_equivalent(friends, expected)
