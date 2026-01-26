@@ -4,7 +4,12 @@
 \alias{friends.test.bic}
 \title{friends.test.bic}
 \usage{
-friends.test.bic(A = NULL, prior.to.have.friends = -1, max.friends.n = "all")
+friends.test.bic(
+  A = NULL,
+  prior.to.have.friends = -1,
+  max.friends.n = "all",
+  .progress = FALSE
+)
 }
 \arguments{
 \item{A}{original association matrix}
