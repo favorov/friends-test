@@ -19,12 +19,17 @@
 #' @param .progress the .progress is passed to \code{purrr} functions
 #' The default is \code{.FALSE}.
 #' If it is not, non-\code{purr} parts also shows progress.
-#' @return \code{Matrix}, _e.g._ sparse matrix, the same size as A,
-#' each nonzero element represent a marker+friend pair,
-#' and the value shows the rank of the friend for the marker,
-#' from 1 (the best friend), then 2, 3, etc.
-#' If a row in A does not have friends,
-#' it is empty (zeroes-filled) in the result.
+#' @return \code{list}; each element represents a marker, *e.g.*,
+#' a matrix row that has friend(s). Each element of the return list
+#' is also a list, one element per friend, and the 2-nd level element
+#' is an integer vector with three numbers, that are:
+#' the marker coordinate (\code{i}),
+#' the friend coordinate (\code{j}), and
+#' the the rank of the friend for the marker (\code{r}).
+#' So, it is list of lists of simple integer vectors, each
+#' vector epresents a marker+friend pair,
+#' the inner lists enumerate friends,
+#' the outer (return) list enumarate markers.
 #' @examples
 #' A <- matrix(
 #'     c(
