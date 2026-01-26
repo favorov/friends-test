@@ -56,7 +56,7 @@
 #'
 #' @importFrom stats p.adjust
 #' @importFrom Matrix sparseMatrix
-#' @importFrom purrr array_branch map map_dbl map2
+#' @importFrom purrr array_branch map_dbl map2 compact
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
@@ -190,7 +190,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
             friend.ranks <- which(
                 step$step.models$columns.order %in% friends
             )
-            #list of trios
+            #list of vector trios
             purrr::pmap(list(i = i, j = friends, r = friend.ranks), c)
         }, .progress = the.progress
         )
@@ -207,10 +207,14 @@ friends.test <- function(A = NULL, threshold = 0.05,
             current = FALSE
         )
     }
-    for (ijrs in ijrlist) {
-        for (ijr in ijrs) {
-            result[ijr[1], ijr[2]] <- ijr[3]
-        }
+    #compact removes NULLs and 0-lengths
+    for (ijrs in purrr::compact(ijrlist)) {
+        # convert to matrix and extract columns
+        trio_matrix <- do.call(rbind, ijrs)
+        i_vec <- trio_matrix[, 1]
+        j_vec <- trio_matrix[, 2]
+        r_vec <- trio_matrix[, 3]
+        result[cbind(i_vec, j_vec)] <- r_vec
         if (.progress) cli::cli_progress_update(id = id)
     }
     if (.progress) cli::cli_progress_done()
