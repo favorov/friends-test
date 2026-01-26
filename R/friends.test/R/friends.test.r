@@ -193,11 +193,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #we did the list of trios as an intermediate
     #because it can be prepard in parallel, reduce is here
     #and it is based on a non-paraller for
-    if (.progress) {
-        cli::cli_progress_step("Compacting...")
-        the.progress$name <- "Compacting..."
-    }
-    ijrlist <- purrr::compact(ijrlist, .progress = .progress)
+    if (.progress) cli::cli_progress_step("Compacting...")
+    ijrlist <- purrr::compact(ijrlist)
     if (.progress) cli::cli_progress_done()
     ijrlist
 }
