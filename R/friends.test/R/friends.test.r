@@ -185,7 +185,9 @@ friends.test <- function(A = NULL, threshold = 0.05,
                 step$step.models$columns.order %in% friends
             )
             #list of vector trios
-            purrr::pmap(list(i = i, j = friends, r = friend.ranks), c)
+            repi <- rep(i, length(friends))
+            names(repi) <- colnames(A)[friends]
+            purrr::pmap(list(i = repi, j = friends, r = friend.ranks), c)
         }, .progress = the.progress
         )
 
