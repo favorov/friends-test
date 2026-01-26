@@ -60,8 +60,8 @@
 #' friends.test(A, threshold = .0001, uniform.max = "m")
 #'
 #' @importFrom stats p.adjust
-#' @importFrom Matrix sparseMatrix
 #' @importFrom purrr array_branch map_dbl map2 compact
+#' @importFrom cli cli_progress_step cli_progress_done
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
@@ -111,17 +111,6 @@ friends.test <- function(A = NULL, threshold = 0.05,
     if (.progress) options(cli.progress_show_after = 0)
 
     # prepare the return sparse matrix
-    result <- Matrix::sparseMatrix(
-        i = integer(0),
-        j = integer(0),
-        x = numeric(0),
-        repr = "T",
-        dims = dim(A),
-        dimnames = list(
-            marker = rownames(A),
-            friend = colnames(A)
-        )
-    )
     # rank all the A elements in columns
     if (.progress) cli::cli_progress_step("Ranking...")
     all_ranks <- friends.test::row.int.ranks(A)
@@ -152,14 +141,14 @@ friends.test <- function(A = NULL, threshold = 0.05,
             method = p.adjust.method
         )
 
-    if (.progress) cli::cli_progress_message("")
+    if (.progress) cli::cli_progress_done()
 
     is_marker <- (adj_nunif_pval <= threshold)
     # is it a marker?
 
     if (sum(is_marker) == 0) {
         message("No rows with non-uniform ranks found for given threshold.")
-        return(result)
+        return(list())
         # empty matrix return
     }
 
@@ -172,8 +161,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
         the.progress$name <- "Identifying friends..."
     }
     #run ut all in purrr style
-    #return: list of dataframes,
-    #trios i, j, rank -- rows of dataframe
+    #return: list of list of, trios
+    #i, j, rank -- rows of dataframe
     ijrlist <-
         all_ranks[marker_indices, , drop = FALSE] |>
         purrr::array_branch(1) |>
@@ -205,23 +194,10 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #because it can be prepard in parallel, reduce is here
     #and it is based on a non-paraller for
     if (.progress) {
-        cli::cli_progress_step("Reducing...")
-        id <- cli::cli_progress_bar(
-            "Reducing...",
-            total = length(ijrlist),
-            current = FALSE
-        )
+        cli::cli_progress_step("Compacting...")
+        the.progress$name <- "Compacting..."
     }
-    #compact removes NULLs and 0-lengths
-    for (ijrs in purrr::compact(ijrlist)) {
-        # convert to matrix and extract columns
-        trio_matrix <- do.call(rbind, ijrs)
-        i_vec <- trio_matrix[, 1]
-        j_vec <- trio_matrix[, 2]
-        r_vec <- trio_matrix[, 3]
-        result[cbind(i_vec, j_vec)] <- r_vec
-        if (.progress) cli::cli_progress_update(id = id)
-    }
+    ijrlist <- purrr::compact(ijrlist, .progress = .progress)
     if (.progress) cli::cli_progress_done()
-    result
+    ijrlist
 }

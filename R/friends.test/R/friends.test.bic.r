@@ -46,7 +46,6 @@
 #' friends.test.bic(A, prior.to.have.friends = 0.5)
 #' friends.test.bic(A, prior.to.have.friends = 0.001)
 #' @importFrom stats p.adjust
-#' @importFrom Matrix sparseMatrix
 #' @export
 #'
 friends.test.bic <- function(A = NULL, prior.to.have.friends = -1,

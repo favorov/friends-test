@@ -40,7 +40,6 @@
 #' @importFrom utils packageDescription
 #' @importFrom data.table frankv
 #' @importFrom stats p.adjust
-#' @importFrom Matrix sparseMatrix
 #' @importFrom purrr array_branch map_dbl map2 compact
 #'
 NULL
