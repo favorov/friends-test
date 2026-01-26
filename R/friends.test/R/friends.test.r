@@ -164,7 +164,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
     max.possible.rank <- dim(A)[1]
     if (.progress) {
         cli::cli_progress_step("Identifying friends...")
-        the.progress$name <- "Identifying friends..." 
+        the.progress$name <- "Identifying friends..."
     }
     #run ut all in purrr style
     #return: list of dataframes,
@@ -190,17 +190,15 @@ friends.test <- function(A = NULL, threshold = 0.05,
             friend.ranks <- which(
                 step$step.models$columns.order %in% friends
             )
-            data.frame(
-                i = i,
-                j = friends,
-                r = friend.ranks
-            )
+            #list of trios
+            purrr::pmap(list(i = i, j = friends, r = friend.ranks), c)
         }, .progress = the.progress
         )
 
     #now, we put all trios to the result
     #we did the list of trios as an intermediate
     #because it can be prepard in parallel, reduce is here
+    #and it is based on a non-paraller for
     if (.progress) {
         cli::cli_progress_step("Reducing...")
         id <- cli::cli_progress_bar(
@@ -210,14 +208,11 @@ friends.test <- function(A = NULL, threshold = 0.05,
         )
     }
     for (ijrs in ijrlist) {
+        for (ijr in ijrs) {
+            result[ijr[1], ijr[2]] <- ijr[3]
+        }
         if (.progress) cli::cli_progress_update(id = id)
-        if (is.null(ijrs)) next
-        if (dim(ijrs)[1] == 0) next
-        marker <- ijrs[, 1]
-        friends <- ijrs[, 2]
-        friend.ranks <- ijrs[, 3]
-        result[cbind(marker, friends)] <- friend.ranks
     }
-    if (.progress) cli::cli_progress_message("")
+    if (.progress) cli::cli_progress_done()
     result
 }
