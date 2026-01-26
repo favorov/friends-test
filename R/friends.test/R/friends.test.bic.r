@@ -23,9 +23,9 @@
 #' a matrix row that has friend(s). Each element of the return list
 #' is also a list, one element per friend, and the 2-nd level element
 #' is an integer vector with three numbers, that are:
-#' the marker coordinate (\code{i}),
-#' the friend coordinate (\code{j}), and
-#' the the rank of the friend for the marker (\code{r}).
+#' the marker coordinate (\code{narker}),
+#' the friend coordinate (\code{friend}), and
+#' the the rank of the friend for the marker (\code{rank}).
 #' So, it is list of lists of simple integer vectors, each
 #' vector epresents a marker+friend pair,
 #' the inner lists enumerate friends,
@@ -128,7 +128,14 @@ friends.test.bic <- function(A = NULL,
             repi <- rep(i, length(friends))
             names(repi) <- colnames(A)[friends]
             #list of vector trios
-            purrr::pmap(list(i = repi, j = friends, r = friend.ranks), c)
+            purrr::pmap(
+                list(
+                    marker = repi,
+                    friend = friends,
+                    rank = friend.ranks
+                ),
+                c
+            )
         }, .progress = the.progress)
 
     if (.progress) cli::cli_progress_step("Compacting...")
