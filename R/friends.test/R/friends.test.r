@@ -110,7 +110,6 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
     if (.progress) options(cli.progress_show_after = 0)
 
-    # prepare the return sparse matrix
     # rank all the A elements in columns
     if (.progress) cli::cli_progress_step("Ranking...")
     all_ranks <- friends.test::row.int.ranks(A)
@@ -162,7 +161,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
     }
     #run ut all in purrr style
     #return: list of list of, trios
-    #i, j, rank -- rows of dataframe
+    #i, j, r -- vectors:
+    #marker, friend, friend.rank
     ijrlist <-
         all_ranks[marker_indices, , drop = FALSE] |>
         purrr::array_branch(1) |>
@@ -184,17 +184,15 @@ friends.test <- function(A = NULL, threshold = 0.05,
             friend.ranks <- which(
                 step$step.models$columns.order %in% friends
             )
-            #list of vector trios
+            #if we give just i to pmap, the value will be the same,
+            #but we want the name of the friend ti be the name of
+            #elemant of the inner list
             repi <- rep(i, length(friends))
             names(repi) <- colnames(A)[friends]
+            #list of vector trios
             purrr::pmap(list(i = repi, j = friends, r = friend.ranks), c)
-        }, .progress = the.progress
-        )
+        }, .progress = the.progress)
 
-    #now, we put all trios to the result
-    #we did the list of trios as an intermediate
-    #because it can be prepard in parallel, reduce is here
-    #and it is based on a non-paraller for
     if (.progress) cli::cli_progress_step("Compacting...")
     ijrlist <- purrr::compact(ijrlist)
     if (.progress) cli::cli_progress_done()
