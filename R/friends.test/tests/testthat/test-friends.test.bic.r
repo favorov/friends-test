@@ -6,7 +6,7 @@ test_that("no errors in simplest case", {
 })
 
 test_that("best friend is determined correctly", {
-    text <- "    col1     col2     coll      col4     col5
+    text <- "    col1     col2     col3      col4     col5
             row1 0.1765568 0.7176185 0.2121425 0.01339033 0.5995658
             row2 0.6870228 0.9919061 0.6516738 0.38238796 0.4935413
             row3 0.3841037 0.3800352 0.1255551 0.86969085 0.1862176
@@ -36,12 +36,12 @@ test_that("best friend is determined correctly", {
 })
 
 # best.friends method is not illustrated well using square diagonal matrices
-# we will use a rectangular matrix for this test (ncolls << nrows)
+# we will use a rectangular matrix for this test (ncols << nrows)
 set.seed(1) # actually, it works with like 9/10 of seeds
 nrows <- 100
 ncols <- 10
 almost_diagon_mat <- matrix(1 + 9 * runif(nrows * ncols), nrow = nrows)
-almost_diagon_mat[1:ncolls, ] <- runif(ncolls * ncols)
+almost_diagon_mat[1:ncols, ] <- runif(ncols * ncols)
 diag(almost_diagon_mat) <- 19
 rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
 colnames(almost_diagon_mat) <- paste0("col", 1:ncols)
@@ -82,13 +82,13 @@ expected <- list(
 
 test_that("passes non-diagonal diagonal test with low prior to have friend", {
     res <- friends.test.bic(almost_diagon_mat, .001)
-    expect_equivalent(res, probe)
+    expect_equivalent(res, expected)
 })
 
 test_that("passes non-diagonal diagonal test with high prior to have friend", {
     res <- friends.test.bic(almost_diagon_mat, .5)
     resflat <- purrr::flatten(res)
-    expflat <- purrr::flatten(exp)
-    expect_equivalent(setdiff(resflat, expflat), list())
+    expflat <- purrr::flatten(expected)
+    expect_equivalent(setdiff(expflat, resflat), list())
     # we test that result is contained in res
 })
