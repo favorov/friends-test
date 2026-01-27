@@ -50,7 +50,22 @@ test_that("Signal-noise test for bic", {
         prior.to.have.friends = 0.01,
         max.friends.n = ncol(signoise[["M"]]) / 2
     )
-    friends.mask <- (friends != 0)
+
+    #here, we convert list-of-lists to matrix
+    #and yes, we can write ones instead of ranks
+
+    friends.mask <- matrix(0,
+        nrow = nrow(signoise[["M"]]),
+        ncol = ncol(signoise[["M"]])
+    )
+    for (ijrs in friends) {
+        # convert to matrix and extract columns
+        trio_matrix <- do.call(rbind, ijrs)
+        i_vec <- trio_matrix[, 1]
+        j_vec <- trio_matrix[, 2]
+        friends.mask[cbind(i_vec, j_vec)] <- 1
+    }
+    #testing.. 
 
     err <- compute_error(signoise[["mask"]], friends.mask)
     expect_true(err[["TP"]] > 0.55,
