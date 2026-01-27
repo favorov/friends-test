@@ -45,3 +45,4 @@ the worst of best friends.
 0.99.15 - the "all" best_no parameter behaviour fixed. The vingnette is rewritten.  
 0.99.16 - the name changed to "friends.test". Parameter best.no renamed to friends.no . Documentation is rewritten.
 0.99.17 - code linted and polished; 2 columns with indices of the marker row and the friendly column in the input matrix are added to the output of the main calls (friends.test and frinds.test.bic).
+0.99.18 - we now retirn list of lists of 3-elemant vectors in both main functions. All the slow inner loops are now purrr::map - family based. .progress paraameter added. Bigfixes. 
