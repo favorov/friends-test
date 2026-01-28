@@ -32,22 +32,25 @@ vignette: >
 # Introduction
 There is a simple intuition of what it means to be a friend. A friend of Augustus cares about Augustus more than about other people. And, if we see Augustus, then we infer to see friends(s) of Augustus also. Please refer to [our Arxive publication](https://arxiv.org/abs/2512.24843) for more formal introduction.
 
-Consider a set of genes and their loads in a set of expression patterns. Each pattern represents a biological process by the expression levels of the involved genes. 
+\paragraph{Introduction} 
 
-Sometimes, the expression of a single gene indicates the activity of the entire pattern. In the simplest case, the gene has a nonzero load in only one pattern. 
-Moreover, the gene may have several nonzero loads, but all of them but one are relatively small. Then the gene (AKA Augustus) is the marker gene for the pattern, and the marked pattern is the best friend of this gene. We want to identify the marker genes and corresponding patterns computationaly.  
+Let's picture a set of expression pattern, each represents a biological process. Techically, each pattern is a vector of expression loads of the involved genes. 
 
-\paragraph{Model} 
+Sometimes, the expression of a single gene in a sample indicates the activity of the entire pattern there. The simplest case: the gene has a nonzero load in only one pattern.
 
-We have two sets:T (rows) and C (columns) and A real matrix A(t,c) that describes the strength of association between each t and each c; t is an element of T and c is an element of C. 
-For each t we want to identify whether it is significantly more relevant for some c's than for the remaining c's. If it does, those c for which the t is relevant, are the t's friend. And, the t is the c's marker.
+Actually, the gene may have several nonzero loads, but all of them but the one of interest are relatively small. Then the gene (AKA Augustus) is the marker gene for the pattern, and the marked pattern is the a friend of this gene. 
+
+There could be more then one friend for a marker. In this case, the marker is more important for the friends than for the non-friends.
+
+\paragraph{The test} 
+
+We have two sets:T (rows) and C (columns) and A real matrix A(t,c) that describes the strength of relation between each t and each c; t is an element of T and c is an element of C.
 
 The model applies to many problems in bioinformatics and statistics.
 
         Example                           $\left\{T\right\}$  $\left\{C\right\}$                    $A\left(t,c\right)$
 --------------------------------------    -------------     ----------------------------------  ----------------------------
-[gene regulation by TFs](#toyTF)          gene              genes under the TF regulation       strength of regulation
-[transctironal correlations](#toynet)     gene              genes coexpressed with a gene       transcription correlation
+gene regulation by TFs                    gene              genes under the TF regulation       strength of regulation
 fuzzy clustering                          object            cluster                             object weight in cluster
 transcription decomposition               transcript        transcription pattern               transcript's load in pattern
 weighted graph                            vertex            another vertex                      weight of edge between column and row
@@ -55,12 +58,11 @@ weighted graph                            vertex            another vertex      
 
 
 
-\paragraph{Goal} For each row, we want to identify whather there are columns(s) that particularly prefer(s) the row, and list the columns. Then such a column is a friend (or the best friend if there is only one) for the row. The simplest example: imagine that for a row, only one column is associated with it. We intend to express the meaning of the word "particularly" in this context by a statistical test.
+\paragraph{Goal} For each row, we want to identify whather there are columns(s) that particularly prefer(s) the row, and list the columns. Then such a column is a friend (or the best friend if there is only one) for the row. We intend to express the meaning of the word "particularly" in this context by a statistical test, that is the **friends.test** provided by this package.
 
-Let's denote the rank of the $i$-th rows's attention association with $j$-the column inside the column, or, in our notation, the rank of $A_{ij}$ in $A_{*j}$ column, as $r(t_i,c_j)$. 
+Let's define the relevance of a row to a column as the rank of the $i$-th rows's relation with $j$-the column inside the column, or, in our notation, the rank of $A_{ij}$ in $A_{*j}$, and denote it as $r(t_i,c_j)$. 
 
-The main idea of the test is that if a row $t_i$ is not preferred by any column(s), the distribution of the ranks of the row in all the columns $r(t_i,c_j)$ behaves like $j$  i.i.d integers that are uniformely distributed in $1..n$
-
+The main idea of the **friends.test**  test is that if a row $t_i$ is not preferred by any column(s), the distribution of the ranks of the row in all the columns $r(t_i,c_j)$ behaves like $j$ i.i.d integers that are uniformely distributed in $1..n$. 
 
 
 ## Toy example: Bayesian option
@@ -110,13 +112,9 @@ friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
 friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
 ```
 
-In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get:
+In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get more results, and the `rank` that shows the rank og the friend for the marker, can differ from 1:
 
 ```{r}
-friends.test.bic(regulation, prior.to.have.friends = .5,
-                 max.friends.n = "all")
-friends.test.bic(regulation, prior.to.have.friends = .33,
-                 max.friends.n  = "all")
 friends.test.bic(regulation, prior.to.have.friends = .25,
                  max.friends.n = "all")
 ```
@@ -136,6 +134,13 @@ And, again, if we relax the `max.friends.no` restriction, we will see more pairs
 
 ```{r}
 friends.test(regulation, threshold = .5, p.adjust.method = "no")
+```
+
+## Iris example
+Let's look for anomalies in the traditional **iris** dataset. We will use the first four columns .
+```{r}
+data("iris")
+friends.test.bic(iris[1:4],prior.to.have.friends = .001)
 ```
 
 ## Session info
