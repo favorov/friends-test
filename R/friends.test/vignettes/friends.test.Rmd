@@ -137,11 +137,19 @@ friends.test(regulation, threshold = .5, p.adjust.method = "no")
 ```
 
 ## Iris example
-Let's look for anomalies in the traditional **iris** dataset. We will use the first four columns .
+Let's look for anomalies in the traditional **iris** dataset: 
+```{r}
+data("iris")
+print(head(iris, n=5))
+```
+
+We use only numeric columns:
 ```{r}
 data("iris")
 friends.test.bic(iris[1:4],prior.to.have.friends = .001)
 ```
+
+
 
 ## Session info
 ```{r}
