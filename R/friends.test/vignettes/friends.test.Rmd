@@ -149,7 +149,15 @@ data("iris")
 friends.test.bic(iris[1:4],prior.to.have.friends = .001)
 ```
 
+So, we see that the flower #14 is important for (we also can think about it as "popular in") the Sepal.Width nomination. Let's understand it a simple request: what is the quantile of the flower #14 in the four columns.
 
+```{r}
+apply(iris[,1:4],2,function(col) ecdf(col)(col[14]))
+```
+
+So, flower #14 is in top 50% in Sepal.Width and in lowest 5% for all other sizes. It is exacly what we describe as "Sepal.Width is friend for flower #14 and the flower #14 is a marker for Sepal.Width".
+
+Let's note that the four sizes have different distributions; still, the friends.test naturally works with this type of data. 
 
 ## Session info
 ```{r}
