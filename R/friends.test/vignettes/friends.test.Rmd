@@ -64,7 +64,7 @@ Let's define the relevance of a row to a column as the rank of the $i$-th rows's
 
 The main idea of the **friends.test**  test is that if a row $t_i$ is not preferred by any column(s), the distribution of the ranks of the row in all the columns $r(t_i,c_j)$ behaves like $j$ i.i.d integers that are uniformely distributed in $1..n$. 
 
-
+# Examples
 ## Toy example: Bayesian option
 ```{r source, echo=FALSE}
 data.digits <- 2
@@ -161,7 +161,11 @@ So, flower #14 is in top 50% in Sepal.Width and in lowest 5% for all other sizes
 
 Let's note that the four sizes have different distributions; still, the friends.test naturally works with this type of data. 
 
-## Session info
+# Rakning and ramdom numbers
+
+
+
+# Session info
 ```{r}
 sessionInfo()
 ```
