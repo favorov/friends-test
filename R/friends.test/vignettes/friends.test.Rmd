@@ -77,21 +77,23 @@ Let's illustrate the method with something supersimple.
 
 ```{r}
 regulation <-
-  structure(
-    c(
-      0.2, 0.25, 0.1, 0.23, 0.3, 0.12, 0.14,
-      4, 3, 6, 1, 9, 7, 10,
-      3, 1, 5, 6, 3, 4, 11),
-    dim = c(7, 3),
-    dimnames =
-    list(
-         c(
-           "Gene1", "Gene2", "Gene3",
-           "Gene4", "Gene5", "Gene6",
-           "Gene7"
-         ),
-         c("TF1", "TF2", "TF3"))
-  )
+    structure(
+        c(
+            0.2, 0.25, 0.1, 0.23, 0.3, 0.12, 0.14,
+            4, 3, 6, 1, 9, 7, 10,
+            3, 1, 5, 6, 3, 4, 11
+        ),
+        dim = c(7, 3),
+        dimnames =
+        list(
+            c(
+                "Gene1", "Gene2", "Gene3",
+                "Gene4", "Gene5", "Gene6",
+                "Gene7"
+            ),
+            c("TF1", "TF2", "TF3")
+        )
+    )
 noquote(regulation)
 ```
 What we want to identify is Gene2-TF1 pair. Gene2 is not the strongest downstream gene in the TF1 column (column), it is only the second, but, on the other hand its rank in other TF-based columns is much lower.
