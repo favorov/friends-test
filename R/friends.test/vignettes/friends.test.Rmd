@@ -163,7 +163,7 @@ Let's note that the four sizes have different distributions; still, the friends.
 
 # Rakning and ramdom numbers
 
-
+The result of both `friends.test` and `friends.test.bic` functions depends on random state generator. The dependency is because the test starts with ranking of the elemants of the input matrix in the columns. The test requires the rank values to be integer, so the ties are resolved randomly. It you want a reproduceablle result, keep the initial random generator state. Another option is to rank the matrix bfore the test call and then to pass the rank matrix as the input. It does not consume a lot of additional time, and the renking of already-ranked does not depend on random seeds. The special case when this approach is the only is if some additional information is used in the ranking.
 
 # Session info
 ```{r}
