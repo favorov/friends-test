@@ -130,7 +130,7 @@ friends.test(regulation, threshold = .5, p.adjust.method = "no",
              max.friends.n = 1)
 ```
 
-And, again, if we relax the `max.friends.no` restriction, we will see more pairs, but now the friends are not required to be unique for a marker.
+And, as usual, if we relax the `max.friends.no` restriction, we will see more pairs, but now the friends are not required to be unique for a marker.
 
 ```{r}
 friends.test(regulation, threshold = .5, p.adjust.method = "no")
@@ -140,19 +140,19 @@ friends.test(regulation, threshold = .5, p.adjust.method = "no")
 Let's look for anomalies in the traditional **iris** dataset: 
 ```{r}
 data("iris")
-print(head(iris, n=5))
+print(head(iris, n = 5))
 ```
 
 We use only numeric columns:
 ```{r}
 data("iris")
-friends.test.bic(iris[1:4],prior.to.have.friends = .001)
+friends.test.bic(iris[1:4], prior.to.have.friends = .001)
 ```
 
 So, we see that the flower #14 is important for (we also can think about it as "popular in") the Sepal.Width nomination. Let's understand it a simple request: what is the quantile of the flower #14 in the four columns.
 
 ```{r}
-apply(iris[,1:4],2,function(col) ecdf(col)(col[14]))
+apply(iris[, 1:4], 2, function(col) ecdf(col)(col[14]))
 ```
 
 So, flower #14 is in top 50% in Sepal.Width and in lowest 5% for all other sizes. It is exacly what we describe as "Sepal.Width is friend for flower #14 and the flower #14 is a marker for Sepal.Width".
