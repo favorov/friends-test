@@ -193,7 +193,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
             purrr::pmap(
                 list(
                     marker = repi,
-                    friend = friends, 
+                    friend = friends,
                     rank = friend.ranks
                 ),
                 c
