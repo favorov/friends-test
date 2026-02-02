@@ -1,0 +1,70 @@
+---
+title: "Find genes that are friendly to a latent pattern (or a cluster) in a matrix"
+output: 
+  html_vignette:
+vignette: >
+ %\VignetteEngine{knitr::rmarkdown}
+ %\VignetteEncoding{UTF-8}
+ %\VignetteDepends{devtools}
+---
+
+[Naturam expellas furca, tamen usque recurret]{style="float:right"}
+
+`r format(Sys.Date(), "%d %b %Y")` 
+
+`r library(knitr)`
+`r library(rmarkdown)`
+`r devtools::load_all()`
+`r library(CoGAPS)`
+`r options(width=80,keep.source=TRUE)`
+`r options(timeout=300)`
+`r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
+`r set.seed(42)`
+<!-- cache is off, we save all the necessary things in Rda -->
+
+<div style="line-height: 1.5em;">
+
+# Introduction
+
+## Genes that are friends to CoGAPS patterns (or CoGAPS patterns that are friends to genes?)
+
+```{r}
+# get CoGAPS result from zenodo
+fname <- 'cogapsresult.Rds'
+if(!file.exists(fname)){
+    download.file('https://zenodo.org/records/7709664/files/cogapsresult.Rds', destfile = fname, mode = 'wb')
+}
+cg <- readRDS('cogapsresult.Rds')
+
+# get feature loadings
+loadings <- cg@featureLoadings
+```
+
+Feature loadings in CoGAPS are normalized expression values across patterns. Each column is a pattern, each row is a gene.
+```{r}
+head(loadings)
+```
+
+Let's find representative genes all patterns using `friends.test`. We are interested in all gene-friends for all patterns, so patterns need to be in rows, and genes in columns.
+```{r}
+friends_genes <- friends.test::friends.test(t(loadings))
+```
+
+Wow, there are so many friends for each pattern!
+```{r}
+lapply(friends_genes, length)
+```
+
+What happens if we don't transpose?
+```{r}
+friends_patterns <- friends.test::friends.test(loadings, max.friends.n = 1)
+
+qq <- lapply(friends_patterns, function(x) names(x)) |> as.data.frame() |> t()
+
+by_patterns <- lapply(unique(qq), function(pat) rownames(qq)[qq==pat])
+
+names(by_patterns) <- unique(qq)
+
+by_patterns
+```
+</div>
