@@ -36,7 +36,7 @@
 #' is an integer vector with three numbers, that are:
 #' the marker coordinate (\code{narker}),
 #' the friend coordinate (\code{friend}), and
-#' the the rank of the friend for the marker (\code{rank}).
+#' the rank of the friend for the marker (\code{rank}).
 #' So, it is list of lists of simple integer vectors, each
 #' vector epresents a marker+friend pair,
 #' the inner lists enumerate friends,
