@@ -60,7 +60,7 @@
 #' friends.test(A, threshold = .0001, uniform.max = "m")
 #'
 #' @importFrom stats p.adjust
-#' @importFrom purrr array_branch map_dbl map2 compact
+#' @importFrom purrr array_branch map_dbl map2 compact pmap
 #' @importFrom cli cli_progress_step cli_progress_done
 #' @export
 #'
