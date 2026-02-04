@@ -56,13 +56,13 @@ test.bf.bic <- TRUE
 test.bf.t.bic <- TRUE
 
 if (test.bf) {
-  fr <- best.friends(seventags, threshold = 0.5)
+  fr <- friends.test(seventags, threshold = 0.5)
 }
 if (test.bf.bic) {
-  fr.bic <- best.friends.bic(seventags, 0.5)
+  fr.bic <- friends.test.bic(seventags, 0.5)
 }
 if (test.bf.t) {
-  fr.t <- best.friends(t.seventags, best.no = "all")
+  fr.t <- friends.test(t.seventags, best.no = "all")
   fr.t.tab <- fr.t |>
     group_by(collection) |>
     summarise(length(tag)) |>
@@ -70,7 +70,7 @@ if (test.bf.t) {
     table()
 }
 if (test.bf.t.bic) {
-  fr.t.bic <- best.friends.bic(t.seventags, 0.5, best.no = "all")
+  fr.t.bic <- friends.test.bic(t.seventags, 0.5, best.no = "all")
   fr.t.bic.tab <- fr.t.bic |>
     group_by(collection) |>
     summarise(length(tag)) |>
