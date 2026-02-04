@@ -5,7 +5,7 @@ if (!require("rmarkdown")) {
 }
 
 files <- list.files()
-files.Rmd <- files[grep("\\.Rmd$", files)]
+files.Rmd <- files[grep("\\.(?i)Rmd$", files)]
 
 for (rmdfile in files.Rmd) {
   rmarkdown::render(rmdfile)
