@@ -76,11 +76,12 @@ friends.test <- function(A = NULL, threshold = 0.05,
         stop("The first parameter is to be a non-empty 2D matrix-like thing.")
     }
 
-    if (is.na(max.friends.n) || max.friends.n == "all" ||
-            max.friends.n == "al" || max.friends.n == "a" ||
-            is.null(max.friends.n) || !as.logical(max.friends.n)
-    ) {
+    if (is.null(max.friends.n) || is.na(max.friends.n) ||
+            max.friends.n == "all" || max.friends.n == "al" ||
+            max.friends.n == "a") {
         max.friends.n <- ncol(A)
+    } else if (!is.numeric(max.friends.n)) {
+        stop("max.friends.n must be numeric, or one of 'all', 'al', 'a', NA, or NULL.")
     }
     if (max.friends.n < 1 || max.friends.n > ncol(A)) {
         stop("max.friends.n must be between 1 and the number of columns.")
