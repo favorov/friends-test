@@ -20,8 +20,8 @@ The simplest example: imagine that only one column pays attention to our row.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/favorov/best-friends}
-  \item Report bugs at \url{https://github.com/favorov/best-friends/issues}
+  \item \url{https://github.com/favorov/friends.test}
+  \item Report bugs at \url{https://github.com/favorov/friends.test/issues}
 }
 
 }
@@ -35,6 +35,7 @@ Authors:
   \item Dmitrijs Lvovs \email{dmitrijs.lvovs@gmail.com} [contributor]
   \item Vera Mukhina \email{atgc@vigg.ru} [contributor]
   \item Andrey A. Mironov \email{mironov@bioinf.fbb.msu.ru} [contributor]
+  \item Ludmila Danilova \email{ludmila.danilova@gmail.com} [contributor]
 }
 
 }

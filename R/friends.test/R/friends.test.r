@@ -81,8 +81,12 @@ friends.test <- function(A = NULL, threshold = 0.05,
             max.friends.n == "a") {
         max.friends.n <- ncol(A)
     } else if (!is.numeric(max.friends.n)) {
-        stop("max.friends.n must be numeric, or one of 'all', 'al', 'a', NA, or NULL.")
+        stop(paste(
+            "max.friends.n must be numeric,",
+            " or one of 'all', 'al', 'a', NA, or NULL."
+        ))
     }
+
     if (max.friends.n < 1 || max.friends.n > ncol(A)) {
         stop("max.friends.n must be between 1 and the number of columns.")
     }
