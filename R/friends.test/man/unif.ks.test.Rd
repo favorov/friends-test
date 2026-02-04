@@ -7,7 +7,7 @@
 unif.ks.test(ranks, uniform.max = NA, simulate.p.value = FALSE, B = 2000)
 }
 \arguments{
-\item{ranks}{vector of ranks of a tag in different collections, \eqn{1 .. N})}
+\item{ranks}{vector of ranks of a row in different columns, \eqn{1 .. N})}
 
 \item{uniform.max}{the maximal rank in the uniform, default is NA which means
 that we take the max(ranks) as the maximal value}
@@ -29,6 +29,6 @@ The values are the ranks of the same row in different columns.
 See \link{friends.test} documentation for details.
 }
 \examples{
-example(tag.int.ranks)
-ks.p.vals<-apply(TF.ranks,1,"unif.ks.test")
+example(row.int.ranks)
+ks.p.vals <- apply(TF.ranks, 1, "unif.ks.test")
 }

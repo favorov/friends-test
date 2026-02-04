@@ -8,10 +8,11 @@ friends.test(
   A = NULL,
   threshold = 0.05,
   p.adjust.method = "BH",
-  max.friends.n = dim(A)[2]\%/\%2,
+  max.friends.n = "all",
   uniform.max = "m",
   simulate.p.value = FALSE,
-  B = 2000
+  B = 2000,
+  .progress = FALSE
 )
 }
 \arguments{
@@ -23,11 +24,11 @@ non-uniformity of ranks.}
 \item{p.adjust.method}{Multiple testing correction method,
 see \link[stats]{p.adjust}.}
 
-\item{max.friends.n}{The maximal number of friends for a marker, the default
-is \code{dim(A)[2]\%/\%2}, that is rounded half of #of columns in A.
-The string "all" means "all friends", i.e. we do not filter by this parameter
-value. A value $n$ means that we filter out a row if it has more
-than $n$ friendly columns. 1 means we look only for unuque (best) friends.}
+\item{max.friends.n}{The maximal number of friends for a marker.
+A value $n$ means that we filter out a row if it has more
+than $n$ friendly columns. 1 means we look only for unique (best) friends.
+The string "all" (default) means the same as \code{ncols(A)} value,
+do not filter markers by this parameter.}
 
 \item{uniform.max}{The maximum of the uniform distribution of the ranks we
 fit the null model, it can be the maximal possible rank that is common for
@@ -35,21 +36,30 @@ all rows and equals the number of rows \code{'c'} or the maximal observed
 rank for the row we test now, \code{'m'} (default).}
 
 \item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
-default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
+default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}.}
 
 \item{B}{number of or replicates if \code{simulate.p.value=TRUE}
-default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
+default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}.}
+
+\item{.progress}{the .progress is passed to \code{purrr} functions
+The default is \code{.FALSE}.
+If it is not, non-\code{purr} parts also shows progress.}
 }
 \value{
-A data.frame, each row describe a pair of a marker and a
-friend. Columns are: marker, friend, marker.index, friend.index and
-friend.rank. Marker and friend are the names of the row and column
-respectively. Indices are their indices in the input matrix.
-The friend.ran is the rank of the column-friend in
-the vector of ranks of the ranks of the row-marker in different columns.
+\code{list}; each element represents a marker, \emph{e.g.},
+a matrix row that has friend(s). Each element of the return list
+is also a list, one element per friend, and the 2-nd level element
+is an integer vector with three numbers, that are:
+the marker coordinate (\code{narker}),
+the friend coordinate (\code{friend}), and
+the the rank of the friend for the marker (\code{rank}).
+So, it is list of lists of simple integer vectors, each
+vector epresents a marker+friend pair,
+the inner lists enumerate friends,
+the outer (return) list enumarate markers.
 }
 \description{
-We have two sets:T (rows) and C (columns) and
+We have two sets: T (rows) and C (columns) and
 A real matrix A(t,c) that describes the strength of association
 between each t and each c; t is an element of T and c is an element of C.
 For each t we want to identify whether it is significantly more
@@ -58,17 +68,21 @@ If it does, those c for which the t is relevant,
 are the t's friend. And, the t is the c's marker.
 }
 \examples{
-A <- matrix(c(10,6,7,8,9,
-                9,10,6,7,8,
-                8,9,10,6,7,
-                7,8,9,10,6,
-                6,7,8,9,10,
-                20,0,0,0,0),
-                nrow=6, ncol=5, byrow=TRUE)
+A <- matrix(
+    c(
+        10, 6, 7, 8, 9,
+        9, 10, 6, 7, 8,
+        8, 9, 10, 6, 7,
+        7, 8, 9, 10, 6,
+        6, 7, 8, 9, 10,
+        20, 0, 0, 0, 0
+    ),
+    nrow = 6, ncol = 5, byrow = TRUE
+)
 A
 friends.test(A, threshold = .05)
 friends.test(A, threshold = .0001)
-friends.test(A, threshold = .05, uniform.max='m')
-friends.test(A, threshold = .0001, uniform.max='m')
+friends.test(A, threshold = .05, uniform.max = "m")
+friends.test(A, threshold = .0001, uniform.max = "m")
 
 }

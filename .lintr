@@ -1,4 +1,11 @@
 linters: linters_with_defaults(
-    object_name_linter = NULL,
-    indentation_linter (indent = 2L)
+  indentation_linter(
+    indent = 4L,
+    hanging_indent_style = c("tidy", "always", "never"),
+    assignment_as_infix = TRUE
+    ),
+  object_length_linter = NULL,
+  object_name_linter = NULL,
+  brace_linter(allow_single_line = TRUE),
+  cyclocomp_linter(complexity_limit = 60L)
   )

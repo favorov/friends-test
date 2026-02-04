@@ -2,18 +2,24 @@
 % Please edit documentation in R/step.fit.ln.likelihoods.r
 \name{step.fit.ln.likelihoods}
 \alias{step.fit.ln.likelihoods}
-\title{step.fit.ln.likelihoods}
+\title{(descending in each column) ranks of the same row
+in different columns
+(the \code{ranks} parameter)
+The input ranks are integers in \eqn{1..max.possible.rank}.
+Each of the split rank values \eqn{1 .. max.possible.rank-1}
+split all the ranks into two steps: "this or less" and
+"greater than this".}
 \usage{
 step.fit.ln.likelihoods(ranks, max.possible.rank)
 }
 \arguments{
-\item{ranks}{vector of ranks of a tag in different collections}
+\item{ranks}{vector of ranks of a row in different columns}
 
-\item{max.possible.rank}{number of tags, i.e. maximal rank}
+\item{max.possible.rank}{number of rows, i.e. maximal rank}
 }
 \value{
 a list of three values: \cr
-\code{collections.order} is the order of ranks in, column-by-column\cr
+\code{columns.order} is the order of ranks in, column-by-column\cr
 \code{ln.likelihoods} the ln of the likelihood of each of models
 corresponding to each split rank value in \eqn{1..max.possible.rank-1}
 and the last, correspond to just uniform, no step\cr
@@ -22,26 +28,16 @@ on left of the step, including the split value, for split values
 \eqn{1..max.possible.rank};\cr
 }
 \description{
-fits possible bi-uniform step models for a set of descending
-(descending in each collection) ranks of the same tag
-in different collections
-(the \code{ranks} parameter)
-The input ranks are integers in \eqn{1..max.possible.rank}.
-Each of the split rank values \eqn{1 .. max.possible.rank-1}
-split all the ranks into two steps: "this or less" and
-"greater than this".
-}
-\details{
 The function fits the step (bi-uniform) model for each
 integer splitting value in \eqn{1..max.possible.rank-1};
 the splitting value is in the maximal value in the left part
 of the ordering (the original ranks are descending, so best
-collections are in the left part) and calculates the likelihood.
+columns are in the left part) and calculates the likelihood.
 The last value with the index \eqn{max.possible.rank} is calculated for a
 non-step uniform model.
 See \link{friends.test} documentation for details.
 }
 \examples{
-example(tag.int.ranks)
-steps<-step.fit.ln.likelihoods(TF.ranks[42,],genes.no)
+example(row.int.ranks)
+steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
 }

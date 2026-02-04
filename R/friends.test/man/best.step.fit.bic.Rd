@@ -7,11 +7,11 @@
 best.step.fit.bic(ranks, max.possible.rank, prior.to.have.friends)
 }
 \arguments{
-\item{ranks}{vector of ranks of a tag in different collections}
+\item{ranks}{vector of ranks of a row in different columns}
 
-\item{max.possible.rank}{number of tags, i.e. maximal rank}
+\item{max.possible.rank}{number of rows, i.e. maximal rank}
 
-\item{prior.to.have.friends}{The prior for a tag is important enough to
+\item{prior.to.have.friends}{The prior for a row is important enough to
 have friendly columns}
 }
 \value{
@@ -20,17 +20,17 @@ a list of four values: \cr
 call the function start with
 \code{best.step.rank} is the rank value that makes the best step;
 it is not obligatory one on the \code{ranks} value.\cr
-\code{collections.on.left} is the vector of the collections on the
+\code{columns.on.left} is the vector of the columns on the
 left of the best step (including the step value).
 They are friends of the row, and the row is thir marker.\cr
-\code{collections.on.right} is vector of those on the right \cr
+\code{columns.on.right} is vector of those on the right \cr
 \code{population.on.left} is how many (column) ranks are on left of split;
 they are friends! \cr
 if non-step uniform model wins and there are no friends,\cr
 then \code{best.step.rank==max.possible.rank},
 \code{population.on.left==0},
-all collections are listed in \code{collections.on.right} and
-\code{collections.on.left} is empty.
+all columns are listed in \code{columns.on.right} and
+\code{columns.on.left} is empty.
 }
 \description{
 finds the ML-best step model for one row and
@@ -41,7 +41,7 @@ and non-step uniform model.
 See \link{friends.test} documentation for details.
 }
 \examples{
-example(tag.int.ranks)
-step<-best.step.fit.bic(TF.ranks[42,],genes.no,0.5)
-nostep<-best.step.fit.bic(TF.ranks[42,],genes.no,1E-50)
+example(row.int.ranks)
+step <- best.step.fit.bic(TF.ranks[42, ], genes.no, 0.5)
+nostep <- best.step.fit.bic(TF.ranks[42, ], genes.no, 1E-50)
 }

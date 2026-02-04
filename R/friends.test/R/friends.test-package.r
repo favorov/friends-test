@@ -8,10 +8,10 @@
 #' relevant for some c's than for the remaining c's.
 #' If it does, those c for which the t is relevant,
 #' are the t's friend. And, the t is the c's marker.
-#' For each tag, we want to identify the column(s) that specifically prefer(s)
-#' the tag. We say that such a column is a friend (or the best friend if it is
-#' the only) for the tag.
-#' The simplest example: imagine that only one column pays attention to our tag.
+#' For each row, we want to identify the column(s) that specifically prefer(s)
+#' the row. We say that such a column is a friend (or the best friend if it is
+#' the only) for the row.
+#' The simplest example: imagine that only one column pays attention to our row.
 #'
 #' @keywords internal
 "_PACKAGE"
@@ -32,12 +32,14 @@
 #' likelihood of splitting and non-splitting models
 #'
 #'
-#' [tag.int.ranks] is use by all above to prepare the integer vector to test.
-#' They are ranks of attentian that a collection pays to different tags.
-#' The ranking happens inside different collections separately.
+#' [row.int.ranks] is use by all above to prepare the integer vector to test.
+#' They are ranks of attentian that a column pays to different rows.
+#' The ranking happens inside different columns separately.
 #' The ties are resolved at random, to keep the ranks integer.
 #'
 #' @importFrom utils packageDescription
 #' @importFrom data.table frankv
+#' @importFrom stats p.adjust
+#' @importFrom purrr array_branch map_dbl map2 compact
 #'
 NULL
