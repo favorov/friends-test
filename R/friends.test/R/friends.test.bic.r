@@ -23,13 +23,13 @@
 #' a matrix row that has friend(s). Each element of the return list
 #' is also a list, one element per friend, and the 2-nd level element
 #' is an integer vector with three numbers, that are:
-#' the marker coordinate (\code{narker}),
+#' the marker coordinate (\code{marker}),
 #' the friend coordinate (\code{friend}), and
 #' the the rank of the friend for the marker (\code{rank}).
 #' So, it is list of lists of simple integer vectors, each
-#' vector epresents a marker+friend pair,
+#' vector represents a marker+friend pair,
 #' the inner lists enumerate friends,
-#' the outer (return) list enumarate markers.
+#' the outer (return) list enumerate markers.
 #' @examples
 #' A <- matrix(
 #'     c(
