@@ -114,7 +114,7 @@ friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
 friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
 ```
 
-In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get more results, and the `rank` that shows the rank og the friend for the marker, can differ from 1:
+In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get more results, and the `rank` that shows the rank of the friend for the marker, can differ from 1:
 
 ```{r}
 friends.test.bic(regulation, prior.to.have.friends = .25,
