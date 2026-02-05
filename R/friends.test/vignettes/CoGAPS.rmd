@@ -14,7 +14,7 @@ vignette: >
 
 `r library(knitr)`
 `r library(rmarkdown)`
-`r devtools::load_all()`
+`r library(friends.test)`
 `r library(CoGAPS)`
 `r options(width=80,keep.source=TRUE)`
 `r options(timeout=300)`
