@@ -52,7 +52,28 @@ friends_genes <- friends.test::friends.test(t(loadings))
 
 Wow, there are so many friends for each pattern!
 ```{r}
-lapply(friends_genes, length)
+aggregate(friend ~ marker, data=friends_genes, length)
+```
+
+Inspect loadings vallues for Pattern4 friends vs non-friends. Higher loading for friend genes is observed, but there is no clear cut-off.
+```{r}
+df <- loadings[,'Pattern_4']
+df <- data.frame(value=df, friend=names(df) %in% friends_genes$friend[friends_genes$marker=="Pattern_4"])
+plot(df$value, col=df$friend+1, pch=16, xlab='Pattern_4 loading', ylab='Friend status') 
+aggregate(value ~ friend, data=df, mean)
+aggregate(value ~ friend, data=df, function(x) c(mean=mean(x), sd=sd(x), min=min(x), max=max(x), n=length(x)))
+```
+
+Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern markers are friends, but not all friends are CoGAPS pattern markers.
+```{r}
+pm <- patternMarkers(cg)
+comp <- lapply(names(pm$PatternMarkers), function(pat){
+  list(pattern=pat,
+       pm_in_friends=pm$PatternMarkers[[pat]] %in% friends_genes$friend[friends_genes$marker==pat] |> mean(),
+       friends_in_pm=friends_genes$friend[friends_genes$marker==pat] %in% pm$PatternMarkers[[pat]] |> mean())
+})
+do.call(rbind, comp)
+
 ```
 
 What happens if we don't transpose?
