@@ -88,4 +88,14 @@ names(by_patterns) <- unique(qq)
 
 by_patterns
 ```
+
+Compare with CoGAPS pattern markers again!
+```{r}
+comp <- lapply(names(pm$PatternMarkers), function(pat){
+  list(pattern=pat,
+       pm_in_friends=pm$PatternMarkers[[pat]] %in% by_patterns[[pat]] |> mean(),
+       friends_in_pm=by_patterns[[pat]] %in% pm$PatternMarkers[[pat]] |> mean())
+})
+do.call(rbind, comp)
+```
 </div>
