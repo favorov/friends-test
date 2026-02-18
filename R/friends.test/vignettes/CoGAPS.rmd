@@ -6,6 +6,7 @@ vignette: >
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
  %\VignetteDepends{devtools}
+ %\VignetteIndexEntry{Find genes that are friendly to a latent pattern (or a cluster) in a matrix}
 ---
 
 [Naturam expellas furca, tamen usque recurret]{style="float:right"}
