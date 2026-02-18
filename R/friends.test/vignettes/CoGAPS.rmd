@@ -20,6 +20,7 @@ vignette: >
 `r options(timeout=300)`
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
+`r devtools::load_all()`
 <!-- cache is off, we save all the necessary things in Rda -->
 
 <div style="line-height: 1.5em;">
@@ -52,13 +53,13 @@ friends_genes <- friends.test::friends.test(t(loadings))
 
 Wow, there are so many friends for each pattern!
 ```{r}
-aggregate(friend ~ marker, data=friends_genes, length)
+lapply(friends_genes, length)
 ```
 
 Inspect loadings vallues for Pattern4 friends vs non-friends. Higher loading for friend genes is observed, but there is no clear cut-off.
 ```{r}
 df <- loadings[,'Pattern_4']
-df <- data.frame(value=df, friend=names(df) %in% friends_genes$friend[friends_genes$marker=="Pattern_4"])
+df <- data.frame(value=df, friend=names(df) %in% names(friends_genes$Pattern_4))
 plot(df$value, col=df$friend+1, pch=16, xlab='Pattern_4 loading', ylab='Friend status') 
 aggregate(value ~ friend, data=df, mean)
 aggregate(value ~ friend, data=df, function(x) c(mean=mean(x), sd=sd(x), min=min(x), max=max(x), n=length(x)))
@@ -69,8 +70,8 @@ Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern marker
 pm <- patternMarkers(cg)
 comp <- lapply(names(pm$PatternMarkers), function(pat){
   list(pattern=pat,
-       pm_in_friends=pm$PatternMarkers[[pat]] %in% friends_genes$friend[friends_genes$marker==pat] |> mean(),
-       friends_in_pm=friends_genes$friend[friends_genes$marker==pat] %in% pm$PatternMarkers[[pat]] |> mean())
+       pm_in_friends=pm$PatternMarkers[[pat]] %in% names(friends_genes[[pat]]) |> mean(),
+       friends_in_pm=names(friends_genes[[pat]]) %in% pm$PatternMarkers[[pat]] |> mean())
 })
 do.call(rbind, comp)
 
@@ -83,7 +84,6 @@ friends_patterns <- friends.test::friends.test(loadings, max.friends.n = 1)
 qq <- lapply(friends_patterns, function(x) names(x)) |> as.data.frame() |> t()
 
 by_patterns <- lapply(unique(qq), function(pat) rownames(qq)[qq==pat])
-
 names(by_patterns) <- unique(qq)
 
 by_patterns
