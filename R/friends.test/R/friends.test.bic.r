@@ -107,7 +107,7 @@ friends.test.bic <- function(A = NULL,
         #we are sure it is a list
         #we pass it to map2,
         #with .y as the row numbers in A
-        purrr::map2(seq_len(nrow(A)), \(ranks, i) {
+        purrr::map2(seq_len(nrow(A)), purrr::in_parallel(\(ranks, i) {
             step <- friends.test::best.step.fit.bic(
                 ranks,
                 max.possible.rank = max.possible.rank,
@@ -142,7 +142,14 @@ friends.test.bic <- function(A = NULL,
                 ),
                 c
             )
-        }, .progress = the.progress)
+        },
+        #inside in_parallel, it knows nothing,
+        #we are to pass it all via ...
+        max.friends.n = max.friends.n,
+        max.possible.rank = max.possible.rank,
+        prior.to.have.friends = prior.to.have.friends,
+        A = A
+        ), .progress = the.progress)
 
     if (.progress) cli::cli_progress_step("Compacting...")
     ijrlist <- purrr::compact(ijrlist)

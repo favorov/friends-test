@@ -132,15 +132,19 @@ friends.test <- function(A = NULL, threshold = 0.05,
         #convert the array to list of rows
         purrr::array_branch(1) |>
         #apply friends.test::unif.ks.test to each
-        purrr::map_dbl(\(ranks) {
-            friends.test::unif.ks.test(
-                ranks,
-                uniform.max = uniform.max,
-                simulate.p.value = FALSE,
-                B = 2000
-            )
-        }, .progress = the.progress
-        ) |>
+        purrr::map_dbl(
+            purrr::in_parallel(\(ranks) {
+                friends.test::unif.ks.test(
+                    ranks,
+                    uniform.max = uniform.max,
+                    simulate.p.value = FALSE,
+                    B = 2000
+                )
+            },
+            #inside in_parallel, it knows nothing,
+            #we are to pass it all via ...
+            uniform.max = uniform.max
+            ), .progress = the.progress) |>
         p.adjust(
             method = p.adjust.method
         )
@@ -175,7 +179,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
         #we are sure it is a list
         #we pass it to map2,
         #with .y as the row numbers in A
-        purrr::map2(which(is_marker), \(ranks, i) {
+        purrr::map2(which(is_marker), purrr::in_parallel(\(ranks, i) {
             step <- friends.test::best.step.fit(
                 ranks,
                 max.possible.rank = max.possible.rank
@@ -203,7 +207,14 @@ friends.test <- function(A = NULL, threshold = 0.05,
                 ),
                 c
             )
-        }, .progress = the.progress)
+        },
+        #inside in_parallel, it knows nothing,
+        #we are to pass it all via ...
+        max.possible.rank = max.possible.rank,
+        max.friends.n = max.friends.n,
+        A = A
+        ),
+        .progress = the.progress)
 
     if (.progress) cli::cli_progress_step("Compacting...")
     ijrlist <- purrr::compact(ijrlist)

@@ -41,5 +41,6 @@
 #' @importFrom data.table frankv
 #' @importFrom stats p.adjust
 #' @importFrom purrr array_branch map_dbl map2 compact pmap
+#' @import mirai carrier
 #'
 NULL
