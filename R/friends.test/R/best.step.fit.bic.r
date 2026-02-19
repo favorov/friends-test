@@ -71,13 +71,9 @@ best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
             )]
     } else {
         # if we are here, the uniform won, no friends
-
         best.step.rank <- max.possible.rank
-
         population.on.left <- 0 # all
-
         columns.on.left <- c() # empty -- no friends
-
         columns.on.right <- step.models$columns.order
         # all
     }
