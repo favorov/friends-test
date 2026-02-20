@@ -70,3 +70,52 @@ test_that("passes non-diagonal diagonal test", {
     )
     expect_equivalent(friends, expected)
 })
+
+test_that("passes non-diagonal diagonal parallel test", {
+    # best.friends method is not illustrated well using square diagonal matrices
+    # we will use a rectangular matrix for this test (ncolls << nrows)
+    set.seed(1) # actually, it works with like 9/10 of seeds
+    nrows <- 100
+    ncolls <- 10
+    almost_diagon_mat <- matrix(1 + 9 * runif(nrows * ncolls), nrow = nrows)
+    almost_diagon_mat[1:ncolls, ] <- runif(ncolls * ncolls)
+    diag(almost_diagon_mat) <- 19
+    rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
+    colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
+    mirai::daemons(2)
+    friends <- friends.test(almost_diagon_mat)
+    mirai::daemons(0)
+    expected <- list(
+        row1 = list(
+            col1 = c(marker = 1, friend = 1, rank = 1)
+        ),
+        row2 = list(
+            col2 = c(marker = 2, friend = 2, rank = 1)
+        ),
+        row3 = list(
+            col3 = c(marker = 3, friend = 3, rank = 1)
+        ),
+        row4 = list(
+            col4 = c(marker = 4, friend = 4, rank = 1)
+        ),
+        row5 = list(
+            col5 = c(marker = 5, friend = 5, rank = 1)
+        ),
+        row6 = list(
+            col6 = c(marker = 6, friend = 6, rank = 1)
+        ),
+        row7 = list(
+            col7 = c(marker = 7, friend = 7, rank = 1)
+        ),
+        row8 = list(
+            col8 = c(marker = 8, friend = 8, rank = 1)
+        ),
+        row9 = list(
+            col9 = c(marker = 9, friend = 9, rank = 1)
+        ),
+        row10 = list(
+            col10 = c(marker = 10, friend = 10, rank = 1)
+        )
+    )
+    expect_equivalent(friends, expected)
+})

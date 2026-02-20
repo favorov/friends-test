@@ -92,3 +92,36 @@ test_that("passes non-diagonal diagonal test with high prior to have friend", {
     expect_equivalent(setdiff(expflat, resflat), list())
     # we test that result is contained in res
 })
+
+test_that("best friend is determined correctly in parallel mode", {
+    text <- "    col1     col2     col3      col4     col5
+            row1 0.1765568 0.7176185 0.2121425 0.01339033 0.5995658
+            row2 0.6870228 0.9919061 0.6516738 0.38238796 0.4935413
+            row3 0.3841037 0.3800352 0.1255551 0.86969085 0.1862176
+            row4 0.7698414 0.7774452 0.2672207 0.34034900 0.8273733
+            row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
+    attention <- as.matrix(read.table(text = text, header = TRUE))
+    mirai::daemons(2)
+    friends <- friends.test.bic(attention, .25, max.friends.n = 1)
+    mirai::daemons(0)
+    expected <- list(
+        row5 = list(
+            col5 = c(marker = 5, friend = 5, rank = 1)
+        )
+    )
+    expect_equivalent(friends, expected)
+
+    mirai::daemons(2)
+    friends <- friends.test.bic(attention, .5, max.friends.n = 1)
+    mirai::daemons(0)
+    #we expct two friend now
+    expected <- list(
+        row3 = list(
+            col4 = c(marker = 3, friend = 4, rank = 1)
+        ),
+        row5 = list(
+            col5 = c(marker = 5, friend = 5, rank = 1)
+        )
+    )
+    expect_equivalent(friends, expected)
+})

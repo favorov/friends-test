@@ -9,6 +9,12 @@
 #' If it does, those c for which the t is relevant,
 #' are the t's friend. And, the t is the c's marker.
 #'
+#' If you want to run the main function cycles in parallel,
+#' say \code{mirai::daemons(proc#)}, the \code{proc#} is a
+#' natural number of processors.
+#' Do not forget to switch the parallel mode off:
+#' \code{mirai::daemons(proc#)}
+#'
 #' @param A original association matrix
 #' @param prior.to.have.friends The prior for a row to have friendly columns.
 #' @param max.friends.n The maximal number of friends for a marker.
