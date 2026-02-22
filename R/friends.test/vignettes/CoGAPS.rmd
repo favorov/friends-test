@@ -16,12 +16,11 @@ vignette: >
 `r library(knitr)`
 `r library(rmarkdown)`
 `r library(friends.test)`
-`r library(CoGAPS)`
 `r options(width=80,keep.source=TRUE)`
 `r options(timeout=300)`
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
-`r devtools::load_all()`
+`r devtools::load_all()` #remove me
 <!-- cache is off, we save all the necessary things in Rda -->
 
 <div style="line-height: 1.5em;">
@@ -31,15 +30,8 @@ vignette: >
 ## Genes that are friends to CoGAPS patterns (or CoGAPS patterns that are friends to genes?)
 
 ```{r}
-# get CoGAPS result from zenodo
-fname <- 'cogapsresult.Rds'
-if(!file.exists(fname)){
-    download.file('https://zenodo.org/records/7709664/files/cogapsresult.Rds', destfile = fname, mode = 'wb')
-}
-cg <- readRDS('cogapsresult.Rds')
-
-# get feature loadings
-loadings <- cg@featureLoadings
+data(cogaps_loadings_example)
+loadings <- cogaps_loadings_example
 ```
 
 Feature loadings in CoGAPS are normalized expression values across patterns. Each column is a pattern, each row is a gene.
@@ -68,7 +60,9 @@ aggregate(value ~ friend, data=df, function(x) c(mean=mean(x), sd=sd(x), min=min
 
 Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern markers are friends, but not all friends are CoGAPS pattern markers.
 ```{r}
-pm <- patternMarkers(cg)
+data(cogaps_loadings_example_markers)
+pm <- cogaps_loadings_example_markers
+
 comp <- lapply(names(pm$PatternMarkers), function(pat){
   list(pattern=pat,
        pm_in_friends=pm$PatternMarkers[[pat]] %in% names(friends_genes[[pat]]) |> mean(),
