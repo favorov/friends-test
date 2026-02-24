@@ -29,7 +29,8 @@ vignette: >
 <div style="line-height: 1.5em;">
 
 
-# Introduction
+## Introduction
+
 There is a simple intuition of what it means to be a friend. A friend of Augustus cares about Augustus more than about other people. And, if we see Augustus, then we infer to see friends(s) of Augustus also. Please refer to [our Arxive publication](https://arxiv.org/abs/2512.24843) for more formal introduction.
 
 \paragraph{Introduction} 
@@ -64,73 +65,73 @@ Let's define the relevance of a row to a column as the rank of the $i$-th rows's
 
 The main idea of the **friends.test**  test is that if a row $t_i$ is not preferred by any column(s), the distribution of the ranks of the row in all the columns $r(t_i,c_j)$ behaves like $j$ i.i.d integers that are uniformely distributed in $1..n$. 
 
-# Examples
-## Toy example: Bayesian option
-```{r source, echo=FALSE}
-data.digits <- 2
-p.val.digits <- 4
-```
-</div>
+## Examples
 
+### Toy example: Bayesian option
+
+    ```{r source, echo=FALSE}
+    data.digits <- 2
+    p.val.digits <- 4
+    ```
 
 Let's illustrate the method with something supersimple.
 
-```{r}
-regulation <-
-    structure(
-        c(
-            0.2, 0.25, 0.1, 0.23, 0.3, 0.12, 0.14,
-            4, 3, 6, 1, 9, 7, 10,
-            3, 1, 5, 6, 3, 4, 11
-        ),
-        dim = c(7, 3),
-        dimnames =
-        list(
+    ```{r}
+    regulation <-
+        structure(
             c(
-                "Gene1", "Gene2", "Gene3",
-                "Gene4", "Gene5", "Gene6",
-                "Gene7"
+                0.2, 0.25, 0.1, 0.23, 0.3, 0.12, 0.14,
+                4, 3, 6, 1, 9, 7, 10,
+                3, 1, 5, 6, 3, 4, 11
             ),
-            c("TF1", "TF2", "TF3")
+            dim = c(7, 3),
+            dimnames =
+            list(
+                c(
+                    "Gene1", "Gene2", "Gene3",
+                    "Gene4", "Gene5", "Gene6",
+                    "Gene7"
+                ),
+                c("TF1", "TF2", "TF3")
+            )
         )
-    )
-noquote(regulation)
-```
+    noquote(regulation)
+    ```
 What we want to identify is Gene2-TF1 pair. Gene2 is not the strongest downstream gene in the TF1 column (column), it is only the second, but, on the other hand its rank in other TF-based columns is much lower.
 
 First, let's apply the Bayesian version of the method, `best.friends.bic`.
 
-```{r}
-friends.test.bic(regulation, prior.to.have.friends = .5, max.friends.n = 1)
-```
+    ```{r}
+    friends.test.bic(regulation, prior.to.have.friends = .5, max.friends.n = 1)
+    ```
 
 We see the expected Gene2-TF1 pair as well as the Gene1-TF1 pair, that is similar to the expected, Gene1 has rank of 3 in the TF1 column.
 
-The lower is the prior to have friends for a row (it is an obligatory parameter for `friends.test.bic`), the less marker-friend pairs we get. 
+The lower is the prior to have friends for a row (it is an obligatory parameter for `friends.test.bic`), the less marker-friend pairs we get.
 
-```{r}
-friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
+    ```{r}
+    friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
 
-friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
-```
+    friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
+    ```
 
 In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get more results, and the `rank` that shows the rank of the friend for the marker, can differ from 1:
 
-```{r}
-friends.test.bic(regulation, prior.to.have.friends = .25,
-                 max.friends.n = "all")
-```
+    ```{r}
+    friends.test.bic(regulation, prior.to.have.friends = .25,
+                     max.friends.n = "all")
+    ```
 
 Note that `max.friends.n = "all"` is the default value for both `friends.test` (see below) and `friends.test.bic`.
 
-## The same toy example: the KS option
+### The same toy example: the KS option
 
 Let's run the p-value-based option of the method on the same data. It is less sensitive on small dataset, so we use unpractical threshold for the p-value to see the result.
 
-```{r}
-friends.test(regulation, threshold = .5, p.adjust.method = "no",
-             max.friends.n = 1)
-```
+    ```{r}
+    friends.test(regulation, threshold = .5, p.adjust.method = "no",
+                 max.friends.n = 1)
+    ```
 
 And, as usual, if we relax the `max.friends.no` restriction, we will see more pairs, but now the friends are not required to be unique for a marker.
 
@@ -138,7 +139,7 @@ And, as usual, if we relax the `max.friends.no` restriction, we will see more pa
 friends.test(regulation, threshold = .5, p.adjust.method = "no")
 ```
 
-## Iris example
+### Iris example
 Let's look for anomalies in the traditional **iris** dataset: 
 ```{r}
 data("iris")
@@ -146,26 +147,34 @@ print(head(iris, n = 5))
 ```
 
 We use only numeric columns:
-```{r}
-data("iris")
-friends.test.bic(iris[1:4], prior.to.have.friends = .001)
-```
+
+    ```{r}
+    data("iris")
+    friends.test.bic(iris[1:4], prior.to.have.friends = .001)
+    ```
 
 So, we see that the flower #14 is important for (we also can think about it as "popular in") the Sepal.Width nomination. Let's understand it a simple request: what is the quantile of the flower #14 in the four columns.
 
-```{r}
-apply(iris[, 1:4], 2, function(col) ecdf(col)(col[14]))
-```
+    ```{r}
+    apply(iris[, 1:4], 2, function(col) ecdf(col)(col[14]))
+    ```
 
 So, flower #14 is in top 50% in Sepal.Width and in lowest 5% for all other sizes. It is exacly what we describe as "Sepal.Width is friend for flower #14 and the flower #14 is a marker for Sepal.Width".
 
 Let's note that the four sizes have different distributions; still, the friends.test naturally works with this type of data. 
 
-# Rakning and ramdom numbers
+## Rakning and random numbers
 
 The result of both `friends.test` and `friends.test.bic` functions depends on random state generator. The dependency is because the test starts with ranking of the elemants of the input matrix in the columns. The test requires the rank values to be integer, so the ties are resolved randomly. It you want a reproduceablle result, keep the initial random generator state. Another option is to rank the matrix bfore the test call and then to pass the rank matrix as the input. It does not consume a lot of additional time, and the renking of already-ranked does not depend on random seeds. The special case when this approach is the only is if some additional information is used in the ranking.
 
-# Session info
-```{r}
-sessionInfo()
-```
+## Parallel calculation
+
+Both main functions, \code{friends.test} and \{friends.test.bic} 
+
+## Session info
+
+    ```{r}
+    sessionInfo()
+    ```
+
+</div>
