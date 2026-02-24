@@ -1,14 +1,17 @@
 library(usethis)
 library(CoGAPS)
 options(timeout = 3000)
-friends_test_cogaps_example <- list()
+friends.test.cogaps.example <- list()
 suppressWarnings({
     cg <- readRDS(gzcon(url(
         "https://zenodo.org/records/7709664/files/cogapsresult.Rds"
     )))
-    cogaps_example_for_friend_test$loadings <- cg@featureLoadings
-    # plan cogaps_example_for_friend_test$markers_all <- patternMarkers(cg)
-    # plan cogaps_example_for_friend_test$markers_cut <-
-    patternMarkers(cg, threshold = "cut")
+    friends.test.cogaps.example$loadings <- cg@featureLoadings
+    # plan cogaps.example.for.friend.test$markers.all <- patternMarkers(cg)
+    # plan cogaps.example.for.friend.test$markers.cut <-
+    friends.test.cogaps.example$markers_cut <-
+        patternMarkers(cg, threshold = "cut")
+    friends.test.cogaps.example$markers_all <-
+        patternMarkers(cg, threshold = "all")
 })
-usethis::use_data(friends_test_cogaps_example, overwrite = TRUE)
+usethis::use_data(friends.test.cogaps.example, overwrite = TRUE)
