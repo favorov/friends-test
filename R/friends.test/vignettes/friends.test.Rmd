@@ -35,7 +35,7 @@ There is a simple intuition of what it means to be a friend. A friend of Augustu
 
 \paragraph{Introduction} 
 
-Let's picture a set of expression pattern, each represents a biological process. Techically, each pattern is a vector of expression loads of the involved genes. 
+Let's picture a set of expression pattern, each represents a biological process. Techically, each pattern is a vector of expression loads of the involved genes.
 
 Sometimes, the expression of a single gene in a sample indicates the activity of the entire pattern there. The simplest case: the gene has a nonzero load in only one pattern.
 
@@ -141,10 +141,10 @@ friends.test(regulation, threshold = .5, p.adjust.method = "no")
 
 ### Iris example
 Let's look for anomalies in the traditional **iris** dataset: 
-```{r}
-data("iris")
-print(head(iris, n = 5))
-```
+    ```{r}
+    data("iris")
+    print(head(iris, n = 5))
+    ```
 
 We use only numeric columns:
 
@@ -169,7 +169,7 @@ The result of both `friends.test` and `friends.test.bic` functions depends on ra
 
 ## Parallel calculation
 
-Both main functions, \code{friends.test} and \{friends.test.bic} 
+Both main functions, `friends.test` and `friends.test.bic`, carries `purrr::in_parallel` code, so if you want each of them to run in parallel mode, say `mirai::deamons(n)` (n is number of processes) in your R code before the finction call, and `mirai::deamons(0)` after. See [mirai] for more information.
 
 ## Session info
 
