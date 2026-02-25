@@ -41,45 +41,46 @@ Feature loadings in CoGAPS are normalized expression values across patterns. Eac
     head(featureLoadings)
     ```
 
-Let's find representative genes for all patterns using `friends.test`. We are interested in gene-friends for all patterns, so patterns need to be in rows, and genes in columns.
+Let's find representative genes for all patterns using `friends.test`. We are interested in patterns - friends of genes, so genes need to be in rows, and patterns in columns.
 
-    ```{r 'friends are genes'}
-    friends_genes <- friends.test(t(featureLoadings))
+    ```{r 'patterns are genes friends'}
+    friends_of_genes <- friends.test(featureLoadings)
     ```
 
-There are so many friends for each pattern!
+```{r 'display all genes per friend'}
+friends_df <- friends_of_genes |>
+    purrr::flatten() |>
+    purrr::reduce(.f=rbind) |> 
+    as.data.frame()
 
-    ```{r 'friends summary'}
-    lapply(friends_genes, length)
-    ```
+#create a list of friends (gene names) per pattern with purrr
+friends_list <- friends_df |>
+    split(friends_df$friend) |> 
+    purrr::map(~rownames(featureLoadings)[.$marker]) |>
+    setNames(featureLoadings |> colnames())
 
-Now let's inspect loadings values for Pattern4 friends vs non-friends. Higher loading for friend genes is observed, but there is no clear cut-off. In the highest loading value decile, about 50% of genes are friends, but also in the lowest decile, there are about 2% of friend genes.
+```
 
-    ```{r 'inspect pattern 4 friends'}
-    loadings <- featureLoadings[, "Pattern_4"]
-    df_ecdf <- ecdf(loadings)
-    df <- data.frame(value = loadings,
-        friend = names(loadings) %in% 
-            names(friends_genes$Pattern_4),
-        loading_ecdf = df_ecdf(loadings)
-    )
-    aggregate(friend ~ round(loading_ecdf, 1), data = df, 
-        FUN = function(x) c(share = mean(x), n = sum(x))
-    )
-    ```
-
-Lets examine hallmarks associated with Pattern 4 friends. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
+Lets examine hallmarks associated with patterns. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
 
     ```{r 'look up signatures'}
-    library(fgsea)
-    library(msigdbr)
-    msigdbr_df <- msigdbr(species = "human", category = "H")
-    #query <- loadings[]
+library(fgsea)
+library(msigdbr)
+msigdbr_df <- msigdbr(species = "human", category = "H")
 
-    fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol, msigdbr_df$gs_name),
-                       stats = loadings)
-    fgseaRes[padj < 0.05,c('pathway', 'padj')][order(padj)]
+hallmarks <- lapply(names(friends_list), function(pat) {
+    fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
+                                      msigdbr_df$gs_name),
+                    stats = featureLoadings[friends_list[[pat]], pat])
+    fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+
+}) |> setNames(names(friends_list))
+
+hallmarks
+
     ```
+
+HERE! 
 
 Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern markers are friends, but not all friends are CoGAPS pattern markers.
 
@@ -93,20 +94,6 @@ Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern marker
     do.call(rbind, comp)
     ```
 
-Lets find very specific genes for each pattern (genes that have only one friend). We can call them "pattern-specific genes".
-    ```{r 'fiends are patterns'}
-    friends_patterns <- friends.test(featureLoadings, max.friends.n = 1)
-    qq <- lapply(friends_patterns,
-        function(x) names(x)
-    ) |>
-    as.data.frame() |>
-    t()
-
-    by_patterns <- lapply(unique(qq), function(pat) rownames(qq)[qq == pat])
-    names(by_patterns) <- unique(qq)
-
-    by_patterns
-    ```
 
 Compare with CoGAPS pattern markers again.
     ```{r 'compare with CoGAPS pattern markers again'}
