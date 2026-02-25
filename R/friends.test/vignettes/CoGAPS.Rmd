@@ -20,6 +20,7 @@ vignette: >
 `r options(timeout=300)`
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
+`r library('fgsea')
 `r devtools::load_all()` #remove me
 <!-- cache is off, we save all the necessary things in Rda -->
 
@@ -69,21 +70,28 @@ This is because ... TODO
     )
     ```
 
+Lets examine hallmarks associated with Pattern 4 friends. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
+```{r 'look up signatures'}
+library(fgsea)
+library(msigdbr)
+msigdbr_df <- msigdbr(species = "human", category = "H")
+query <- loadings[]
+
+fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol, msigdbr_df$gs_name),
+                   stats = loadings)
+fgseaRes[padj < 0.05,c('pathway', 'padj')][order(padj)]
+```
+
 Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern markers are friends, but not all friends are CoGAPS pattern markers.
-
-
-    ```{r 'compare with CoGAPS pattern markers'}
-    pm_all <- friends.test.cogaps.example$markers_all[["PatternMarkers"]]
-    comp <- lapply(names(pm_all), function(pat) {
-        list(pattern = pat,
-            pm_in_friends = 
-                pm_all[[pat]] %in% names(friends_genes[[pat]]) |> mean(),
-            friends_in_pm = 
-                names(friends_genes[[pat]]) %in% pm_all[[pat]] |> mean()
-        )
-    })
-    do.call(rbind, comp)
-    ```
+```{r 'compare with CoGAPS pattern markers'}
+pm_all <- friends.test.cogaps.example$markers_all[["PatternMarkers"]]
+comp <- lapply(names(pm_all), function(pat) {
+    list(pattern = pat,
+        pm_in_friends = pm_all[[pat]] %in% names(friends_genes[[pat]]) |> mean(),
+        friends_in_pm = names(friends_genes[[pat]]) %in% pm_all[[pat]] |> mean())
+})
+do.call(rbind, comp)
+```
 
 TODO Validate! Lets find very specific genes for each pattern (genes that have only one friend). We can call them "pattern-specific genes".
 
