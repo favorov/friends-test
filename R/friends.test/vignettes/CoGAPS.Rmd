@@ -47,19 +47,22 @@ Let's find representative genes for all patterns using `friends.test`. We are in
     friends_of_genes <- friends.test(featureLoadings)
     ```
 
-```{r 'display all genes per friend'}
-friends_df <- friends_of_genes |>
-    purrr::flatten() |>
-    purrr::reduce(.f=rbind) |> 
-    as.data.frame()
+\code{friends.test} returns a list of lists, the first level is the marker (rowname in the table), the second is the friend (colname) and the leave in a vector of the marker index in the initial table, the friend index and the rank of the friend.
 
-#create a list of friends (gene names) per pattern with purrr
-friends_list <- friends_df |>
-    split(friends_df$friend) |> 
-    purrr::map(~rownames(featureLoadings)[.$marker]) |>
-    setNames(featureLoadings |> colnames())
 
-```
+    ```{r 'display all genes per friend'}
+    friends_df <- friends_of_genes |>
+        purrr::flatten() |>
+        purrr::reduce(.f=rbind) |> 
+        as.data.frame()
+
+    #create a list of friends (gene names) per pattern with purrr
+    friends_list <- friends_df |>
+        split(friends_df$friend) |> 
+        purrr::map(~rownames(featureLoadings)[.$marker]) |>
+        setNames(featureLoadings |> colnames())
+
+    ```
 
 Lets examine hallmarks associated with patterns. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
 
