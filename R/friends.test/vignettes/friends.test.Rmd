@@ -164,7 +164,7 @@ Let's note that the four sizes have different distributions; still, the friends.
 
 ## Output
 
-\code{friends.test} and \code{friends.test.bic} return a list of lists, the first level is the marker (rowname in the table), the second is the friend (colname) and the leave in a vector of the marker index in the initial table, the friend index and the rank of the friend. Sometimes, you need a data.frame.
+\code{friends.test} and \code{friends.test.bic} return a list of lists, the first level is the marker (rowname in the table), the second is the friend (colname) and the leave in a vector of the marker index in the initial table, the friend index and the rank of the friend. Sometimes, we need a matrix structure. 
 
 
 
@@ -172,8 +172,7 @@ Let's note that the four sizes have different distributions; still, the friends.
         friends.test.bic(regulation, prior.to.have.friends = .25) |>
         purrr::flatten() |>
         purrr::reduce(rbind) |>
-        as.data.frame() |>
-        tibble::remove_rownames()
+        magrittr::set_rownames(NULL)
     ```
 
 
