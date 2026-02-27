@@ -118,8 +118,7 @@ The lower is the prior to have friends for a row (it is an obligatory parameter 
 In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get more results, and the `rank` that shows the rank of the friend for the marker, can differ from 1:
 
     ```{r}
-    friends.test.bic(regulation, prior.to.have.friends = .25,
-                     max.friends.n = "all")
+    friends.test.bic(regulation, prior.to.have.friends = .25)
     ```
 
 Note that `max.friends.n = "all"` is the default value for both `friends.test` (see below) and `friends.test.bic`.
@@ -135,9 +134,9 @@ Let's run the p-value-based option of the method on the same data. It is less se
 
 And, as usual, if we relax the `max.friends.no` restriction, we will see more pairs, but now the friends are not required to be unique for a marker.
 
-```{r}
-friends.test(regulation, threshold = .5, p.adjust.method = "no")
-```
+    ```{r}
+    friends.test(regulation, threshold = .5, p.adjust.method = "no")
+    ```
 
 ### Iris example
 Let's look for anomalies in the traditional **iris** dataset: 
@@ -161,7 +160,23 @@ So, we see that the flower #14 is important for (we also can think about it as "
 
 So, flower #14 is in top 50% in Sepal.Width and in lowest 5% for all other sizes. It is exacly what we describe as "Sepal.Width is friend for flower #14 and the flower #14 is a marker for Sepal.Width".
 
-Let's note that the four sizes have different distributions; still, the friends.test naturally works with this type of data. 
+Let's note that the four sizes have different distributions; still, the friends.test naturally works with this type of data.
+
+## Output
+
+\code{friends.test} and \code{friends.test.bic} return a list of lists, the first level is the marker (rowname in the table), the second is the friend (colname) and the leave in a vector of the marker index in the initial table, the friend index and the rank of the friend. Sometimes, you need a data.frame.
+
+
+
+    ```{r 'data.frame convesion'}
+        friends.test.bic(regulation, prior.to.have.friends = .25) |>
+        purrr::flatten() |>
+        purrr::reduce(rbind) |>
+        as.data.frame() |>
+        tibble::remove_rownames()
+    ```
+
+
 
 ## Rakning and random numbers
 

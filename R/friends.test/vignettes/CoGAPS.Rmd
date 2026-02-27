@@ -47,14 +47,14 @@ Let's find representative genes for all patterns using `friends.test`. We are in
     friends_of_genes <- friends.test(featureLoadings)
     ```
 
-\code{friends.test} returns a list of lists, the first level is the marker (rowname in the table), the second is the friend (colname) and the leave in a vector of the marker index in the initial table, the friend index and the rank of the friend.
+
 
 
     ```{r 'display all genes per friend'}
     friends_df <- friends_of_genes |>
         purrr::flatten() |>
-        purrr::reduce(.f=rbind) |> 
-        as.data.frame()
+        purrr::reduce(.f = rbind) |>
+        tibble::as_tibble()
 
     #create a list of friends (gene names) per pattern with purrr
     friends_list <- friends_df |>
