@@ -50,11 +50,10 @@ Let's find representative genes for all patterns using `friends.test`. We are in
 
 
     ```{r 'display all genes per friend'}
-
     friends_df <- friends_of_genes |>
         purrr::flatten() |>
         purrr::reduce(.f = rbind) |>
-        magrittr::set_rownames(NULL)
+        tibble::as_tibble()
 
     #create a list of friends (gene names) per pattern with purrr
     friends_list <- friends_df |>
