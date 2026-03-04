@@ -21,7 +21,6 @@ vignette: >
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
 `r library('fgsea')
-`r devtools::load_all()` #remove me
 <!-- cache is off, we save all the necessary things in Rda -->
 
 <div style="line-height: 1.5em;">
@@ -62,6 +61,15 @@ Let's find representative genes for all patterns using `friends.test`. We are in
         purrr::map(~rownames(featureLoadings)[.$marker]) |>
         setNames(featureLoadings |> colnames())
 
+    qq <- matrix(0, nrow(featureLoadings), ncol(featureLoadings))
+
+    for (i in seq_len(nrow(qq))){
+        qq[unlist(friends_df[i,1]), unlist(friends_df[i,2])] <- 1/unlist(friends_df[i,3])
+    }
+
+    colnames(qq) <- colnames(featureLoadings)
+    rownames(qq) <- rownames(featureLoadings)
+
     ```
 
 Lets examine hallmarks associated with patterns. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
@@ -71,15 +79,55 @@ library(fgsea)
 library(msigdbr)
 msigdbr_df <- msigdbr(species = "human", category = "H")
 
+# 1. run for CoGAPS patterns
 hallmarks <- lapply(names(friends_list), function(pat) {
     fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
-                                      msigdbr_df$gs_name),
-                    stats = featureLoadings[friends_list[[pat]], pat])
+                                       msigdbr_df$gs_name),
+                     stats = featureLoadings[, pat])
     fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
 
 }) |> setNames(names(friends_list))
 
 hallmarks
+
+# 2. ru with one-hot friends or not friends
+hallmarks_onehot <- lapply(names(friends_list), function(pat) {
+    onehot <- names(featureLoadings[, pat]) %in% friends_list[[pat]] |> as.numeric()
+    names(onehot) <- names(featureLoadings[, pat])
+    fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
+                                       msigdbr_df$gs_name),
+                     stats = onehot)
+    fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+
+}) |> setNames(names(friends_list))
+
+hallmarks_onehot
+
+
+
+# 3. hallmarks qq
+hallmarks_qq <- lapply(names(friends_list), function(pat) {
+    fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
+                                       msigdbr_df$gs_name),
+                     stats = qq[, pat])
+    fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+
+}) |> setNames(names(friends_list))
+
+hallmarks_qq
+
+
+
+# 4. hallmarks on friends results 
+hallmarks_friends <- lapply(names(friends_list), function(pat) {
+    fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
+                                       msigdbr_df$gs_name),
+                     stats = featureLoadings[friends_list[[pat]], pat])
+    fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+
+}) |> setNames(names(friends_list))
+
+hallmarks_friends
 
     ```
 
