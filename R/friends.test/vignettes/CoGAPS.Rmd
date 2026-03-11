@@ -47,34 +47,22 @@ Let's find representative genes for all patterns using `friends.test`. We are in
     ```
 
 
-
-
     ```{r 'display all genes per friend'}
-    friends_df <- friends_of_genes |>
+    friends_tibble <- friends_of_genes |>
         purrr::flatten() |>
         purrr::reduce(.f = rbind) |>
         tibble::as_tibble()
 
     #create a list of friends (gene names) per pattern with purrr
-    friends_list <- friends_df |>
-        split(friends_df$friend) |> 
+    friends_list <- friends_tibble |>
+        split(friends_tibble$friend) |>
         purrr::map(~rownames(featureLoadings)[.$marker]) |>
         setNames(featureLoadings |> colnames())
-
-    qq <- matrix(0, nrow(featureLoadings), ncol(featureLoadings))
-
-    for (i in seq_len(nrow(qq))){
-        qq[unlist(friends_df[i,1]), unlist(friends_df[i,2])] <- 1/unlist(friends_df[i,3])
-    }
-
-    colnames(qq) <- colnames(featureLoadings)
-    rownames(qq) <- rownames(featureLoadings)
-
     ```
 
 Lets examine hallmarks associated with patterns. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
 
-    ```{r 'look up signatures'}
+    ```{r 'look up signatures in CoGAPS patterns'}
 library(fgsea)
 library(msigdbr)
 msigdbr_df <- msigdbr(species = "human", category = "H")
@@ -89,41 +77,62 @@ hallmarks <- lapply(names(friends_list), function(pat) {
 }) |> setNames(names(friends_list))
 
 hallmarks
+    ```
 
-# 2. ru with one-hot friends or not friends
+    ```{r 'signatures in one-hot ordered lists'}
+
+# 2. run with one-hot friends vs not friends as ranking
+
 hallmarks_onehot <- lapply(names(friends_list), function(pat) {
-    onehot <- names(featureLoadings[, pat]) %in% friends_list[[pat]] |> as.numeric()
-    names(onehot) <- names(featureLoadings[, pat])
+
+    onehot <- names(featureLoadings[, pat]) %in% friends_list[[pat]] |>
+        as.numeric() |>
+        setNames(names(featureLoadings[, pat]))
+
     fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
                                        msigdbr_df$gs_name),
-                     stats = onehot)
+                      stats = onehot)
     fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
 
 }) |> setNames(names(friends_list))
 
 hallmarks_onehot
+    ```
 
+    ```{r 'signatures in pattern loadings ordered by friends lists'}
 
+# 3. run with loadings but friends are ranked higher than non-friends
 
-# 3. hallmarks qq
-hallmarks_qq <- lapply(names(friends_list), function(pat) {
+ratings <- matrix(0, nrow(featureLoadings), ncol(featureLoadings))
+
+for (i in seq_len(nrow(friends_tibble))){
+    ratings[unlist(friends_tibble[i, 1]),
+            unlist(friends_tibble[i, 2])] <- 1 / unlist(friends_tibble[i, 3])
+}
+
+colnames(ratings) <- colnames(featureLoadings)
+rownames(ratings) <- rownames(featureLoadings)
+
+hallmarks_rated <- lapply(names(friends_list), function(pat) {
     fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
                                        msigdbr_df$gs_name),
-                     stats = qq[, pat])
-    fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+                     stats = ratings[, pat])
+    fgseaRes[padj < 0.05, c("pathway", "padj")][order(padj)]
 
 }) |> setNames(names(friends_list))
 
-hallmarks_qq
+hallmarks_rated
+    ```
 
+    ```{r 'signatures in ordered friends lists'}
 
+# 4. hallmarks directly on friends results
 
-# 4. hallmarks on friends results 
 hallmarks_friends <- lapply(names(friends_list), function(pat) {
     fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
                                        msigdbr_df$gs_name),
-                     stats = featureLoadings[friends_list[[pat]], pat])
-    fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+                      stats = featureLoadings[friends_list[[pat]], pat])
+    fgseaRes[padj < 0.05, c("pathway", "padj")][order(padj)]
 
 }) |> setNames(names(friends_list))
 
@@ -131,7 +140,7 @@ hallmarks_friends
 
     ```
 
-HERE! 
+HERE! - Next steps: run on horizontal matrix
 
 Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern markers are friends, but not all friends are CoGAPS pattern markers.
 
