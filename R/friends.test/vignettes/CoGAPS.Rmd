@@ -148,14 +148,19 @@ assess marker specificity (are friends of pattern 1 also friends of pattern 2?)
     specificity <- lapply(names(friends_list), function(pat) {
         friends <- friends_list[[pat]]
         friends_ranks_in_pattern <- rank(featureLoadings[, pat])[friends]
-        avg_rank_friends <- median(friends_ranks_in_pattern)
+        avg_rank_friends <- mean(friends_ranks_in_pattern)
         others <- setdiff(names(featureLoadings[, pat]), friends)
         others_ranks_in_pattern <- rank(featureLoadings[, pat])[others]
-        avg_rank_others <- median(others_ranks_in_pattern)
+        avg_rank_others <- mean(others_ranks_in_pattern)
+        rank_friends_in_other_patterns <- sapply(setdiff(colnames(featureLoadings), pat), function(other_pat) {
+            rank(featureLoadings[, other_pat])[friends]
+        })
+        avg_rank_friends_in_other_patterns <- apply(rank_friends_in_other_patterns, 1, mean) |> mean()
         list(pattern = pat,
              avg_rank_friends = avg_rank_friends,
              avg_rank_others = avg_rank_others,
-             specificity_score = avg_rank_friends/avg_rank_others)
+             avg_rank_friends_in_other_patterns = avg_rank_friends_in_other_patterns
+        )
     })
     specificity
     ```
