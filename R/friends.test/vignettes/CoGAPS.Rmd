@@ -140,7 +140,28 @@ hallmarks_friends
 
     ```
 
-HERE! - Next steps: run on horizontal matrix
+
+assess marker specificity (are friends of pattern 1 also friends of pattern 2?)
+
+    ```{r 'specificity measure'}
+    #for each pattern, find avarage rank of friends in that pattern vs average rank in other patterns
+    specificity <- lapply(names(friends_list), function(pat) {
+        friends <- friends_list[[pat]]
+        friends_ranks_in_pattern <- rank(featureLoadings[, pat])[friends]
+        avg_rank_friends <- median(friends_ranks_in_pattern)
+        others <- setdiff(names(featureLoadings[, pat]), friends)
+        others_ranks_in_pattern <- rank(featureLoadings[, pat])[others]
+        avg_rank_others <- median(others_ranks_in_pattern)
+        list(pattern = pat,
+             avg_rank_friends = avg_rank_friends,
+             avg_rank_others = avg_rank_others,
+             specificity_score = avg_rank_friends/avg_rank_others)
+    })
+    specificity
+    ```
+
+HERE! - Next steps: 
+    - run on horizontal matrix
 
 Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern markers are friends, but not all friends are CoGAPS pattern markers.
 
