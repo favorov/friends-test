@@ -43,7 +43,7 @@ Feature loadings in CoGAPS are normalized expression values across patterns. Eac
 Let's find representative genes for all patterns using `friends.test`. We are interested in patterns - friends of genes, so genes need to be in rows, and patterns in columns.
 
     ```{r 'patterns are genes friends'}
-    friends_of_genes <- friends.test(featureLoadings)
+    friends_of_genes <- friends.test(featureLoadings, max.friends.n = 1)
     ```
 
 
@@ -57,7 +57,7 @@ Let's find representative genes for all patterns using `friends.test`. We are in
     friends_list <- friends_tibble |>
         split(friends_tibble$friend) |>
         purrr::map(~rownames(featureLoadings)[.$marker]) |>
-        setNames(featureLoadings |> colnames())
+        (\(x) setNames(x, colnames(featureLoadings)[as.integer(names(x))]))()
     ```
 
 Lets examine hallmarks associated with patterns. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
@@ -157,9 +157,10 @@ assess marker specificity (are friends of pattern 1 also friends of pattern 2?)
         })
         avg_rank_friends_in_other_patterns <- apply(rank_friends_in_other_patterns, 1, mean) |> mean()
         list(pattern = pat,
-             avg_rank_friends = avg_rank_friends,
-             avg_rank_others = avg_rank_others,
-             avg_rank_friends_in_other_patterns = avg_rank_friends_in_other_patterns
+            avg_rank_friends = avg_rank_friends,
+            avg_rank_others = avg_rank_others,
+            avg_rank_friends_in_other_patterns = avg_rank_friends_in_other_patterns,
+            count_friends = length(friends)
         )
     })
     specificity
