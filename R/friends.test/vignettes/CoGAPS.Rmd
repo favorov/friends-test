@@ -20,7 +20,7 @@ vignette: >
 `r options(timeout=300)`
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
-`r library('fgsea')
+`r library('fgsea')`
 <!-- cache is off, we save all the necessary things in Rda -->
 
 <div style="line-height: 1.5em;">
@@ -29,29 +29,69 @@ vignette: >
 
 ## Genes that are friends to CoGAPS patterns (or CoGAPS patterns that are friends to genes?)
 
+CoGAPS decomoses an expression dataset into pattetns of expression, ideally, eah of them represent an underlying biological process. We use the [PDAC dataset](https://zenodo.org/records/7709664) from the [Johnson _et al_, 2023](https://www.nature.com/articles/s41596-023-00892-x) as an example. 
+
     ```{r 'setup'}
     data(friends.test.cogaps.example)
     ```
 
-Feature loadings in CoGAPS are normalized expression values across patterns. Each column is a pattern, each row is a gene.
+Feature loadings in CoGAPS are normalized expression values across patterns. Each column is a pattern, each row is a gene. 
 
     ```{r 'examine input'}
     featureLoadings <- friends.test.cogaps.example$loadings
     head(featureLoadings)
     ```
 
-Let's find representative genes for all patterns using `friends.test`. We are interested in patterns - friends of genes, so genes need to be in rows, and patterns in columns.
+Let's look for marker genes for the patterns using `friends.test`. Genes are rows, patterns are columns. Let's looki for genes that have only one friend (exclusive markers), so we use `max.friends.n = 1`.
 
     ```{r 'patterns are genes friends'}
-    friends_of_genes <- friends.test(featureLoadings, max.friends.n = 1)
+    best_friends_of_genes <- friends.test(featureLoadings, max.friends.n = 1)
+    names(best_friends_of_genes)
     ```
+Each of the genes is a marker of a pattern. The output format allows a marker to have a lot of friends. It is list by marker, and each element is list by friend, and the leave is a 3-integer vector:
 
+    ```{r show list element}
+    best_friends_of_genes[[1]][[1]]
+    ```
+Thte three integers are the marker index, friend index, and the rank of the friend for the marker. Now, the third is always 1. The format is flexible enough.
 
-    ```{r 'display all genes per friend'}
-    friends_tibble <- friends_of_genes |>
+For our example, let's pack it into a data frame. It works ok if the number of elements do not reach hundred of thousands.
+
+    ```{r 'display all genes per best friend'}
+    best_friends_df <- best_friends_of_genes |>
         purrr::flatten() |>
         purrr::reduce(.f = rbind) |>
-        tibble::as_tibble()
+        data.frame() |>
+        tibble::remove_rownames() |>
+        dplyr::mutate(
+            gene = rownames(featureLoadings)[marker],
+            pattern = colnames(featureLoadings)[friend]
+        )
+    head(best_friends_df)
+    ```
+
+Lets examine hallmarks associated with list of the pattern markers. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
+
+    ```{r 'signatures in one-hot lists of exclusive markers'}
+    best_friend_patterns <- best_friends_df$pattern |> unique() |> sort()
+    hallmarks_by_exclusive_markers <- lapply(best_friend_patterns, function(pat) {
+        markers <- best_friends_df |>
+            dplyr::filter(pattern == pat) |>
+            dplyr::pull(gene)
+        onehot <- rep(0,nrow(featureLoadings)) |>
+            setNames(rownames(featureLoadings))
+        onehot[markers] <- 1
+        fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
+                                           msigdbr_df$gs_name),
+                          stats = onehot)
+        fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+    })
+    hallmarks_by_exclusive_markers
+    ```
+
+Now, let's create lists of markers per patter.
+
+    ```{r 'list of marker per best friend', eval = FALSE}
 
     #create a list of friends (gene names) per pattern with purrr
     friends_list <- friends_tibble |>
@@ -62,7 +102,7 @@ Let's find representative genes for all patterns using `friends.test`. We are in
 
 Lets examine hallmarks associated with patterns. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
 
-    ```{r 'look up signatures in CoGAPS patterns'}
+    ```{r 'look up signatures in CoGAPS patterns', eval=FALSE}
 library(fgsea)
 library(msigdbr)
 msigdbr_df <- msigdbr(species = "human", category = "H")
@@ -79,7 +119,7 @@ hallmarks <- lapply(names(friends_list), function(pat) {
 hallmarks
     ```
 
-    ```{r 'signatures in one-hot ordered lists'}
+    ```{r 'signatures in one-hot ordered lists',eval=FALSE}
 
 # 2. run with one-hot friends vs not friends as ranking
 
@@ -99,7 +139,7 @@ hallmarks_onehot <- lapply(names(friends_list), function(pat) {
 hallmarks_onehot
     ```
 
-    ```{r 'signatures in pattern loadings ordered by friends lists'}
+    ```{r 'signatures in pattern loadings ordered by friends lists', eval=FALSE}
 
 # 3. run with loadings but friends are ranked higher than non-friends
 
@@ -124,7 +164,7 @@ hallmarks_rated <- lapply(names(friends_list), function(pat) {
 hallmarks_rated
     ```
 
-    ```{r 'signatures in ordered friends lists'}
+    ```{r 'signatures in ordered friends lists', eval=FALSE}
 
 # 4. hallmarks directly on friends results
 
@@ -143,7 +183,7 @@ hallmarks_friends
 
 assess marker specificity (are friends of pattern 1 also friends of pattern 2?)
 
-    ```{r 'specificity measure'}
+    ```{r 'specificity measure' ,eval=FALSE}
     #for each pattern, find avarage rank of friends in that pattern vs average rank in other patterns
     specificity <- lapply(names(friends_list), function(pat) {
         friends <- friends_list[[pat]]
@@ -171,7 +211,7 @@ HERE! - Next steps:
 
 Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern markers are friends, but not all friends are CoGAPS pattern markers.
 
-    ```{r 'compare with CoGAPS pattern markers'}
+    ```{r 'compare with CoGAPS pattern markers', eval=FALSE}
     pm_all <- friends.test.cogaps.example$markers_all[["PatternMarkers"]]
     comp <- lapply(names(pm_all), function(pat) {
         list(pattern = pat,
@@ -183,7 +223,7 @@ Compare all pattern friends to CoGAPS pattern markers. All CoGAPS pattern marker
 
 
 Compare with CoGAPS pattern markers again.
-    ```{r 'compare with CoGAPS pattern markers again'}
+    ```{r 'compare with CoGAPS pattern markers again', eval=FALSE}
     comp <- lapply(names(pm_all), function(pat){
         list(pattern = pat,
             pm_in_friends = pm_all[[pat]] %in% by_patterns[[pat]] |> mean(),
