@@ -83,29 +83,48 @@ Now, let's prepare a list of markers by pattern.
         )
     ```
 
-Lets examine hallmarks associated with list of the pattern markers. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
+### The exclusive markers, their rannks, etc
+
+### The exclusive markers: gene set enrichment
+
+As far as we have gene lists, let's examine them for overreprentation in the gene collections from [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp). We use `fgsea` and `msigdbr` for that.
+
+First, prepare the collections sets for H (Hallmarks) for C4:3CA (Curated Cancer Cell Atlas).
+
+    ```{r 'prepare msigdb collections'}
+    msigdbr_H_df <- msigdbr::msigdbr(species = "human", collection = "H")
+    collections_H <- split(
+        msigdbr_H_df$gene_symbol,
+        msigdbr_H_df$gs_name
+    )
+    msigdbr_C4_3CA_df <-
+        msigdbr::msigdbr(
+            species = "human",
+            collection = "C4",
+            subcollection = "3CA"
+        )
+    collections_C4_3CA <- split(
+        msigdbr_C4_3CA_df$gene_symbol,
+        msigdbr_C4_3CA_df$gs_name
+    )
+    ```
+
+Now, let's test the gene enrichment of te exclusive markers for each pattern in the Curated Cancer Cell Atlas geneset MSigDB collection.
+
 
     ```{r 'signatures in one-hot lists of exclusive markers'}
-    best_friend_patterns <- best_friends_df$pattern |> unique() |> sort()
-    msigdbr_df <- msigdbr::msigdbr(species = "human", collection = "H")
-    pathways <- split(
-                msigdbr_df$gene_symbol,
-                msigdbr_df$gs_name)
-    hallmarks_by_exclusive_markers <- lapply(best_friend_patterns, function(pat) {
-        markers <- best_friends_df |>
-            dplyr::filter(pattern == pat) |>
-            dplyr::pull(gene)
-
-        fgseaRes <- fgsea::fora(
-            pathways = pathways,
-            markers,
-            rownames(featureLoadings)
-        )
-        cat(markers)
-        #fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
-        fgseaRes
-    })
-    hallmarks_by_exclusive_markers
+    c4_by_exclusive_markers <- exclusive_markers_list |>
+        purrr::map(\(markers) {
+            fgseaRes <- fgsea::fora(
+                pathways = collections_C4_3CA,
+                markers,
+                rownames(featureLoadings)
+            )
+            fgseaRes |>
+                dplyr::filter(padj < 0.05) |>
+                dplyr::select(pathway, padj, foldEnrichment, overlapGenes)
+        })
+    c4_by_exclusive_markers
     ```
 
 Now, let's create lists of markers per patter.
@@ -202,7 +221,7 @@ hallmarks_friends
 
 assess marker specificity (are friends of pattern 1 also friends of pattern 2?)
 
-    ```{r 'specificity measure'}
+    ```{r 'specificity measure', eval=FALSE}
     #for each pattern, find avarage rank of friends in that pattern vs average rank in other patterns
     specificity <- lapply(names(friends_list), function(pat) {
         friends <- friends_list[[pat]]
