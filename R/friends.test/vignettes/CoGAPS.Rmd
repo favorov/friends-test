@@ -21,6 +21,7 @@ vignette: >
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
 `r library('fgsea')`
+`r library('msigdbr')`
 <!-- cache is off, we save all the necessary things in Rda -->
 
 <div style="line-height: 1.5em;">
@@ -70,21 +71,39 @@ For our example, let's pack it into a data frame. It works ok if the number of e
     head(best_friends_df)
     ```
 
+Now, let's prepare a list of markers by pattern.
+
+    ```{r 'make exclusive marker list'}
+    exclusive_markers_list <- best_friends_df |>
+        split(best_friends_df$pattern) |>
+        purrr::map(~ .x |>
+                dplyr::pull(gene) |>
+                unique() |>
+                sort()
+        )
+    ```
+
 Lets examine hallmarks associated with list of the pattern markers. We can use `fgsea` for that. We will use the loadings as a ranking statistic, and we will look up the hallmark gene sets from MSigDB.
 
     ```{r 'signatures in one-hot lists of exclusive markers'}
     best_friend_patterns <- best_friends_df$pattern |> unique() |> sort()
+    msigdbr_df <- msigdbr::msigdbr(species = "human", collection = "H")
+    pathways <- split(
+                msigdbr_df$gene_symbol,
+                msigdbr_df$gs_name)
     hallmarks_by_exclusive_markers <- lapply(best_friend_patterns, function(pat) {
         markers <- best_friends_df |>
             dplyr::filter(pattern == pat) |>
             dplyr::pull(gene)
-        onehot <- rep(0,nrow(featureLoadings)) |>
-            setNames(rownames(featureLoadings))
-        onehot[markers] <- 1
-        fgseaRes <- fgsea(pathways = split(msigdbr_df$gene_symbol,
-                                           msigdbr_df$gs_name),
-                          stats = onehot)
-        fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+
+        fgseaRes <- fgsea::fora(
+            pathways = pathways,
+            markers,
+            rownames(featureLoadings)
+        )
+        cat(markers)
+        #fgseaRes[padj < 0.05, c('pathway', 'padj')][order(padj)]
+        fgseaRes
     })
     hallmarks_by_exclusive_markers
     ```
@@ -183,7 +202,7 @@ hallmarks_friends
 
 assess marker specificity (are friends of pattern 1 also friends of pattern 2?)
 
-    ```{r 'specificity measure' ,eval=FALSE}
+    ```{r 'specificity measure'}
     #for each pattern, find avarage rank of friends in that pattern vs average rank in other patterns
     specificity <- lapply(names(friends_list), function(pat) {
         friends <- friends_list[[pat]]
