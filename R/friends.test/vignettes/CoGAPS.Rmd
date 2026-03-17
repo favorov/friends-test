@@ -20,8 +20,7 @@ vignette: >
 `r options(timeout=300)`
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
-`r library('fgsea')`
-`r library('msigdbr')`
+
 <!-- cache is off, we save all the necessary things in Rda -->
 
 <div style="line-height: 1.5em;">
@@ -56,6 +55,8 @@ Each of the genes is a marker of a pattern. The output format allows a marker to
     ```
 Thte three integers are the marker index, friend index, and the rank of the friend for the marker. Now, the third is always 1. The format is flexible enough.
 
+
+
 For our example, let's pack it into a data frame. It works ok if the number of elements do not reach hundred of thousands.
 
     ```{r 'display all genes per best friend'}
@@ -83,16 +84,34 @@ Now, let's prepare a list of markers by pattern.
         )
     ```
 
-### The exclusive markers, their rannks, etc
+### The exclusive markers, their ranks
+
+Let's look what happens in the friends.test. First, we rank all the genes inside the loadings matrix.
+
+    ```{r ranking of loadings}
+    ranks <- row.int.ranks(featureLoadings)
+    head(ranks)
+    ```
+The ranks of the exclusive marker of the first pattern:
+    ```{r demo 1}
+    m1p1<-exclusive_markers_list[["Pattern_1"]][[1]]
+    ranks[m1p1, ]
+    ```
+
+Obviously, its rank is the highest in Pattern_1. Also, the model chose the split "Pattern_1 against all oters" as the best split among all. 
 
 ### The exclusive markers: gene set enrichment
 
 As far as we have gene lists, let's examine them for overreprentation in the gene collections from [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp). We use `fgsea` and `msigdbr` for that.
 
-First, prepare the collections sets for H (Hallmarks) for C4:3CA (Curated Cancer Cell Atlas).
+First, prepare the collections sets for H (Hallmarks) and for for C4:3CA (Curated Cancer Cell Atlas).
 
     ```{r 'prepare msigdb collections'}
     msigdbr_H_df <- msigdbr::msigdbr(species = "human", collection = "H")
+    collections_H <- split(
+        msigdbr_H_df$gene_symbol,
+        msigdbr_H_df$gs_name
+    )
     collections_H <- split(
         msigdbr_H_df$gene_symbol,
         msigdbr_H_df$gs_name
@@ -115,14 +134,13 @@ Now, let's test the gene enrichment of te exclusive markers for each pattern in 
     ```{r 'signatures in one-hot lists of exclusive markers'}
     c4_by_exclusive_markers <- exclusive_markers_list |>
         purrr::map(\(markers) {
-            fgseaRes <- fgsea::fora(
+            fgsea::fora(
                 pathways = collections_C4_3CA,
                 markers,
                 rownames(featureLoadings)
-            )
-            fgseaRes |>
+            ) |>
                 dplyr::filter(padj < 0.05) |>
-                dplyr::select(pathway, padj, foldEnrichment, overlapGenes)
+                dplyr::select(pathway, padj, foldEnrichment)
         })
     c4_by_exclusive_markers
     ```
