@@ -26,9 +26,7 @@ vignette: >
 <div style="line-height: 1.5em;">
 
 # Introduction
-
-## Genes that are friends to CoGAPS patterns (or CoGAPS patterns that are friends to genes?)
-
+ 
 CoGAPS decomoses an expression dataset into pattetns of expression, ideally, eah of them represent an underlying biological process. We use the [PDAC dataset](https://zenodo.org/records/7709664) from the [Johnson _et al_, 2023](https://www.nature.com/articles/s41596-023-00892-x) as an example. 
 
     ```{r 'setup'}
@@ -42,20 +40,46 @@ Feature loadings in CoGAPS are normalized expression values across patterns. Eac
     head(featureLoadings)
     ```
 
-Let's look for marker genes for the patterns using `friends.test`. Genes are rows, patterns are columns. Let's looki for genes that have only one friend (exclusive markers), so we use `max.friends.n = 1`.
+
+# Genes that are markers CoGAPS patterns
+
+Let's look for marker genes for the patterns using `friends.test`. In this setup, genes (possibly, markers) are rows, patterns (possibly, friends for the markers) are columns.
+
+
+## The exclusive markers, their ranks
+
+ To look for genes that have only one friend (call them exclusive markers), so we use `max.friends.n = 1`. The parameter actually is involved after the main part of the calculation, it filters out the genes that has more than `max.friends.n` friends, these genes are not stored in the output.
 
     ```{r 'patterns are genes friends'}
     best_friends_of_genes <- friends.test(featureLoadings, max.friends.n = 1)
     names(best_friends_of_genes)
     ```
-Each of the genes is a marker of a pattern. The output format allows a marker to have a lot of friends. It is list by marker, and each element is list by friend, and the leave is a 3-integer vector:
+
+The output is a list of lists, the outer list is by gene, the inner is by patter. The output format allows a marker to have a lot of friends. The leave is a 3-integer vector:
 
     ```{r show list element}
     best_friends_of_genes[[1]][[1]]
     ```
-Thte three integers are the marker index, friend index, and the rank of the friend for the marker. Now, the third is always 1. The format is flexible enough.
+
+The three integers are the marker index and the friend index in the matrix we started with, and the rank of the friend for the marker. In current call, the rank is always 1. The format is flexible enough, we exemplify posiible transformations [later](#the-result-format-transromations).
 
 
+
+Let's look what happens in the friends.test. First, we rank all the genes inside the loadings matrix.
+
+    ```{r ranking of loadings}
+    ranks <- row.int.ranks(featureLoadings)
+    head(ranks)
+    ```
+The ranks of the exclusive marker of the first pattern:
+    ```{r demo 1}
+    m1p1 <- exclusive_markers_list[["Pattern_1"]][[1]]
+    ranks[m1p1, ]
+    ```
+
+Obviously, its rank is the highest in Pattern_1. Also, the model chose the split "Pattern_1 against all oters" as the best split among all. 
+
+## The result format transromations
 
 For our example, let's pack it into a data frame. It works ok if the number of elements do not reach hundred of thousands.
 
@@ -84,21 +108,7 @@ Now, let's prepare a list of markers by pattern.
         )
     ```
 
-### The exclusive markers, their ranks
 
-Let's look what happens in the friends.test. First, we rank all the genes inside the loadings matrix.
-
-    ```{r ranking of loadings}
-    ranks <- row.int.ranks(featureLoadings)
-    head(ranks)
-    ```
-The ranks of the exclusive marker of the first pattern:
-    ```{r demo 1}
-    m1p1<-exclusive_markers_list[["Pattern_1"]][[1]]
-    ranks[m1p1, ]
-    ```
-
-Obviously, its rank is the highest in Pattern_1. Also, the model chose the split "Pattern_1 against all oters" as the best split among all. 
 
 ### The exclusive markers: gene set enrichment
 
