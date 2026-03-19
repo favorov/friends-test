@@ -2,16 +2,15 @@
 title: "In a matrix, we look for columns that are friendly to a row"
 output: 
   html_vignette:
+        toc: true
+        toc_depth: 2
 vignette: >
  %\VignetteIndexEntry{In a matrix, we look for columns that are friendly to a row}
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
  %\VignetteDepends{devtools}
 ---
-<!--  tried below html_vignette, did no work
-      theme: Nonuniformity test
-      toc: true
-      toc_depth: 2 -->
+<!-- TOC enabled in YAML output block above -->
 
 
 [SI AUGUSTUS CERNATUR, CERNANTUR QOUQUE AMICI]{style="float:right"}
@@ -21,7 +20,7 @@ vignette: >
 `r library(knitr)`
 `r library(markdown)`
 `r library(friends.test)`
-`r options(width=80,keep.source=TRUE)`
+`r options(width=100,keep.source=TRUE)`
 `r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
 `r set.seed(42)`
 <!-- cache is off, we save all the necessary things in Rda -->
@@ -33,7 +32,6 @@ vignette: >
 
 There is a simple intuition of what it means to be a friend. A friend of Augustus cares about Augustus more than about other people. And, if we see Augustus, then we infer to see friends(s) of Augustus also. Please refer to [our Arxive publication](https://arxiv.org/abs/2512.24843) for more formal introduction.
 
-\paragraph{Introduction} 
 
 Let's picture a set of expression pattern, each represents a biological process. Techically, each pattern is a vector of expression loads of the involved genes.
 
@@ -65,7 +63,7 @@ Let's define the relevance of a row to a column as the rank of the $i$-th rows's
 
 The main idea of the **friends.test**  test is that if a row $t_i$ is not preferred by any column(s), the distribution of the ranks of the row in all the columns $r(t_i,c_j)$ behaves like $j$ i.i.d integers that are uniformely distributed in $1..n$. 
 
-## Examples
+## Toy examples
 
 ### Toy example: Bayesian option
 
@@ -76,7 +74,7 @@ The main idea of the **friends.test**  test is that if a row $t_i$ is not prefer
 
 Let's illustrate the method with something supersimple.
 
-    ```{r}
+    ```{r regulation}
     regulation <-
         structure(
             c(
@@ -101,7 +99,7 @@ What we want to identify is Gene2-TF1 pair. Gene2 is not the strongest downstrea
 
 First, let's apply the Bayesian version of the method, `best.friends.bic`.
 
-    ```{r}
+    ```{r reg bic .5 1}
     friends.test.bic(regulation, prior.to.have.friends = .5, max.friends.n = 1)
     ```
 
@@ -109,15 +107,14 @@ We see the expected Gene2-TF1 pair as well as the Gene1-TF1 pair, that is simila
 
 The lower is the prior to have friends for a row (it is an obligatory parameter for `friends.test.bic`), the less marker-friend pairs we get.
 
-    ```{r}
+    ```{r reg bic .33 .25 1}
     friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
-
     friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
     ```
 
 In all the three examples above, the `max.friends.n` parameter was set to 1. It means that the function filters out all the rows that have more that one friendly column, or in other words, we look only for the best friends. If we relax the restriction, we get more results, and the `rank` that shows the rank of the friend for the marker, can differ from 1:
 
-    ```{r}
+    ```{r reg bic .25}
     friends.test.bic(regulation, prior.to.have.friends = .25)
     ```
 
@@ -127,34 +124,33 @@ Note that `max.friends.n = "all"` is the default value for both `friends.test` (
 
 Let's run the p-value-based option of the method on the same data. It is less sensitive on small dataset, so we use unpractical threshold for the p-value to see the result.
 
-    ```{r}
+    ```{r reg ks .5 noadj 1}
     friends.test(regulation, threshold = .5, p.adjust.method = "no",
                  max.friends.n = 1)
     ```
 
 And, as usual, if we relax the `max.friends.no` restriction, we will see more pairs, but now the friends are not required to be unique for a marker.
 
-    ```{r}
+    ```{r reg ks .5 noadj}
     friends.test(regulation, threshold = .5, p.adjust.method = "no")
     ```
 
 ### Iris example
 Let's look for anomalies in the traditional **iris** dataset: 
-    ```{r}
+    ```{r datairis}
     data("iris")
     print(head(iris, n = 5))
     ```
 
 We use only numeric columns:
 
-    ```{r}
-    data("iris")
+    ```{r iris bic}
     friends.test.bic(iris[1:4], prior.to.have.friends = .001)
     ```
 
 So, we see that the flower #14 is important for (we also can think about it as "popular in") the Sepal.Width nomination. Let's understand it a simple request: what is the quantile of the flower #14 in the four columns.
 
-    ```{r}
+    ```{r iris bic to table}
     apply(iris[, 1:4], 2, function(col) ecdf(col)(col[14]))
     ```
 
@@ -162,20 +158,214 @@ So, flower #14 is in top 50% in Sepal.Width and in lowest 5% for all other sizes
 
 Let's note that the four sizes have different distributions; still, the friends.test naturally works with this type of data.
 
-## Output
 
-\code{friends.test} and \code{friends.test.bic} return a list of lists, the first level is the marker (rowname in the table), the second is the friend (colname) and the leave in a vector of the marker index in the initial table, the friend index and the rank of the friend. Sometimes, we need a matrix structure. 
+## CoGAPS feature loadings example
 
+[NATURAM EXPELLAS FURCA, TAMEN USQUE RECURRET]{style="float:right"}
+ 
+CoGAPS decomposes an expression dataset into pattetns of expression, ideally, eah of them represent an underlying biological process. We use the [PDAC dataset](https://zenodo.org/records/7709664) from the [Johnson _et al_, 2023](https://www.nature.com/articles/s41596-023-00892-x) as an example. 
 
+    ```{r data cogaps}
+    data(friends.test.cogaps.example)
+    ```
 
-    ```{r 'data.frame convesion'}
-        friends.test.bic(regulation, prior.to.have.friends = .25) |>
-        purrr::flatten() |>
-        purrr::reduce(rbind) |>
-        magrittr::set_rownames(NULL)
+Feature loadings in CoGAPS are normalized expression values across patterns. Each column is a pattern, each row is a gene. 
+
+    ```{r fatureLoadings}
+    featureLoadings <- friends.test.cogaps.example$loadings
+    head(featureLoadings)
     ```
 
 
+### Friends test application to the loading matrix
+
+Let's look for marker genes for the patterns using `friends.test`. In this setup, genes (possibly, markers) are rows, patterns (possibly, friends for the markers) are columns.
+
+
+We use here the default version of `friends.test` that selects markers by the KS test. As far ad there is ~15000 genes, we use Bonferroni p=value adjustment rather than the default "BH". 
+
+    ```{r patterns are genes friends}
+    friends_of_genes <- friends.test(
+        featureLoadings,
+        p.adjust.method = "bonferroni"
+    )
+    ```
+
+### Return structure
+
+The return is a list of lists, the outer list is by gene that is a marker, the inner is by pattern that is the marker's friend. The output format allows a marker to have a lot of friends. 
+The leave is a 3-integer vector, are the marker index and the friend index in the matrix we started with, and the rank of the friend for the marker. Let's look at the first element, it's rank is 1 as far as it is the first.
+
+    ```{r show list element}
+    friends_of_genes[[1]][[1]]
+    ```
+
+The names of the list elements are in accordance.
+The first marker name:
+
+    ```{r marker name}
+    rownames(featureLoadings)[friends_of_genes[[1]][[1]]["marker"]]
+    names(friends_of_genes)[1]
+    ```
+
+The name of the first friend of the first marker:
+    ```{r friend name}
+    colnames(featureLoadings)[friends_of_genes[[1]][[1]]["friend"]]
+    names(friends_of_genes[[1]])[1]
+    ```
+
+The format is flexible enough, we exemplify posiible transformations [later](#the-result-format-transfromations). The format is common for the `friends.test` and `friends.test.bic` main functions.
+
+### Ranks of a marker in its friends and non-friends
+
+Let's look what happens in the friends.test. First, we rank all the genes inside the loadings matrix.
+
+    ```{r ranking of loadings}
+    ranks <- row.int.ranks(featureLoadings)
+    head(ranks)
+    ```
+
+The ranks of the first marker in all he patterns:
+    ```{r demo marker 1 all ranks}
+    marker_1 <- names(friends_of_genes)[1]
+    ranks[marker_1, ]
+    ```
+
+The ranks of the first in all the friend patterns:
+    ```{r demo marker 1 friend ranks}
+    ranks[marker_1, names(friends_of_genes[[1]])]
+    ```
+
+The model splitted the patterns into two sets: Pattern_1 where the marker has a very low rank, and the reaminder. It is what we supposed to be done.
+
+
+### Exclusive marker search
+
+ To look for genes that have only one friend (let's call them exclusive markers), so we use `max.friends.n = 1`. The parameter actually is involved after the main part of the calculation, it filters out the genes that has more than `max.friends.n` friends, these genes are not stored in the output.
+
+    ```{r 'patterns are only best genes friends'}
+    best_friends_of_genes <- friends.test(
+        featureLoadings,
+        p.adjust.method = "bonferroni",
+        max.friends.n = 1
+    )
+    names(best_friends_of_genes)
+    ```
+
+In this super-restrictive mode, only one (exclusive) marker, `r names(best_friends_of_genes)`, is found. Its friend is the `r names(best_friends_of_genes[[1]])`. It is to the only by the task.
+
+    ```{r demo best friend and ranks}
+    the_marker <- names(best_friends_of_genes)[1]
+    ranks[the_marker, ]
+    ```
+
+That is what the friends.test is a unique test to detect: the `r names(best_friends_of_genes)` has a moderate rank in `r names(best_friends_of_genes[[1]])`, but it is the best of its ranks in all other patterns and it is significantlu higher than all of them.
+
+
+## Gene set enrichment
+
+To perform an example of gene set enrichment analysis, we use the Baesian version of the test, `friends.test.bic`. We restrict the number of friends for a marker by 4, a half of number of the patterns, to keep them all in the similar "direction". The reqired parameter `prior.to.have.friends` is set to approximately 1/(number od genes). We run 4 parallel processses, see [Parallel calculation](#parallel-calculation).
+
+    ```{r 'patterns are good genes friends'}
+    mirai::daemons(4)
+    good_friends_of_genes <- friends.test.bic(
+        featureLoadings,
+        prior.to.have.friends = 1E-4,
+        max.friends.n = 4
+    )
+    mirai::daemons(0)
+    ```
+
+### The result format transfromation
+
+For the gene overrrepresentation analysis, we need to gen a list of markers (genes) for each pttern. So, we swap the levels of the list, and we do not need leaves. Here, we can reverse the list via a data frame. It works if the number of elements do not reach hundred of thousands. 
+
+    ```{r 'display all genes per best friend'}
+    good_friends_df <- good_friends_of_genes |>
+        purrr::flatten() |>
+        purrr::reduce(.f = rbind) |>
+        data.frame() |>
+        tibble::remove_rownames() |>
+        dplyr::mutate(
+            gene = rownames(featureLoadings)[marker],
+            pattern = colnames(featureLoadings)[friend]
+        )
+    head(good_friends_df)
+    ```
+
+Now, let's prepare a list of markers by pattern.
+
+    ```{r 'make exclusive marker list'}
+    good_markers_list <- good_friends_df |>
+        split(good_friends_df$pattern) |>
+        purrr::map(~ .x |>
+                dplyr::pull(gene) |>
+                unique() |>
+                sort()
+        )
+    ```
+
+
+
+### Prepare the gene collections
+
+As far as we have gene lists, let's examine them for overreprentation in the gene collections from [MSigDB](https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp). We use `fgsea` and `msigdbr` for that.
+
+First, prepare the collections sets for H (Hallmarks) and for for C4:3CA (Curated Cancer Cell Atlas).
+
+    ```{r 'prepare msigdb collections'}
+    msigdbr_H_df <- msigdbr::msigdbr(species = "human", collection = "H")
+    collections_H <- split(
+        msigdbr_H_df$gene_symbol,
+        msigdbr_H_df$gs_name
+    )
+    collections_H <- split(
+        msigdbr_H_df$gene_symbol,
+        msigdbr_H_df$gs_name
+    )
+    msigdbr_C4_3CA_df <-
+        msigdbr::msigdbr(
+            species = "human",
+            collection = "C4",
+            subcollection = "3CA"
+        )
+    collections_C4_3CA <- split(
+        msigdbr_C4_3CA_df$gene_symbol,
+        msigdbr_C4_3CA_df$gs_name
+    )
+    ```
+
+Now, let's test the gene enrichment of the markers for each pattern in the Curated Cancer Cell Atlas and in Hallmarks MSigDB collections.
+
+
+    ```{r 'C4_3CA signatures in markers'}
+    C4_3CA_by_markers <- good_markers_list |>
+        purrr::map(\(markers) {
+            fgsea::fora(
+                pathways = collections_C4_3CA,
+                markers,
+                rownames(featureLoadings)
+            ) |>
+                dplyr::filter(padj < 0.05) |>
+                dplyr::select(pathway, padj)
+        })
+    C4_3CA_by_markers
+    ```
+
+
+    ```{r 'Hallmarks signatures in markers'}
+    hallmarks_by_markers <- good_markers_list |>
+        purrr::map(\(markers) {
+            fgsea::fora(
+                pathways = collections_H,
+                markers,
+                rownames(featureLoadings)
+            ) |>
+                dplyr::filter(padj < 0.05) |>
+                dplyr::select(pathway, padj)
+        })
+    hallmarks_by_markers
+    ```
 
 ## Rakning and random numbers
 
@@ -183,7 +373,8 @@ The result of both `friends.test` and `friends.test.bic` functions depends on ra
 
 ## Parallel calculation
 
-Both main functions, `friends.test` and `friends.test.bic`, carries `purrr::in_parallel` code, so if you want each of them to run in parallel mode, say `mirai::deamons(n)` (n is number of processes) in your R code before the finction call, and `mirai::deamons(0)` after. See [mirai] for more information.
+Both main functions, `friends.test` and `friends.test.bic`, carries `purrr::in_parallel` code, so if you want each of them to run in parallel mode, say `mirai::deamons(n)` (n is number of processes) in your R code before the finction call, and `mirai::daemons(0)` after. See [mirai - Quick Reference](https://cran.r-project.org/web/packages/mirai/vignettes/mirai.html) for more information.
+
 
 ## Session info
 
