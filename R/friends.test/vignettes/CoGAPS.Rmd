@@ -146,7 +146,7 @@ For the gene overrrepresentation analysis, we need to gen a list of markers (gen
     ```{r 'display all genes per best friend'}
     good_friends_df <- good_friends_of_genes |>
         purrr::flatten() |>
-        purrr::reduce(.f = rbind) |>
+        purrr::reduce(rbind) |>
         data.frame() |>
         tibble::remove_rownames() |>
         dplyr::mutate(
