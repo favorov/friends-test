@@ -25,10 +25,10 @@ the worst of best friends.
 0.3.0 - names changed, documentation updated.  
 0.99.0 - we changed the terminology to elements+communities, added the friends test, prepared a vignette.  
 0.99.1 - devtools::check passed with one note.  
-0.99.3 - devtools::check passed with no notes or errors.   
+0.99.3 - devtools::check passed with no notes or errors.
 0.99.4 - the vignette is fixed and improved.  
 0.99.5 - trigger re-check, the mail list error fixed.  
-0.99.6 - Documentation updated; non-diagonal options added.   
+0.99.6 - Documentation updated; non-diagonal options added.
 0.99.61 - Changing rank normalisation scheme.  
 0.99.62 - The math in rd is \eqn{}. NOTES from BiocCheck::BiocCheck.  
 0.99.63 - Switched to tag + colllection terminology.  
@@ -39,10 +39,10 @@ the worst of best friends.
 0.99.9 - all the old tests (friends, best.friends) are removed.  
 0.99.10 - unit tests started; There are only NOTES in BiocCheck::BiocCheck again.  
 0.99.11 - major bugfix (any uniform part is never empty now); the function that fit models and the function that finds the best are separated.  
-0.99.12 - best.friends function added that put it altogether; jitter amplitude lowered to make KS more stable; best.friends now returns data frame even when the return is empty, tests added, docs improved.   
+0.99.12 - best.friends function added that put it altogether; jitter amplitude lowered to make KS more stable; best.friends now returns data frame even when the return is empty, tests added, docs improved.
 0.99.13 - ks on ranks mapped to 0..1 rather than on raw ranks  
 0.99.14 - the Bayesian (bic) version of the functions added.  
 0.99.15 - the "all" best_no parameter behaviour fixed. The vingnette is rewritten.  
 0.99.16 - the name changed to "friends.test". Parameter best.no renamed to friends.no . Documentation is rewritten.
 0.99.17 - code linted and polished; 2 columns with indices of the marker row and the friendly column in the input matrix are added to the output of the main calls (friends.test and frinds.test.bic).
-0.99.18 - we now retirn list of lists of 3-elemant vectors in both main functions. All the slow inner loops are now purrr::map - family based. .progress paraameter added. Bigfixes. 
+0.99.18 - we now retirn list of lists of 3-elemant vectors in both main functions. All the slow inner loops are now purrr::map - family based. Progress indicator and .progress parameter added. Bigfixes.
