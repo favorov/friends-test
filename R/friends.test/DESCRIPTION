@@ -27,10 +27,10 @@ Depends: R (>= 4.2.0)
 biocViews: Annotation, StatisticalMethod
 URL: https://github.com/favorov/friends.test
 BugReports: https://github.com/favorov/friends.test/issues
-Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat, dplyr
+Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat, dplyr, msigdbr, fgsea, tibble
 VignetteBuilder: knitr
 Packaged: 2025-03-18 2:30:05 EST; favorov
-Imports: stats, utils, data.table, purrr, cli
+Imports: stats, utils, data.table, purrr, cli, mirai, carrier
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 LazyData: true
