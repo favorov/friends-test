@@ -1,17 +1,11 @@
 friends.test R implementation
 ===
 
-This is R implementation of the friends.test.
-The idea is: we have T rows and C columns and 
-column-to-row attention described as a |T|x|C| matrix.
-Attention is a metaphor for any relation, weight, load, etc.
-First, we rank all attentions of a column to all rows. 
-The ranks are referred to as importance of the rows to the column.
+This is R implementation of the friends.test .
 
-If a row is important for a column more than by chance, 
-the column is row's friend and the row is the column's marker.
-"By chance" (null model)" implies uniform distribution of the row's 
-importance in different columns. 
+The idea is: we have T rows and C columns and column-to-row relation described as a full |T|x|C| matrix. Relation is a comparable value, *e.g.* weight, load, correlation. First, we rank all relations of a column to all the rows inside the column. The ranks are referred to as importance of the rows to the column.
+
+If a row is more important for a column than for other column(s), and the difference is more than by chance, the column is the row's friend and the row is the column's marker. "By chance" (null model)" implies uniform distribution of the row's importance for different columns.
 
 0.0.1 - initial version.  
 0.1.1 - p-value calculated.  
@@ -39,9 +33,10 @@ the worst of best friends.
 0.99.10 - unit tests started; There are only NOTES in BiocCheck::BiocCheck again.  
 0.99.11 - major bugfix (any uniform part is never empty now); the function that fit models and the function that finds the best are separated.  
 0.99.12 - best.friends function added that put it altogether; jitter amplitude lowered to make KS more stable; best.friends now returns data frame even when the return is empty, tests added, docs improved.
-0.99.13 - ks on ranks mapped to 0..1 rather than on raw ranks  
+0.99.13 - ks on ranks mapped to 0..1 rather than on raw ranks.  
 0.99.14 - the Bayesian (bic) version of the functions added.  
 0.99.15 - the "all" best_no parameter behaviour fixed. The vingnette is rewritten.  
-0.99.16 - the name changed to "friends.test". Parameter best.no renamed to friends.no . Documentation is rewritten.
-0.99.17 - code linted and polished; 2 columns with indices of the marker row and the friendly column in the input matrix are added to the output of the main calls (friends.test and frinds.test.bic).
-0.99.18 - we now retirn list of lists of 3-elemant vectors in both main functions. All the slow inner loops are now purrr::map - family based. Progress indicator and .progress parameter added. Bigfixes. The dafault for max.friends.n is now "all" (do not filter).
+0.99.16 - the name changed to "friends.test". Parameter best.no renamed to friends.no; Documentation is rewritten.  
+0.99.17 - code linted and polished; 2 columns with indices of the marker row and the friendly column in the input matrix are added to the output of the main calls (friends.test and frinds.test.bic).  
+0.99.18 - we now retirn list of lists of 3-elemant vectors in both main functions. All the slow inner loops are now purrr::map - family based. Progress indicator and '.progress' parameter added. Bigfixes. The dafault for max.friends.n is now "all" (do not filter).
+
