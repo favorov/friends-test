@@ -10,12 +10,10 @@ suppressWarnings({
         "https://zenodo.org/records/7709664/files/cogapsresult.Rds"
     )))
     friends.test.cogaps.example$loadings <- cg@featureLoadings
-    # plan cogaps.example.for.friend.test$markers.all <- patternMarkers(cg)
-    # plan cogaps.example.for.friend.test$markers.cut <-
-    friends.test.cogaps.example$markers_cut <-
-        patternMarkers(cg, threshold = "cut")
-    friends.test.cogaps.example$markers_all <-
-        patternMarkers(cg, threshold = "all")
+    # maybe later friends.test.cogaps.example$markers_cut <-
+    # maybe later    patternMarkers(cg, threshold = "cut")
+    # maybe laterfriends.test.cogaps.example$markers_all <-
+    # maybe later    patternMarkers(cg, threshold = "all")
 
 
     msigdbr_H_df <- msigdbr::msigdbr(species = "human", collection = "H")
