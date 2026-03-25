@@ -137,14 +137,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
         .Platform$OS.type == "windows" &&
             mirai::status()$connections > 0
     ) {
-        libs <- .libPaths()
-        mirai::everywhere(
-            {
-                .libPaths(libs)
-                library(friends.test)
-            },
-            libs = libs
-        )
+        mirai::daemons(0)
+        warning("For Windows, we do not support in_parallel now.")
     }
     adj_nunif_pval <-
         all_ranks |>
@@ -190,7 +184,6 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #return: list of list of, trios
     #i, j, r -- vectors:
     #marker, friend, friend.rank
-    mirai::everywhere({ .libPaths(.libs) }, .libs = .libPaths())
     ijrlist <-
         all_ranks[marker_indices, , drop = FALSE] |>
         purrr::array_branch(1) |>
