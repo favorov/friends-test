@@ -134,11 +134,18 @@ friends.test <- function(A = NULL, threshold = 0.05,
         the.progress <- list(name = "Filtering out uniforms...")
     }
     if (
-        .Platform$OS.type == "windows" &&
+        # ifif .Platform$OS.type == "windows" &&
             mirai::status()$connections > 0
     ) {
-        mirai::daemons(0)
-        warning("For Windows, we do not support in_parallel now.")
+        libs <- .libPaths()
+        mirai::everywhere(
+            {
+                .libPaths(libs)
+            },
+            libs = libs
+        )
+        # qq mirai::daemons(0)
+        # qq warning("For Windows, we do not support in_parallel now.")
     }
     adj_nunif_pval <-
         all_ranks |>
