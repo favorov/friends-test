@@ -133,25 +133,36 @@ friends.test <- function(A = NULL, threshold = 0.05,
         cli::cli_progress_step("Filtering out uniforms...")
         the.progress <- list(name = "Filtering out uniforms...")
     }
-    mirai::everywhere({ .libPaths(.libs) }, .libs = .libPaths())
+    if (
+        .Platform$OS.type == "windows" &&
+            mirai::status()$connections > 0
+    ) {
+        libs <- .libPaths()
+        mirai::everywhere(
+            {
+                .libPaths(libs)
+                library(friends.test)
+            },
+            libs = libs
+        )
+    }
     adj_nunif_pval <-
         all_ranks |>
         #convert the array to list of rows
         purrr::array_branch(1) |>
         #apply friends.test::unif.ks.test to each
-        purrr::map_dbl(
-            purrr::in_parallel(\(ranks) {
-                friends.test::unif.ks.test(
-                    ranks,
-                    uniform.max = uniform.max,
-                    simulate.p.value = FALSE,
-                    B = 2000
-                )
-            },
-            #inside in_parallel, it knows nothing,
-            #we are to pass it all via ...
-            uniform.max = uniform.max
-            ), .progress = the.progress) |>
+        purrr::map_dbl(purrr::in_parallel(\(ranks) {
+            friends.test::unif.ks.test(
+                ranks,
+                uniform.max = uniform.max,
+                simulate.p.value = FALSE,
+                B = 2000
+            )
+        },
+        #inside in_parallel, it knows nothing,
+        #we are to pass it all via ...
+        uniform.max = uniform.max
+        ), .progress = the.progress) |>
         p.adjust(
             method = p.adjust.method
         )
