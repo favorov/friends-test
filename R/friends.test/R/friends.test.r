@@ -133,6 +133,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
         cli::cli_progress_step("Filtering out uniforms...")
         the.progress <- list(name = "Filtering out uniforms...")
     }
+    mirai::everywhere({ .libPaths(.libs) }, .libs = .libPaths())
     adj_nunif_pval <-
         all_ranks |>
         #convert the array to list of rows
@@ -178,6 +179,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
     #return: list of list of, trios
     #i, j, r -- vectors:
     #marker, friend, friend.rank
+    mirai::everywhere({ .libPaths(.libs) }, .libs = .libPaths())
     ijrlist <-
         all_ranks[marker_indices, , drop = FALSE] |>
         purrr::array_branch(1) |>

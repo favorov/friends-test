@@ -103,6 +103,7 @@ friends.test.bic <- function(A = NULL,
         cli::cli_progress_step("Fitting the models...")
         the.progress <- list(name = "Fitting the models...")
     }
+    mirai::everywhere({ .libPaths(.libs) }, .libs = .libPaths())
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
