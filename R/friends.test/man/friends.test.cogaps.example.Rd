@@ -5,7 +5,7 @@
 \alias{friends.test.cogaps.example}
 \title{An exaple of loadings of genes in CoGAPS - identified patterns.}
 \format{
-An object of class \code{list} of length 5.
+An object of class \code{list} of length 3.
 }
 \source{
 \url{https://zenodo.org/records/7709664/files/cogapsresult.Rds}
