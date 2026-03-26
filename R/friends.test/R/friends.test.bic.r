@@ -103,7 +103,20 @@ friends.test.bic <- function(A = NULL,
         cli::cli_progress_step("Fitting the models...")
         the.progress <- list(name = "Fitting the models...")
     }
-    mirai::everywhere({ .libPaths(.libs) }, .libs = .libPaths())
+    if (
+        # ifif .Platform$OS.type == "windows" &&
+            mirai::status()$connections > 0
+    ) {
+        libs <- .libPaths()
+        mirai::everywhere(
+            {
+                .libPaths(libs)
+            },
+            libs = libs
+        )
+        # qq mirai::daemons(0)
+        # qq warning("For Windows, we do not support in_parallel now.")
+    }
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
