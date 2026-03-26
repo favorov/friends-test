@@ -68,6 +68,7 @@
 #' @importFrom stats p.adjust
 #' @importFrom purrr array_branch map_dbl map2 compact pmap
 #' @importFrom cli cli_progress_step cli_progress_done
+#' @importFrom mirai status everywhere
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
