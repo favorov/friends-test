@@ -103,7 +103,18 @@ friends.test.bic <- function(A = NULL,
         cli::cli_progress_step("Fitting the models...")
         the.progress <- list(name = "Fitting the models...")
     }
-
+    if (
+        mirai::status()$connections > 0
+    ) {
+        libs <- .libPaths()
+        mirai::everywhere(
+            {
+                .libPaths(libs)
+            },
+            libs = libs
+        )
+        #For Windows, we need it because of uninitialised windows workers.
+    }
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
