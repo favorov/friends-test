@@ -15,7 +15,7 @@
         "editor.detectIndentation": false,
         "r.lsp.diagnostics": true,
 		"accessibility.signalOptions.volume": 0,
-		"workbench.colorTheme": "Default Dark Modern",
+		"workbench.colorTheme": "Dark Modern",
         "editor.codeLens": true,
         "files.associations": {
             "*.rmd": "rmd",
