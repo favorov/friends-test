@@ -1,13 +1,15 @@
+#' @importFrom rtlr str_rtl
 .onAttach <- function(libname, pkgname) {
     version <- packageDescription("friends.test", fields = "Version")
     packageStartupMessage(
         paste(
-            "Welcome to friends.test, version",
-            version, "\n(\u05D3\u05E2\u05E8",
+            "Welcome to friends.test, version ",
+            version, "\n  Der friling is shoyn do.\n",
+            ".\u05D3\u05E2\u05E8",
             "\u05E4\u05BF\u05E8\u05D9\u05DC\u05D9\u05E0\u05D2",
             "\u05D0\u05D9\u05D6",
             "\u05E9\u05D5\u05D9\u05DF",
-            "\u05D3\u05B8\u05D0.", " Der friling is shoyn noent.)"
+            "\u05D3\u05D0\u05B8"
         )
     )
 }
