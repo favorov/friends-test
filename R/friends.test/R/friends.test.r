@@ -134,19 +134,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
         cli::cli_progress_step("Filtering out uniforms...")
         the.progress <- list(name = "Filtering out uniforms...")
     }
-    if (
-        mirai::status()$connections > 0
-    ) {
-        libs <- .libPaths()
-        mirai::everywhere(
-            {
-                .libPaths(libs)
-            },
-            libs = libs
-        )
-        # qq mirai::daemons(0)
-        # qq warning("For Windows, we do not support in_parallel now.")
-    }
+
     adj_nunif_pval <-
         all_ranks |>
         #convert the array to list of rows
