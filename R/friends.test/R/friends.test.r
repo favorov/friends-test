@@ -135,8 +135,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
         the.progress <- list(name = "Filtering out uniforms...")
     }
     if (
-        # ifif .Platform$OS.type == "windows" &&
-            mirai::status()$connections > 0
+        mirai::status()$connections > 0
     ) {
         libs <- .libPaths()
         mirai::everywhere(

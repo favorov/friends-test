@@ -104,8 +104,7 @@ friends.test.bic <- function(A = NULL,
         the.progress <- list(name = "Fitting the models...")
     }
     if (
-        # ifif .Platform$OS.type == "windows" &&
-            mirai::status()$connections > 0
+        mirai::status()$connections > 0
     ) {
         libs <- .libPaths()
         mirai::everywhere(
