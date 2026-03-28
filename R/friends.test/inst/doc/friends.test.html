@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>In a matrix, we look for columns that are friendly to a row</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">In a matrix, we look for columns that are
+friendly to a row</h1>
+
+
+
+<!-- TOC enabled in YAML output block above -->
+<p><span style="float:right">SI AUGUSTUS CERNATUR, CERNANTUR QOUQUE
+AMICI</span></p>
+<p>27 Mar 2026</p>
+<!-- cache is off, we save all the necessary things in Rda -->
+<div style="line-height: 1.5em;">
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>There is a simple intuition of what it means to be a friend. A friend
+of Augustus cares about Augustus more than about other people. And, if
+we see Augustus, then we infer to see friends(s) of Augustus also.
+Please refer to <a href="https://arxiv.org/abs/2512.24843">our Arxive
+publication</a> for more formal introduction.</p>
+<p>Let’s picture a set of expression pattern, each represents a
+biological process. Techically, each pattern is a vector of expression
+loads of the involved genes.</p>
+<p>Sometimes, the expression of a single gene in a sample indicates the
+activity of the entire pattern there. The simplest case: the gene has a
+nonzero load in only one pattern.</p>
+<p>Actually, the gene may have several nonzero loads, but all of them
+but the one of interest are relatively small. Then the gene (AKA
+Augustus) is the marker gene for the pattern, and the marked pattern is
+the a friend of this gene.</p>
+<p>There could be more then one friend for a marker. In this case, the
+marker is more important for the friends than for the non-friends.</p>
+<p>We have two sets:T (rows) and C (columns) and A real matrix A(t,c)
+that describes the strength of relation between each t and each c; t is
+an element of T and c is an element of C.</p>
+<p>The model applies to many problems in bioinformatics and
+statistics.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Example</th>
+<th><span class="math inline">\(\left\{T\right\}\)</span></th>
+<th align="center"><span class="math inline">\(\left\{C\right\}\)</span></th>
+<th align="center"><span class="math inline">\(A\left(t,c\right)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">gene regulation by TFs</td>
+<td>gene</td>
+<td align="center">genes under the TF regulation</td>
+<td align="center">strength of regulation</td>
+</tr>
+<tr class="even">
+<td align="center">fuzzy clustering</td>
+<td>object</td>
+<td align="center">cluster</td>
+<td align="center">object weight in cluster</td>
+</tr>
+<tr class="odd">
+<td align="center">transcription decomposition</td>
+<td>transcript</td>
+<td align="center">transcription pattern</td>
+<td align="center">transcript’s load in pattern</td>
+</tr>
+<tr class="even">
+<td align="center">weighted graph</td>
+<td>vertex</td>
+<td align="center">another vertex</td>
+<td align="center">weight of edge between column and row</td>
+</tr>
+</tbody>
+</table>
+<p>For each row, we want to identify whather there are columns(s) that
+particularly prefer(s) the row, and list the columns. Then such a column
+is a friend (or the best friend if there is only one) for the row. We
+intend to express the meaning of the word “particularly” in this context
+by a statistical test, that is the <strong>friends.test</strong>
+provided by this package.</p>
+<p>Let’s define the relevance of a row to a column as the rank of the
+<span class="math inline">\(i\)</span>-th rows’s relation with <span class="math inline">\(j\)</span>-the column inside the column, or, in
+our notation, the rank of <span class="math inline">\(A_{ij}\)</span> in
+<span class="math inline">\(A_{*j}\)</span>, and denote it as <span class="math inline">\(r(t_i,c_j)\)</span>.</p>
+<p>The main idea of the <strong>friends.test</strong> test is that if a
+row <span class="math inline">\(t_i\)</span> is not preferred by any
+column(s), the distribution of the ranks of the row in all the columns
+<span class="math inline">\(r(t_i,c_j)\)</span> behaves like <span class="math inline">\(j\)</span> i.i.d integers that are uniformely
+distributed in <span class="math inline">\(1..n\)</span>.</p>
+</div>
+<div id="toy-examples" class="section level2">
+<h2>Toy examples</h2>
+<div id="toy-example-bayesian-option" class="section level3">
+<h3>Toy example: Bayesian option</h3>
+<p>Let’s illustrate the method with something supersimple.</p>
+<pre><code>``` r
+regulation &lt;-
+    structure(
+        c(
+            0.2, 0.25, 0.1, 0.23, 0.3, 0.12, 0.14,
+            4, 3, 6, 1, 9, 7, 10,
+            3, 1, 5, 6, 3, 4, 11
+        ),
+        dim = c(7, 3),
+        dimnames =
+        list(
+            c(
+                &quot;Gene1&quot;, &quot;Gene2&quot;, &quot;Gene3&quot;,
+                &quot;Gene4&quot;, &quot;Gene5&quot;, &quot;Gene6&quot;,
+                &quot;Gene7&quot;
+            ),
+            c(&quot;TF1&quot;, &quot;TF2&quot;, &quot;TF3&quot;)
+        )
+    )
+noquote(regulation)
+```
+
+```
+##        TF1 TF2 TF3
+## Gene1 0.20   4   3
+## Gene2 0.25   3   1
+## Gene3 0.10   6   5
+## Gene4 0.23   1   6
+## Gene5 0.30   9   3
+## Gene6 0.12   7   4
+## Gene7 0.14  10  11
+```</code></pre>
+<p>What we want to identify is Gene2-TF1 pair. Gene2 is not the
+strongest downstream gene in the TF1 column (column), it is only the
+second, but, on the other hand its rank in other TF-based columns is
+much lower.</p>
+<p>First, let’s apply the Bayesian version of the method,
+<code>best.friends.bic</code>.</p>
+<pre><code>``` r
+friends.test.bic(regulation, prior.to.have.friends = .5, max.friends.n = 1)
+```
+
+```
+## $Gene1
+## $Gene1$TF1
+## marker friend   rank 
+##      1      1      1 
+## 
+## 
+## $Gene2
+## $Gene2$TF1
+## marker friend   rank 
+##      2      1      1
+```</code></pre>
+<p>We see the expected Gene2-TF1 pair as well as the Gene1-TF1 pair,
+that is similar to the expected, Gene1 has rank of 3 in the TF1
+column.</p>
+<p>The lower is the prior to have friends for a row (it is an obligatory
+parameter for <code>friends.test.bic</code>), the less marker-friend
+pairs we get.</p>
+<pre><code>``` r
+friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
+```
+
+```
+## $Gene2
+## $Gene2$TF1
+## marker friend   rank 
+##      2      1      1
+```
+
+``` r
+friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
+```
+
+```
+## named list()
+```</code></pre>
+<p>In all the three examples above, the <code>max.friends.n</code>
+parameter was set to 1. It means that the function filters out all the
+rows that have more that one friendly column, or in other words, we look
+only for the best friends. If we relax the restriction, we get more
+results, and the <code>rank</code> that shows the rank of the friend for
+the marker, can differ from 1:</p>
+<pre><code>``` r
+friends.test.bic(regulation, prior.to.have.friends = .25)
+```
+
+```
+## $Gene7
+## $Gene7$TF2
+## marker friend   rank 
+##      7      2      1 
+## 
+## $Gene7$TF3
+## marker friend   rank 
+##      7      3      2
+```</code></pre>
+<p>Note that <code>max.friends.n = &quot;all&quot;</code> is the default value for
+both <code>friends.test</code> (see below) and
+<code>friends.test.bic</code>.</p>
+</div>
+<div id="the-same-toy-example-the-ks-option" class="section level3">
+<h3>The same toy example: the KS option</h3>
+<p>Let’s run the p-value-based option of the method on the same data. It
+is less sensitive on small dataset, so we use unpractical threshold for
+the p-value to see the result.</p>
+<pre><code>``` r
+friends.test(regulation, threshold = .5, p.adjust.method = &quot;no&quot;,
+             max.friends.n = 1)
+```
+
+```
+## $Gene2
+## $Gene2$TF1
+## marker friend   rank 
+##      2      1      1
+```</code></pre>
+<p>And, as usual, if we relax the <code>max.friends.no</code>
+restriction, we will see more pairs, but now the friends are not
+required to be unique for a marker.</p>
+<pre><code>``` r
+friends.test(regulation, threshold = .5, p.adjust.method = &quot;no&quot;)
+```
+
+```
+## $Gene2
+## $Gene2$TF1
+## marker friend   rank 
+##      2      1      1 
+## 
+## 
+## $Gene4
+## $Gene4$TF3
+## marker friend   rank 
+##      4      3      1 
+## 
+## $Gene4$TF1
+## marker friend   rank 
+##      4      1      2 
+## 
+## 
+## $Gene7
+## $Gene7$TF2
+## marker friend   rank 
+##      7      2      1 
+## 
+## $Gene7$TF3
+## marker friend   rank 
+##      7      3      2
+```</code></pre>
+</div>
+<div id="iris-example" class="section level3">
+<h3>Iris example</h3>
+<p>Let’s look for anomalies in the traditional <strong>iris</strong>
+dataset:</p>
+<pre><code>``` r
+data(&quot;iris&quot;)
+print(head(iris, n = 5))
+```
+
+```
+##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+```</code></pre>
+<p>We use only numeric columns:</p>
+<pre><code>``` r
+friends.test.bic(iris[1:4], prior.to.have.friends = .001)
+```
+
+```
+## $`14`
+## $`14`$Sepal.Width
+## marker friend   rank 
+##     14      2      1
+```</code></pre>
+<p>So, we see that the flower #14 is important for (we also can think
+about it as “popular in”) the Sepal.Width nomination. Let’s understand
+it a simple request: what is the quantile of the flower #14 in the four
+columns.</p>
+<pre><code>``` r
+apply(iris[, 1:4], 2, function(col) ecdf(col)(col[14]))
+```
+
+```
+## Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+##  0.006666667  0.553333333  0.013333333  0.033333333
+```</code></pre>
+<p>So, flower #14 is in top 50% in Sepal.Width and in lowest 5% for all
+other sizes. It is exacly what we describe as “Sepal.Width is friend for
+flower #14 and the flower #14 is a marker for Sepal.Width”.</p>
+<p>Let’s note that the four sizes have different distributions; still,
+the friends.test naturally works with this type of data.</p>
+</div>
+</div>
+<div id="cogaps-feature-loadings-example" class="section level2">
+<h2>CoGAPS feature loadings example</h2>
+<p><span style="float:right">NATURAM EXPELLAS FURCA, TAMEN USQUE
+RECURRET</span></p>
+<p>CoGAPS decomposes an expression dataset into pattetns of expression,
+ideally, eah of them represent an underlying biological process. We use
+the <a href="https://zenodo.org/records/7709664">PDAC dataset</a> from
+the <a href="https://www.nature.com/articles/s41596-023-00892-x">Johnson
+<em>et al</em>, 2023</a> as an example.</p>
+<pre><code>``` r
+data(friends.test.cogaps.example)
+```</code></pre>
+<p>Feature loadings in CoGAPS are normalized expression values across
+patterns. Each column is a pattern, each row is a gene.</p>
+<pre><code>``` r
+featureLoadings &lt;- friends.test.cogaps.example$loadings
+head(featureLoadings)
+```
+
+```
+##           Pattern_1   Pattern_2   Pattern_3   Pattern_4    Pattern_5    Pattern_6  Pattern_7
+## SAMD11  0.002373853 0.002656909 0.006061856 0.001842319 0.0007711356 0.0005375241 0.01290628
+## NOC2L   0.333290756 0.215134636 0.680900455 0.083199978 0.1951790750 0.1346961260 0.18365334
+## KLHL17  0.055154882 0.005238459 0.047037147 0.013550087 0.0049433918 0.0671307519 0.01745793
+## PLEKHN1 0.070879407 0.160753518 0.002134236 0.002048471 0.0000000000 0.4884256721 0.10620824
+## HES4    0.345203698 0.139899164 0.149048895 0.026502691 1.6740946770 1.3930050135 0.18173441
+## ISG15   0.012890226 1.408829808 0.849508107 0.025504649 0.1476552784 1.0514144897 1.27441263
+##           Pattern_8
+## SAMD11  0.001200248
+## NOC2L   0.018304676
+## KLHL17  0.016975854
+## PLEKHN1 0.075609177
+## HES4    0.267374903
+## ISG15   0.445318580
+```</code></pre>
+<div id="friends-test-application-to-the-loading-matrix" class="section level3">
+<h3>Friends test application to the loading matrix</h3>
+<p>Let’s look for marker genes for the patterns using
+<code>friends.test</code>. In this setup, genes (possibly, markers) are
+rows, patterns (possibly, friends for the markers) are columns.</p>
+<p>We use here the default version of <code>friends.test</code> that
+selects markers by the KS test. As far ad there is ~15000 genes, we use
+Bonferroni p=value adjustment rather than the default “BH”.</p>
+<pre><code>``` r
+friends_of_genes &lt;- friends.test(
+    featureLoadings,
+    p.adjust.method = &quot;bonferroni&quot;
+)
+```</code></pre>
+</div>
+<div id="return-structure" class="section level3">
+<h3>Return structure</h3>
+<p>The return is a list of lists, the outer list is by gene that is a
+marker, the inner is by pattern that is the marker’s friend. The output
+format allows a marker to have a lot of friends. The leave is a
+3-integer vector, are the marker index and the friend index in the
+matrix we started with, and the rank of the friend for the marker. Let’s
+look at the first element, it’s rank is 1 as far as it is the first.</p>
+<pre><code>``` r
+friends_of_genes[[1]][[1]]
+```
+
+```
+## marker friend   rank 
+##    232      5      1
+```</code></pre>
+<p>The names of the list elements are in accordance. The first marker
+name:</p>
+<pre><code>``` r
+rownames(featureLoadings)[friends_of_genes[[1]][[1]][&quot;marker&quot;]]
+```
+
+```
+## [1] &quot;RPL11&quot;
+```
+
+``` r
+names(friends_of_genes)[1]
+```
+
+```
+## [1] &quot;RPL11&quot;
+```</code></pre>
+<p>The name of the first friend of the first marker:</p>
+<pre><code>``` r
+colnames(featureLoadings)[friends_of_genes[[1]][[1]][&quot;friend&quot;]]
+```
+
+```
+## [1] &quot;Pattern_5&quot;
+```
+
+``` r
+names(friends_of_genes[[1]])[1]
+```
+
+```
+## [1] &quot;Pattern_5&quot;
+```</code></pre>
+<p>The format is flexible enough, we exemplify posiible transformations
+<a href="#the-result-format-transfromations">later</a>. The format is
+common for the <code>friends.test</code> and
+<code>friends.test.bic</code> main functions.</p>
+</div>
+<div id="ranks-of-a-marker-in-its-friends-and-non-friends" class="section level3">
+<h3>Ranks of a marker in its friends and non-friends</h3>
+<p>Let’s look what happens in the friends.test. First, we rank all the
+genes inside the loadings matrix.</p>
+<pre><code>``` r
+ranks &lt;- row.int.ranks(featureLoadings)
+head(ranks)
+```
+
+```
+##         Pattern_1 Pattern_2 Pattern_3 Pattern_4 Pattern_5 Pattern_6 Pattern_7 Pattern_8
+## SAMD11      12846     11721     10876     11106     11863     12096     10495     12220
+## NOC2L        2093      4244      1081      3785      4573      5654      2866      9268
+## KLHL17       8678     11147      8186      8078     10935      7095      9920      9361
+## PLEKHN1      8048      5169     11974     11012     15128      2203      4717      6885
+## HES4         1980      5613      5304      6617       346       486      2905      3742
+## ISG15       11049       390       751      6698      5515       725       196      2293
+```</code></pre>
+<p>The ranks of the first marker in all he patterns:</p>
+<pre><code>``` r
+marker_1 &lt;- names(friends_of_genes)[1]
+ranks[marker_1, ]
+```
+
+```
+## Pattern_1 Pattern_2 Pattern_3 Pattern_4 Pattern_5 Pattern_6 Pattern_7 Pattern_8 
+##      7599        80       149        31        12        48        86        92
+```</code></pre>
+<p>The ranks of the first in all the friend patterns:</p>
+<pre><code>``` r
+ranks[marker_1, names(friends_of_genes[[1]])]
+```
+
+```
+## Pattern_5 Pattern_4 Pattern_6 Pattern_2 Pattern_7 Pattern_8 Pattern_3 
+##        12        31        48        80        86        92       149
+```</code></pre>
+<p>The model splitted the patterns into two sets: Pattern_1 where the
+marker has a very low rank, and the reaminder. It is what we supposed to
+be done.</p>
+</div>
+<div id="exclusive-marker-search" class="section level3">
+<h3>Exclusive marker search</h3>
+<p>To look for genes that have only one friend (let’s call them
+exclusive markers), so we use <code>max.friends.n = 1</code>. The
+parameter actually is involved after the main part of the calculation,
+it filters out the genes that has more than <code>max.friends.n</code>
+friends, these genes are not stored in the output.</p>
+<pre><code>``` r
+best_friends_of_genes &lt;- friends.test(
+    featureLoadings,
+    p.adjust.method = &quot;bonferroni&quot;,
+    max.friends.n = 1
+)
+names(best_friends_of_genes)
+```
+
+```
+## [1] &quot;CA4&quot;
+```</code></pre>
+<p>In this super-restrictive mode, only one (exclusive) marker, CA4, is
+found. Its friend is the Pattern_5. It is to the only by the task.</p>
+<pre><code>``` r
+the_marker &lt;- names(best_friends_of_genes)[1]
+ranks[the_marker, ]
+```
+
+```
+## Pattern_1 Pattern_2 Pattern_3 Pattern_4 Pattern_5 Pattern_6 Pattern_7 Pattern_8 
+##     15098     14889     14789     14885       632     14794     15081     14654
+```</code></pre>
+<p>That is what the friends.test is a unique test to detect: the CA4 has
+a moderate rank in Pattern_5, but it is the best of its ranks in all
+other patterns and it is significantlu higher than all of them.</p>
+</div>
+</div>
+<div id="gene-set-enrichment" class="section level2">
+<h2>Gene set enrichment</h2>
+<p>To perform an example of gene set enrichment analysis, we use the
+Baesian version of the test, <code>friends.test.bic</code>. We restrict
+the number of friends for a marker by 4, a half of number of the
+patterns, to keep them all in the similar “direction”. The reqired
+parameter <code>prior.to.have.friends</code> is set to approximately
+1/(number od genes). We run 4 parallel processses, see <a href="#parallel-calculation">Parallel calculation</a>.</p>
+<pre><code>``` r
+mirai::daemons(4)
+good_friends_of_genes &lt;- friends.test.bic(
+    featureLoadings,
+    prior.to.have.friends = 1E-4,
+    max.friends.n = 4
+)
+mirai::daemons(0)
+```</code></pre>
+<div id="the-result-format-transfromation" class="section level3">
+<h3>The result format transfromation</h3>
+<p>For the gene overrrepresentation analysis, we need to gen a list of
+markers (genes) for each pttern. So, we swap the levels of the list, and
+we do not need leaves. Here, we can reverse the list via a data frame.
+It works if the number of elements do not reach hundred of
+thousands.</p>
+<pre><code>``` r
+good_friends_df &lt;- good_friends_of_genes |&gt;
+    purrr::flatten() |&gt;
+    purrr::reduce(.f = rbind) |&gt;
+    data.frame() |&gt;
+    tibble::remove_rownames() |&gt;
+    dplyr::mutate(
+        gene = rownames(featureLoadings)[marker],
+        pattern = colnames(featureLoadings)[friend]
+    )
+head(good_friends_df)
+```
+
+```
+##   marker friend rank     gene   pattern
+## 1     62      5    1    AJAP1 Pattern_5
+## 2     62      1    2    AJAP1 Pattern_1
+## 3     76      6    1   TAS1R1 Pattern_6
+## 4     92      6    1      CA6 Pattern_6
+## 5    112      5    1 C1orf127 Pattern_5
+## 6    117      5    1  ANGPTL7 Pattern_5
+```</code></pre>
+<p>Now, let’s prepare a list of markers by pattern.</p>
+<pre><code>``` r
+good_markers_list &lt;- good_friends_df |&gt;
+    split(good_friends_df$pattern) |&gt;
+    purrr::map(~ .x |&gt;
+            dplyr::pull(gene) |&gt;
+            unique() |&gt;
+            sort()
+    )
+```</code></pre>
+</div>
+<div id="prepare-the-gene-collections" class="section level3">
+<h3>Prepare the gene collections</h3>
+<p>As far as we have gene lists, let’s examine them for overreprentation
+in the gene collections from <a href="https://www.gsea-msigdb.org/gsea/msigdb/collections.jsp">MSigDB</a>.
+We use <code>fgsea</code> and <code>msigdbr</code> for that.</p>
+<p>First, prepare the collections sets for H (Hallmarks) and for for
+C4:3CA (Curated Cancer Cell Atlas).</p>
+<pre><code>``` r
+msigdbr_H_df &lt;- msigdbr::msigdbr(species = &quot;human&quot;, collection = &quot;H&quot;)
+collections_H &lt;- split(
+    msigdbr_H_df$gene_symbol,
+    msigdbr_H_df$gs_name
+)
+collections_H &lt;- split(
+    msigdbr_H_df$gene_symbol,
+    msigdbr_H_df$gs_name
+)
+msigdbr_C4_3CA_df &lt;-
+    msigdbr::msigdbr(
+        species = &quot;human&quot;,
+        collection = &quot;C4&quot;,
+        subcollection = &quot;3CA&quot;
+    )
+collections_C4_3CA &lt;- split(
+    msigdbr_C4_3CA_df$gene_symbol,
+    msigdbr_C4_3CA_df$gs_name
+)
+```</code></pre>
+<p>Now, let’s test the gene enrichment of the markers for each pattern
+in the Curated Cancer Cell Atlas and in Hallmarks MSigDB
+collections.</p>
+<pre><code>``` r
+C4_3CA_by_markers &lt;- good_markers_list |&gt;
+    purrr::map(\(markers) {
+        fgsea::fora(
+            pathways = collections_C4_3CA,
+            markers,
+            rownames(featureLoadings)
+        ) |&gt;
+            dplyr::filter(padj &lt; 0.05) |&gt;
+            dplyr::select(pathway, padj)
+    })
+C4_3CA_by_markers
+```
+
+```
+## $Pattern_1
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_2
+##                                             pathway       padj
+##                                              &lt;char&gt;      &lt;num&gt;
+## 1:  GAVISH_3CA_METAPROGRAM_EPITHELIAL_COLON_RELATED 0.01053558
+## 2: GAVISH_3CA_METAPROGRAM_EPITHELIAL_PDAC_RELATED_2 0.01053558
+## 
+## $Pattern_3
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_4
+##                                             pathway       padj
+##                                              &lt;char&gt;      &lt;num&gt;
+## 1:    GAVISH_3CA_METAPROGRAM_EPITHELIAL_RESPIRATION 0.03434735
+## 2: GAVISH_3CA_METAPROGRAM_EPITHELIAL_PDAC_RELATED_2 0.03434735
+## 
+## $Pattern_5
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_6
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_7
+##                                                      pathway         padj
+##                                                       &lt;char&gt;        &lt;num&gt;
+## 1:            GAVISH_3CA_MALIGNANT_METAPROGRAM_23_SECRETED_2 0.0003684984
+## 2:                GAVISH_3CA_METAPROGRAM_EPITHELIAL_SECRETED 0.0003684984
+## 3: GAVISH_3CA_MALIGNANT_METAPROGRAM_19_EPITHELIAL_SENESCENCE 0.0072089630
+## 4:                  GAVISH_3CA_METAPROGRAM_EPITHELIAL_EPISEN 0.0454684340
+## 5:                GAVISH_3CA_METAPROGRAM_EPITHELIAL_ALVEOLAR 0.0454684340
+## 6:          GAVISH_3CA_METAPROGRAM_EPITHELIAL_PDAC_RELATED_2 0.0454684340
+## 7:         GAVISH_3CA_METAPROGRAM_FIBROBLASTS_METAL_RESPONSE 0.0454684340
+## 
+## $Pattern_8
+##                                                      pathway       padj
+##                                                       &lt;char&gt;      &lt;num&gt;
+## 1: GAVISH_3CA_MALIGNANT_METAPROGRAM_19_EPITHELIAL_SENESCENCE 0.01266589
+## 2:                  GAVISH_3CA_METAPROGRAM_EPITHELIAL_EPISEN 0.03366002
+## 3:                GAVISH_3CA_METAPROGRAM_EPITHELIAL_SECRETED 0.03366002
+## 4:          GAVISH_3CA_METAPROGRAM_EPITHELIAL_PDAC_RELATED_2 0.03366002
+```
+
+
+
+``` r
+hallmarks_by_markers &lt;- good_markers_list |&gt;
+    purrr::map(\(markers) {
+        fgsea::fora(
+            pathways = collections_H,
+            markers,
+            rownames(featureLoadings)
+        ) |&gt;
+            dplyr::filter(padj &lt; 0.05) |&gt;
+            dplyr::select(pathway, padj)
+    })
+hallmarks_by_markers
+```
+
+```
+## $Pattern_1
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_2
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_3
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_4
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_5
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_6
+##                       pathway       padj
+##                        &lt;char&gt;      &lt;num&gt;
+## 1: HALLMARK_KRAS_SIGNALING_DN 0.02078762
+## 
+## $Pattern_7
+## Empty data.table (0 rows and 2 cols): pathway,padj
+## 
+## $Pattern_8
+## Empty data.table (0 rows and 2 cols): pathway,padj
+```</code></pre>
+</div>
+</div>
+<div id="rakning-and-random-numbers" class="section level2">
+<h2>Rakning and random numbers</h2>
+<p>The result of both <code>friends.test</code> and
+<code>friends.test.bic</code> functions depends on random state
+generator. The dependency is because the test starts with ranking of the
+elemants of the input matrix in the columns. The test requires the rank
+values to be integer, so the ties are resolved randomly. It you want a
+reproduceablle result, keep the initial random generator state. Another
+option is to rank the matrix bfore the test call and then to pass the
+rank matrix as the input. It does not consume a lot of additional time,
+and the renking of already-ranked does not depend on random seeds. The
+special case when this approach is the only is if some additional
+information is used in the ranking.</p>
+</div>
+<div id="parallel-calculation" class="section level2">
+<h2>Parallel calculation</h2>
+<p>Both main functions, <code>friends.test</code> and
+<code>friends.test.bic</code>, carries <code>purrr::in_parallel</code>
+code, so if you want each of them to run in parallel mode, say
+<code>mirai::deamons(n)</code> (n is number of processes) in your R code
+before the finction call, and <code>mirai::daemons(0)</code> after. See
+<a href="https://cran.r-project.org/web/packages/mirai/vignettes/mirai.html">mirai
+- Quick Reference</a> for more information.</p>
+</div>
+<div id="session-info" class="section level2">
+<h2>Session info</h2>
+<pre><code>``` r
+sessionInfo()
+```
+
+```
+## R version 4.5.3 (2026-03-11)
+## Platform: aarch64-apple-darwin25.3.0
+## Running under: macOS Tahoe 26.4
+## 
+## Matrix products: default
+## BLAS:   /opt/homebrew/Cellar/openblas/0.3.32/lib/libopenblasp-r0.3.32.dylib 
+## LAPACK: /opt/homebrew/Cellar/r/4.5.3/lib/R/lib/libRlapack.dylib;  LAPACK version 3.12.1
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: America/New_York
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] friends.test_0.99.18 markdown_2.0         knitr_1.51          
+## 
+## loaded via a namespace (and not attached):
+##  [1] sass_0.4.10         generics_0.1.4      fgsea_1.36.2        lattice_0.22-9     
+##  [5] digest_0.6.39       magrittr_2.0.4      evaluate_1.0.5      grid_4.5.3         
+##  [9] RColorBrewer_1.1-3  fastmap_1.2.0       Matrix_1.7-5        jsonlite_2.0.0     
+## [13] purrr_1.2.1         scales_1.4.0        codetools_0.2-20    jquerylib_0.1.4    
+## [17] cli_3.6.5           rlang_1.1.7         rtlr_0.1.0          cowplot_1.2.0      
+## [21] withr_3.0.2         cachem_1.1.0        yaml_2.3.12         otel_0.2.0         
+## [25] tools_4.5.3         parallel_4.5.3      BiocParallel_1.44.0 dplyr_1.2.0        
+## [29] nanonext_1.8.1      ggplot2_4.0.2       carrier_0.3.0.4     fastmatch_1.1-8    
+## [33] curl_7.0.0          assertthat_0.2.1    babelgene_22.9      vctrs_0.7.2        
+## [37] R6_2.6.1            lifecycle_1.0.5     pkgconfig_2.0.3     pillar_1.11.1      
+## [41] bslib_0.10.0        gtable_0.3.6        data.table_1.18.2.1 glue_1.8.0         
+## [45] Rcpp_1.1.1          xfun_0.57           tibble_3.3.1        tidyselect_1.2.1   
+## [49] farver_2.1.2        msigdbr_26.1.0      htmltools_0.5.9     mirai_2.6.1        
+## [53] rmarkdown_2.30      compiler_4.5.3      S7_0.2.1
+```</code></pre>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
