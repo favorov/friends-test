@@ -23,7 +23,7 @@ Description: We have two sets:T (rows) and C (columns) and
     are the t's friend. And, the t is the c's marker.
 License: Artistic-2.0
 LazyLoad: yes
-Depends: R (>= 4.2.0)
+Depends: R (>= 4.5.0)
 biocViews: Annotation, StatisticalMethod
 URL: https://github.com/favorov/friends.test
 BugReports: https://github.com/favorov/friends.test/issues
@@ -33,4 +33,4 @@ Packaged: 2025-03-18 2:30:05 EST; favorov
 Imports: stats, utils, data.table, purrr, cli, mirai, carrier, rtlr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-LazyData: true
+LazyData: false
