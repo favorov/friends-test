@@ -53,71 +53,6 @@
 #' example(row.int.ranks)
 #' steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
 #' @export
-# Internal O(ncol) per-row step-model fitter.
-#
-# For each possible number-of-friends k1 in 1:(k-1), the log-likelihood
-# is *convex* in the split rank l1, so the maximum over the valid range
-# [sorted_ranks[k1], sorted_ranks[k1+1]-1] is always at one of the two
-# boundary points.  We evaluate at both endpoints and keep the better one.
-# Total work: O(k) = O(ncol) per row instead of O(nrow) — a crucial
-# speedup for large matrices (VisiumHD, scRNA-seq, etc.).
-#
-# Returns a list with:
-#   columns.order   — integer vector of column indices sorted by ascending rank
-#   best_ll_by_k1   — length-k vector; entry k1 = best log-likelihood for k1
-#                     friends (−Inf when the valid range for that k1 is empty)
-#   best_l1_by_k1   — length-k vector; entry k1 = the optimal split rank l1
-#                     achieving best_ll_by_k1[k1]
-#   uniform_ll      — log-likelihood of the uniform (no-friends) model
-#
-# This is *not* exported; callers are best.step.fit and best.step.fit.bic.
-.step_fit_compact <- function(ranks, max.possible.rank) {
-    columns.order <- order(ranks)
-    sorted_ranks <- ranks[columns.order]  # ascending
-    k <- length(sorted_ranks)
-
-    best_ll_by_k1 <- rep(-Inf, k)
-    best_l1_by_k1 <- integer(k)
-
-    for (k1 in seq_len(k - 1L)) {
-        l1_min <- sorted_ranks[k1]
-        l1_max <- sorted_ranks[k1 + 1L] - 1L
-        if (l1_min > l1_max) next  # empty range: adjacent ranks are tied
-
-        p1      <- k1 / k
-        log_p1  <- log(p1)
-        log_1p1 <- log(1 - p1)
-
-        # Evaluate log-likelihood at the left boundary
-        ll_min <- k1 * (log_p1 - log(l1_min)) +
-            (k - k1) * (log_1p1 - log(max.possible.rank - l1_min))
-
-        if (l1_min == l1_max) {
-            best_l1_by_k1[k1] <- l1_min
-            best_ll_by_k1[k1] <- ll_min
-        } else {
-            # Evaluate at the right boundary; prefer larger l1 on exact tie
-            # (consistent with the historical max(which(ll == max_ll)) rule)
-            ll_max <- k1 * (log_p1 - log(l1_max)) +
-                (k - k1) * (log_1p1 - log(max.possible.rank - l1_max))
-            if (ll_max >= ll_min) {
-                best_l1_by_k1[k1] <- l1_max
-                best_ll_by_k1[k1] <- ll_max
-            } else {
-                best_l1_by_k1[k1] <- l1_min
-                best_ll_by_k1[k1] <- ll_min
-            }
-        }
-    }
-
-    list(
-        columns.order = columns.order,
-        best_ll_by_k1 = best_ll_by_k1,
-        best_l1_by_k1 = best_l1_by_k1,
-        uniform_ll    = k * log(1 / max.possible.rank)
-    )
-}
-
 step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
     if (max.possible.rank < max(ranks)) {
         stop("Rows_no parameter is the maximal possible rank,
@@ -165,5 +100,68 @@ step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
         columns.order = columns.order,
         ln.likelihoods = ln.likelihoods,
         k1.by.l1 = k1.by.l1
+    )
+}
+
+# Internal O(ncol) per-row step-model fitter.
+#
+# For each possible number-of-friends k1 in 1:(k-1), the log-likelihood
+# is *convex* in the split rank l1, so the maximum over the valid range
+# [sorted_ranks[k1], sorted_ranks[k1+1]-1] is always at one of the two
+# boundary points.  We evaluate at both endpoints and keep the better one.
+# Total work: O(k) = O(ncol) per row instead of O(nrow) — a crucial
+# speedup for large matrices (VisiumHD, scRNA-seq, etc.).
+#
+# Returns a list with:
+#   columns.order   — integer vector of column indices sorted by ascending rank
+#   best_ll_by_k1   — length-k vector; entry k1 = best log-likelihood for k1
+#                     friends (−Inf when the valid range for that k1 is empty)
+#   best_l1_by_k1   — length-k vector; entry k1 = the optimal split rank l1
+#                     achieving best_ll_by_k1[k1]
+#   uniform_ll      — log-likelihood of the uniform (no-friends) model
+#
+# Not exported; called by best.step.fit and best.step.fit.bic.
+.step_fit_compact <- function(ranks, max.possible.rank) {
+    columns.order <- order(ranks)
+    sorted_ranks <- ranks[columns.order]  # ascending
+    k <- length(sorted_ranks)
+
+    best_ll_by_k1 <- rep(-Inf, k)
+    best_l1_by_k1 <- integer(k)
+
+    for (k1 in seq_len(k - 1L)) {
+        l1_min <- sorted_ranks[k1]
+        l1_max <- sorted_ranks[k1 + 1L] - 1L
+        if (l1_min > l1_max) next  # empty range: adjacent ranks are tied
+
+        p1      <- k1 / k
+        log_p1  <- log(p1)
+        log_1p1 <- log(1 - p1)
+
+        ll_min <- k1 * (log_p1 - log(l1_min)) +
+            (k - k1) * (log_1p1 - log(max.possible.rank - l1_min))
+
+        if (l1_min == l1_max) {
+            best_l1_by_k1[k1] <- l1_min
+            best_ll_by_k1[k1] <- ll_min
+        } else {
+            # Prefer larger l1 on exact tie (consistent with max(which(...)) convention)
+            ll_max <- k1 * (log_p1 - log(l1_max)) +
+                (k - k1) * (log_1p1 - log(max.possible.rank - l1_max))
+            if (ll_max >= ll_min) {
+                best_l1_by_k1[k1] <- l1_max
+                best_ll_by_k1[k1] <- ll_max
+            } else {
+                best_l1_by_k1[k1] <- l1_min
+                best_ll_by_k1[k1] <- ll_min
+            }
+        }
+    }
+
+    list(
+        columns.order = columns.order,
+        best_ll_by_k1 = best_ll_by_k1,
+        best_l1_by_k1 = best_l1_by_k1,
+        uniform_ll    = k * log(1 / max.possible.rank)
     )
 }
