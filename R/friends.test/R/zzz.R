@@ -9,11 +9,16 @@
         " \u05DB\u05BC\u05DE\u05E2\u05D8",
         " \u05D0\u05B7\u05D5\u05D5\u05E2\u05E7."
     )
+    yiddish_display <- if (Sys.getenv("TERM_PROGRAM") == "vscode") {
+        intToUtf8(rev(utf8ToInt(yiddish)))
+    } else {
+        str_rtl(yiddish)
+    }
     packageStartupMessage(
         paste0(
             "Welcome to friends.test, version ",
             version, "\n  Der friling iz shoyn kimat avek.\n ",
-            str_rtl(yiddish)
+            yiddish_display
         )
     )
 }
