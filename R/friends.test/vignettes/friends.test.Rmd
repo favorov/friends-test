@@ -264,16 +264,15 @@ That is what the friends.test is a unique test to detect: the `r names(best_frie
 
 ## Gene set enrichment
 
-To perform an example of gene set enrichment analysis, we use the Baesian version of the test, `friends.test.bic`. We restrict the number of friends for a marker by 4, a half of number of the patterns, to keep them all in the similar "direction". The reqired parameter `prior.to.have.friends` is set to approximately 1/(number od genes). We run 4 parallel processses, see [Parallel calculation](#parallel-calculation).
+To perform an example of gene set enrichment analysis, we use the Baesian version of the test, `friends.test.bic`. We restrict the number of friends for a marker by 4, a half of number of the patterns, to keep them all in the similar "direction". The reqired parameter `prior.to.have.friends` is set to approximately 1/(number od genes). We run 2 parallel processses, see [Parallel calculation](#parallel-calculation).
 
     ```{r 'patterns are good genes friends'}
-    mirai::daemons(4)
     good_friends_of_genes <- friends.test.bic(
         featureLoadings,
         prior.to.have.friends = 1E-4,
-        max.friends.n = 4
+        max.friends.n = 4,
+        BPPARAM = BiocParallel::MulticoreParam(workers = 2)
     )
-    mirai::daemons(0)
     ```
 
 ### The result format transfromation
@@ -373,7 +372,30 @@ The result of both `friends.test` and `friends.test.bic` functions depends on ra
 
 ## Parallel calculation
 
-Both main functions, `friends.test` and `friends.test.bic`, carries `purrr::in_parallel` code, so if you want each of them to run in parallel mode, say `mirai::deamons(n)` (n is number of processes) in your R code before the finction call, and `mirai::daemons(0)` after. See [mirai - Quick Reference](https://cran.r-project.org/web/packages/mirai/vignettes/mirai.html) for more information.
+Both main functions, `friends.test` and `friends.test.bic`, can distribute the row-wise work through `BiocParallel`. Pass `BPPARAM = BiocParallel::MulticoreParam(workers = n)` on Unix-like systems or `BPPARAM = BiocParallel::SnowParam(workers = n)` on all platforms. If you also set `.progress = TRUE`, the selected `BiocParallel` backend shows its text progress bar.
+
+Here is a minimal parallel example using a socket backend that also works on Windows:
+
+    ```{r 'simple parallel example'}
+    toy_attention <- matrix(
+        c(
+            10, 6, 7, 8, 9,
+            9, 10, 6, 7, 8,
+            8, 9, 10, 6, 7,
+            7, 8, 9, 10, 6,
+            6, 7, 8, 9, 10,
+            20, 0, 0, 0, 0
+        ),
+        nrow = 6, ncol = 5, byrow = TRUE
+    )
+
+    friends.test(
+        toy_attention,
+        threshold = 0.05,
+        .progress = TRUE,
+        BPPARAM = BiocParallel::SnowParam(workers = 2)
+    )
+    ```
 
 
 ## Session info

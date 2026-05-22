@@ -9,11 +9,10 @@
 #' If it does, those c for which the t is relevant,
 #' are the t's friend. And, the t is the c's marker.
 #'
-#' If you want to run the main function cycles in parallel,
-#' say \code{mirai::daemons(proc#)}, the \code{proc#} is a
-#' natural number of processors.
-#' Do not forget to switch the parallel mode off:
-#' \code{mirai::daemons(proc#)}
+#' If you want to run the row-wise calculations in parallel,
+#' pass a [BiocParallel::BiocParallelParam-class] object via \code{BPPARAM},
+#' for instance \code{BiocParallel::MulticoreParam(workers = 4)} on Unix-like
+#' systems or \code{BiocParallel::SnowParam(workers = 4)} on all platforms.
 #'
 #' @param A original association matrix
 #' @param threshold The adjusted p-value threshold for KS test for
@@ -33,9 +32,12 @@
 #' default is \code{FALSE}, see [stats::ks.test()].
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
 #' default is 2000, see [stats::ks.test()].
-#' @param .progress the .progress is passed to \code{purrr} functions
-#' The default is \code{.FALSE}.
-#' If it is not, non-\code{purr} parts also shows progress.
+#' @param .progress if \code{TRUE}, show simple progress messages and enable
+#' the text progress bar of the selected \code{BPPARAM}. The default is
+#' \code{FALSE}.
+#' @param BPPARAM a [BiocParallel::BiocParallelParam-class] instance that
+#' controls whether the row-wise work is run serially or in parallel. The
+#' default is \code{BiocParallel::SerialParam()}.
 #' @return \code{list}; each element represents a marker, *e.g.*,
 #' a matrix row that has friend(s). Each element of the return list
 #' is also a list, one element per friend, and the 2-nd level element
@@ -66,9 +68,8 @@
 #' friends.test(A, threshold = .0001, uniform.max = "m")
 #'
 #' @importFrom stats p.adjust
-#' @importFrom purrr array_branch map_dbl map2 compact pmap
+#' @importFrom purrr array_branch compact pmap
 #' @importFrom cli cli_progress_step cli_progress_done
-#' @importFrom mirai status everywhere
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
@@ -77,7 +78,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
                          uniform.max = "m",
                          simulate.p.value = FALSE,
                          B = 2000,
-                         .progress = FALSE) {
+                         .progress = FALSE,
+                         BPPARAM = NULL) {
     # parameter checks
     if (is.null(A) || (length(dim(A)) != 2))  {
         stop("The first parameter is to be a non-empty 2D matrix-like thing.")
@@ -121,48 +123,28 @@ friends.test <- function(A = NULL, threshold = 0.05,
     }
 
     if (.progress) options(cli.progress_show_after = 0)
+    BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
 
     # rank all the A elements in columns
     if (.progress) cli::cli_progress_step("Ranking...")
     all_ranks <- friends.test::row.int.ranks(A)
+    all_rank_rows <- purrr::array_branch(all_ranks, 1)
 
     # calculate the p-values for null hypothesis for all the rank rows
     # pipeline : array tp list, list to double vector of p-values
     # adjust p-value
-    the.progress <- .progress
     if (.progress) {
         cli::cli_progress_step("Filtering out uniforms...")
-        the.progress <- list(name = "Filtering out uniforms...")
-    }
-    if (
-        mirai::status()$connections > 0
-    ) {
-        libs <- .libPaths()
-        mirai::everywhere(
-            {
-                .libPaths(libs)
-            },
-            libs = libs
-        )
-        #For Windows, we need it because of uninitialised windows workers.
     }
     adj_nunif_pval <-
-        all_ranks |>
-        #convert the array to list of rows
-        purrr::array_branch(1) |>
-        #apply friends.test::unif.ks.test to each
-        purrr::map_dbl(purrr::in_parallel(\(ranks) {
-            friends.test::unif.ks.test(
-                ranks,
-                uniform.max = uniform.max,
-                simulate.p.value = FALSE,
-                B = 2000
-            )
-        },
-        #inside in_parallel, it knows nothing,
-        #we are to pass it all via ...
-        uniform.max = uniform.max
-        ), .progress = the.progress) |>
+        ft_bplapply_dbl(
+            all_rank_rows,
+            friends.test::unif.ks.test,
+            uniform.max = uniform.max,
+            simulate.p.value = simulate.p.value,
+            B = B,
+            BPPARAM = BPPARAM
+        ) |>
         p.adjust(
             method = p.adjust.method
         )
@@ -182,22 +164,18 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
     # find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
-    if (.progress) {
-        cli::cli_progress_step("Identifying friends...")
-        the.progress$name <- "Identifying friends..."
-    }
+    if (.progress) cli::cli_progress_step("Identifying friends...")
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
     #marker, friend, friend.rank
-    ijrlist <-
-        all_ranks[marker_indices, , drop = FALSE] |>
-        purrr::array_branch(1) |>
-        #we have a list of nonuniform row ranks;
-        #we are sure it is a list
-        #we pass it to map2,
-        #with .y as the row numbers in A
-        purrr::map2(which(is_marker), purrr::in_parallel(\(ranks, i) {
+    marker_rank_rows <- purrr::array_branch(
+        all_ranks[marker_indices, , drop = FALSE],
+        1
+    )
+    col_names <- colnames(A)
+    ijrlist <- ft_bpmapply_list(
+        \(ranks, i, max.possible.rank, max.friends.n, col_names) {
             step <- friends.test::best.step.fit(
                 ranks,
                 max.possible.rank = max.possible.rank
@@ -215,7 +193,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
             #but we want the name of the friend ti be the name of
             #elemant of the inner list
             repi <- rep(i, length(friends))
-            names(repi) <- colnames(A)[friends]
+            names(repi) <- col_names[friends]
             #list of vector trios
             purrr::pmap(
                 list(
@@ -226,13 +204,16 @@ friends.test <- function(A = NULL, threshold = 0.05,
                 c
             )
         },
-        #inside in_parallel, it knows nothing,
-        #we are to pass it all via ...
-        max.possible.rank = max.possible.rank,
-        max.friends.n = max.friends.n,
-        A = A
+        marker_rank_rows,
+        marker_indices,
+        MoreArgs = list(
+            max.possible.rank = max.possible.rank,
+            max.friends.n = max.friends.n,
+            col_names = col_names
         ),
-        .progress = the.progress)
+        BPPARAM = BPPARAM
+    )
+    names(ijrlist) <- names(marker_rank_rows)
 
     if (.progress) cli::cli_progress_step("Compacting...")
     ijrlist <- purrr::compact(ijrlist)

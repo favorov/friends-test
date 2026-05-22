@@ -9,11 +9,10 @@
 #' If it does, those c for which the t is relevant,
 #' are the t's friend. And, the t is the c's marker.
 #'
-#' If you want to run the main function cycles in parallel,
-#' say \code{mirai::daemons(proc#)}, the \code{proc#} is a
-#' natural number of processors.
-#' Do not forget to switch the parallel mode off:
-#' \code{mirai::daemons(proc#)}
+#' If you want to run the row-wise calculations in parallel,
+#' pass a [BiocParallel::BiocParallelParam-class] object via \code{BPPARAM},
+#' for instance \code{BiocParallel::MulticoreParam(workers = 4)} on Unix-like
+#' systems or \code{BiocParallel::SnowParam(workers = 4)} on all platforms.
 #'
 #' @param A original association matrix
 #' @param prior.to.have.friends The prior for a row to have friendly columns.
@@ -22,9 +21,12 @@
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
 #' The string "all" (default) means the same as \code{ncols(A)} value,
 #' do not filter markers by this parameter.
-#' @param .progress the .progress is passed to \code{purrr} functions
-#' The default is \code{.FALSE}.
-#' If it is not, non-\code{purr} parts also shows progress.
+#' @param .progress if \code{TRUE}, show simple progress messages and enable
+#' the text progress bar of the selected \code{BPPARAM}. The default is
+#' \code{FALSE}.
+#' @param BPPARAM a [BiocParallel::BiocParallelParam-class] instance that
+#' controls whether the row-wise work is run serially or in parallel. The
+#' default is \code{BiocParallel::SerialParam()}.
 #' @return \code{list}; each element represents a marker, *e.g.*,
 #' a matrix row that has friend(s). Each element of the return list
 #' is also a list, one element per friend, and the 2-nd level element
@@ -52,14 +54,15 @@
 #' friends.test.bic(A, prior.to.have.friends = 0.5)
 #' friends.test.bic(A, prior.to.have.friends = 0.001)
 #' @importFrom stats p.adjust
-#' @importFrom purrr array_branch map_dbl map2 compact pmap
+#' @importFrom purrr array_branch compact pmap
 #' @importFrom cli cli_progress_step cli_progress_done
 #' @export
 #'
 friends.test.bic <- function(A = NULL,
                              prior.to.have.friends = -1,
                              max.friends.n = "all",
-                             .progress = FALSE) {
+                             .progress = FALSE,
+                             BPPARAM = NULL) {
     # parameter checks
     if (is.null(A) || (length(dim(A)) != 2))  {
         stop("The first parameter is to be a non-empty 2D matrix-like thing.")
@@ -93,40 +96,21 @@ friends.test.bic <- function(A = NULL,
     }
 
     if (.progress) options(cli.progress_show_after = 0)
+    BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
     # rank all the A elements in columns
     if (.progress) cli::cli_progress_step("Ranking...")
     all_ranks <- friends.test::row.int.ranks(A)
     max.possible.rank <- dim(A)[1]
+    all_rank_rows <- purrr::array_branch(all_ranks, 1)
 
-    the.progress <- .progress
-    if (.progress) {
-        cli::cli_progress_step("Fitting the models...")
-        the.progress <- list(name = "Fitting the models...")
-    }
-    if (
-        mirai::status()$connections > 0
-    ) {
-        libs <- .libPaths()
-        mirai::everywhere(
-            {
-                .libPaths(libs)
-            },
-            libs = libs
-        )
-        #For Windows, we need it because of uninitialised windows workers.
-    }
+    if (.progress) cli::cli_progress_step("Fitting the models...")
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
     #marker, friend, friend.rank
-    ijrlist <-
-        all_ranks |>
-        purrr::array_branch(1) |>
-        #we have a list of nonuniform row ranks;
-        #we are sure it is a list
-        #we pass it to map2,
-        #with .y as the row numbers in A
-        purrr::map2(seq_len(nrow(A)), purrr::in_parallel(\(ranks, i) {
+    col_names <- colnames(A)
+    ijrlist <- ft_bpmapply_list(
+        \(ranks, i, max.friends.n, max.possible.rank, prior.to.have.friends, col_names) {
             step <- friends.test::best.step.fit.bic(
                 ranks,
                 max.possible.rank = max.possible.rank,
@@ -151,7 +135,7 @@ friends.test.bic <- function(A = NULL,
             #but we want the name of the friend ti be the name of
             #elemant of the inner list
             repi <- rep(i, length(friends))
-            names(repi) <- colnames(A)[friends]
+            names(repi) <- col_names[friends]
             #list of vector trios
             purrr::pmap(
                 list(
@@ -162,13 +146,17 @@ friends.test.bic <- function(A = NULL,
                 c
             )
         },
-        #inside in_parallel, it knows nothing,
-        #we are to pass it all via ...
-        max.friends.n = max.friends.n,
-        max.possible.rank = max.possible.rank,
-        prior.to.have.friends = prior.to.have.friends,
-        A = A
-        ), .progress = the.progress)
+        all_rank_rows,
+        seq_len(nrow(A)),
+        MoreArgs = list(
+            max.friends.n = max.friends.n,
+            max.possible.rank = max.possible.rank,
+            prior.to.have.friends = prior.to.have.friends,
+            col_names = col_names
+        ),
+        BPPARAM = BPPARAM
+    )
+    names(ijrlist) <- names(all_rank_rows)
 
     if (.progress) cli::cli_progress_step("Compacting...")
     ijrlist <- purrr::compact(ijrlist)

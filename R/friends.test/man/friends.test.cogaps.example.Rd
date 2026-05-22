@@ -11,7 +11,7 @@ An object of class \code{list} of length 3.
 \url{https://zenodo.org/records/7709664/files/cogapsresult.Rds}
 }
 \usage{
-friends.test.cogaps.example
+data(friends.test.cogaps.example)
 }
 \description{
 An exaple of loadings of genes in CoGAPS - identified patterns.

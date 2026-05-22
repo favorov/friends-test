@@ -101,9 +101,12 @@ test_that("best friend is determined correctly in parallel mode", {
             row4 0.7698414 0.7774452 0.2672207 0.34034900 0.8273733
             row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
     attention <- as.matrix(read.table(text = text, header = TRUE))
-    mirai::daemons(2)
-    friends <- friends.test.bic(attention, .25, max.friends.n = 1)
-    mirai::daemons(0)
+    friends <- friends.test.bic(
+        attention,
+        .25,
+        max.friends.n = 1,
+        BPPARAM = BiocParallel::SnowParam(workers = 2, progressbar = FALSE)
+    )
     expected <- list(
         row5 = list(
             col5 = c(marker = 5, friend = 5, rank = 1)
@@ -111,9 +114,12 @@ test_that("best friend is determined correctly in parallel mode", {
     )
     expect_equivalent(friends, expected)
 
-    mirai::daemons(2)
-    friends <- friends.test.bic(attention, .5, max.friends.n = 1)
-    mirai::daemons(0)
+    friends <- friends.test.bic(
+        attention,
+        .5,
+        max.friends.n = 1,
+        BPPARAM = BiocParallel::SnowParam(workers = 2, progressbar = FALSE)
+    )
     #we expct two friend now
     expected <- list(
         row3 = list(

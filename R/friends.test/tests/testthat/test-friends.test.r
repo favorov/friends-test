@@ -82,9 +82,10 @@ test_that("passes non-diagonal diagonal parallel test", {
     diag(almost_diagon_mat) <- 19
     rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
     colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
-    mirai::daemons(2)
-    friends <- friends.test(almost_diagon_mat)
-    mirai::daemons(0)
+    friends <- friends.test(
+        almost_diagon_mat,
+        BPPARAM = BiocParallel::SnowParam(workers = 2, progressbar = FALSE)
+    )
     expected <- list(
         row1 = list(
             col1 = c(marker = 1, friend = 1, rank = 1)

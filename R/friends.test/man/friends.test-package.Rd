@@ -30,6 +30,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Alexander Favorov \email{favorov@sensi.org} (\href{https://orcid.org/0000-0003-2595-1091}{ORCID})
   \item Alexandra Suvorikova \email{a.suvorikova@gmail.com} [contributor]
   \item Alexey Kroshnin \email{kroshnin@wias-berlin.de} [contributor]
   \item Dmitrijs Lvovs \email{dmitrijs.lvovs@gmail.com} [contributor]

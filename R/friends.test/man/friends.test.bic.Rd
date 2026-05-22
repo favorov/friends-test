@@ -8,7 +8,8 @@ friends.test.bic(
   A = NULL,
   prior.to.have.friends = -1,
   max.friends.n = "all",
-  .progress = FALSE
+  .progress = FALSE,
+  BPPARAM = NULL
 )
 }
 \arguments{
@@ -22,9 +23,13 @@ than $n$ friendly columns. 1 means we look only for unique (best) friends.
 The string "all" (default) means the same as \code{ncols(A)} value,
 do not filter markers by this parameter.}
 
-\item{.progress}{the .progress is passed to \code{purrr} functions
-The default is \code{.FALSE}.
-If it is not, non-\code{purr} parts also shows progress.}
+\item{.progress}{if \code{TRUE}, show simple progress messages and enable
+the text progress bar of the selected \code{BPPARAM}. The default is
+\code{FALSE}.}
+
+\item{BPPARAM}{a \link[BiocParallel:BiocParallelParam-class]{BiocParallel::BiocParallelParam} instance that
+controls whether the row-wise work is run serially or in parallel. The
+default is \code{BiocParallel::SerialParam()}.}
 }
 \value{
 \code{list}; each element represents a marker, \emph{e.g.},
@@ -49,11 +54,10 @@ If it does, those c for which the t is relevant,
 are the t's friend. And, the t is the c's marker.
 }
 \details{
-If you want to run the main function cycles in parallel,
-say \code{mirai::daemons(proc#)}, the \code{proc#} is a
-natural number of processors.
-Do not forget to switch the parallel mode off:
-\code{mirai::daemons(proc#)}
+If you want to run the row-wise calculations in parallel,
+pass a \link[BiocParallel:BiocParallelParam-class]{BiocParallel::BiocParallelParam} object via \code{BPPARAM},
+for instance \code{BiocParallel::MulticoreParam(workers = 4)} on Unix-like
+systems or \code{BiocParallel::SnowParam(workers = 4)} on all platforms.
 }
 \examples{
 A <- matrix(
