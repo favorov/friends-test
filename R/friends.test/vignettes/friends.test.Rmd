@@ -30,7 +30,7 @@ vignette: >
 
 ## Introduction
 
-There is a simple intuition of what it means to be a friend. A friend of Augustus cares about Augustus more than about other people. And, if we see Augustus, then we infer to see friends(s) of Augustus also. Please refer to [our Arxive publication](https://arxiv.org/abs/2512.24843) for more formal introduction.
+There is a simple intuition of what it means to be a friend. A friend of Augustus cares about Augustus more than about other people. And, if we see Augustus, then we infer to see friends(s) of Augustus also. Please refer to [our arXiv preprint](https://arxiv.org/abs/2512.24843) for a more formal introduction.
 
 
 Let's picture a set of expression pattern, each represents a biological process. Techically, each pattern is a vector of expression loads of the involved genes.
@@ -182,7 +182,7 @@ Feature loadings in CoGAPS are normalized expression values across patterns. Eac
 Let's look for marker genes for the patterns using `friends.test`. In this setup, genes (possibly, markers) are rows, patterns (possibly, friends for the markers) are columns.
 
 
-We use here the default version of `friends.test` that selects markers by the KS test. As far ad there is ~15000 genes, we use Bonferroni p=value adjustment rather than the default "BH". 
+We use here the default version of `friends.test` that selects markers by the KS test. As far as there is ~15000 genes, we use Bonferroni p-value adjustment rather than the default "BH". 
 
     ```{r patterns are genes friends}
     friends_of_genes <- friends.test(
@@ -194,7 +194,7 @@ We use here the default version of `friends.test` that selects markers by the KS
 ### Return structure
 
 The return is a list of lists, the outer list is by gene that is a marker, the inner is by pattern that is the marker's friend. The output format allows a marker to have a lot of friends. 
-The leave is a 3-integer vector, are the marker index and the friend index in the matrix we started with, and the rank of the friend for the marker. Let's look at the first element, it's rank is 1 as far as it is the first.
+The leaf is a 3-integer vector: the marker index and the friend index in the matrix we started with, and the rank of the friend for the marker. Let's look at the first element; its rank is 1 as it is the first.
 
     ```{r show list element}
     friends_of_genes[[1]][[1]]
@@ -264,7 +264,7 @@ That is what the friends.test is a unique test to detect: the `r names(best_frie
 
 ## Gene set enrichment
 
-To perform an example of gene set enrichment analysis, we use the Baesian version of the test, `friends.test.bic`. We restrict the number of friends for a marker by 4, a half of number of the patterns, to keep them all in the similar "direction". The reqired parameter `prior.to.have.friends` is set to approximately 1/(number od genes). We run 2 parallel processses, see [Parallel calculation](#parallel-calculation).
+To perform an example of gene set enrichment analysis, we use the Bayesian version of the test, `friends.test.bic`. We restrict the number of friends for a marker by 4, a half of number of the patterns, to keep them all in the similar "direction". The required parameter `prior.to.have.friends` is set to approximately 1/(number of genes). We run 2 parallel processes, see [Parallel calculation](#parallel-calculation).
 
     ```{r 'patterns are good genes friends'}
     good_friends_of_genes <- friends.test.bic(
@@ -403,5 +403,11 @@ Here is a minimal parallel example using a socket backend that also works on Win
     ```{r}
     sessionInfo()
     ```
+
+## References
+
+Suvorikova A, Kroshnin A, Lvovs D, Mukhina V, Mironov A, Fertig EJ, Danilova L, Favorov A (2025).
+*friends.test: identifying specificity by detecting structural breaks in entity interactions.*
+arXiv:2512.24843. <https://arxiv.org/abs/2512.24843>
 
 </div>

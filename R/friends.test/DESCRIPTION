@@ -25,7 +25,8 @@ License: Artistic-2.0
 LazyLoad: yes
 Depends: R (>= 4.5.0)
 biocViews: Annotation, StatisticalMethod
-URL: https://github.com/favorov/friends.test
+URL: https://github.com/favorov/friends.test,
+    https://arxiv.org/abs/2512.24843
 BugReports: https://github.com/favorov/friends.test/issues
 Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat, dplyr, msigdbr, fgsea, tibble
 VignetteBuilder: knitr

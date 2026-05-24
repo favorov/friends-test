@@ -7,6 +7,8 @@ The idea is: we have T rows and C columns and column-to-row relation described a
 
 If a row is more important for a column than for other column(s), and the difference is more than by chance, the column is the row's friend and the row is the column's marker. "By chance" (null model)" implies uniform distribution of the row's importance for different columns.
 
+**Preprint:** Suvorikova A, Kroshnin A, Lvovs D, Mukhina V, Mironov A, Fertig EJ, Danilova L, Favorov A (2025). *friends.test: identifying specificity by detecting structural breaks in entity interactions.* arXiv:2512.24843. <https://arxiv.org/abs/2512.24843>
+
 0.0.1 - initial version.  
 0.1.1 - p-value calculated.  
 0.2.1 - cpp based p-value, first working version.  
