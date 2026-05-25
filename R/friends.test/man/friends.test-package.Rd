@@ -21,6 +21,7 @@ The simplest example: imagine that only one column pays attention to our row.
 Useful links:
 \itemize{
   \item \url{https://github.com/favorov/friends.test}
+  \item \url{https://arxiv.org/abs/2512.24843}
   \item Report bugs at \url{https://github.com/favorov/friends.test/issues}
 }
 
