@@ -2,7 +2,8 @@
 #'
 #' Validates and configures a \code{BiocParallelParam} object for use in
 #' \code{friends.test} and \code{friends.test.bic}.  When \code{BPPARAM} is
-#' \code{NULL} the function falls back to \code{\link[BiocParallel]{SerialParam}}
+#' \code{NULL} the function falls back to
+#' \code{\link[BiocParallel]{SerialParam}}
 #' so that callers always receive a usable backend.  The progress bar is
 #' enabled or disabled according to \code{.progress}.
 #'
