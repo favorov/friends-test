@@ -47,7 +47,11 @@ step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
     if (!is.null(dim(ranks))) {
         warning("Ranks has not-NULL dim(), it is not a vector.\n")
     }
-    .step_fit_compact(ranks, max.possible.rank)
+    if (max.possible.rank <= length(ranks)) {
+        .step_fit_fullmesh(ranks, max.possible.rank)
+    } else {
+        .step_fit_compact(ranks, max.possible.rank)
+    }
 }
 
 
@@ -184,6 +188,52 @@ step.fit.ln.likelihoods.fullmesh <- function(ranks, max.possible.rank) {
         columns.order = columns.order,
         ln.likelihoods = ln.likelihoods,
         k1.by.l1 = k1.by.l1
+    )
+}
+
+
+# Internal O(nrow) per-row step-model core for wide matrices (ncol >= nrow).
+#
+# Iterates over all split ranks l1 in 1:(max.possible.rank-1) and directly
+# accumulates the best log-likelihood and best l1 for each k1.
+# Tie-breaking: prefer larger l1 (>= comparison), consistent with
+# .step_fit_compact.
+# Total work: O(max.possible.rank) = O(nrow) per row.
+#
+# No parameter checks — callers are responsible for valid input.
+# Public entry point with checks: step.fit.ln.likelihoods().
+#
+# Returns the same compact list as .step_fit_compact:
+#   columns.order, best_ll_by_k1, best_l1_by_k1, uniform_ll
+.step_fit_fullmesh <- function(ranks, max.possible.rank) {
+    columns.order <- order(ranks)
+    sorted_ranks <- ranks[columns.order]  # ascending
+    k <- length(sorted_ranks)
+
+    best_ll_by_k1 <- rep(-Inf, k)
+    best_l1_by_k1 <- integer(k)
+
+    k1 <- 0L
+    for (l1 in seq_len(max.possible.rank - 1L)) {
+        while (k1 < k && sorted_ranks[k1 + 1L] <= l1) k1 <- k1 + 1L
+        if (k1 == 0L || k1 == k) next  # all ranks on one side: no valid split
+
+        p1 <- k1 / k
+        ll <- k1 * log(p1 / l1) +
+            (k - k1) * log((1 - p1) / (max.possible.rank - l1))
+
+        # >= to prefer larger l1 on exact tie (same convention as .step_fit_compact)
+        if (ll >= best_ll_by_k1[k1]) {
+            best_ll_by_k1[k1] <- ll
+            best_l1_by_k1[k1] <- l1
+        }
+    }
+
+    list(
+        columns.order = columns.order,
+        best_ll_by_k1 = best_ll_by_k1,
+        best_l1_by_k1 = best_l1_by_k1,
+        uniform_ll    = k * log(1 / max.possible.rank)
     )
 }
 
