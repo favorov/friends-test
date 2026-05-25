@@ -7,9 +7,9 @@
 best.step.fit(ranks, max.possible.rank)
 }
 \arguments{
-\item{ranks}{vector of ranks of a row in different columns}
+\item{ranks}{integer vector of ranks of a row in different columns}
 
-\item{max.possible.rank}{number of rows, i.e. maximal rank}
+\item{max.possible.rank}{number of rows, i.e. maximal possible rank}
 }
 \value{
 a list of four values: \cr

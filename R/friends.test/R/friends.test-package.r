@@ -24,8 +24,11 @@
 #' [unif.ks.test] tests uniformity of a integer vector, the uniformity
 #' corresponds to the "has-no-friends" uniform null model.
 #'
-#' [step.fit.ln.likelihoods] fits a integer vector with one-step model,
-#' step contains friends.
+#' [step.fit.ln.likelihoods] fits an integer vector with the one-step model
+#' using the compact O(ncol) algorithm; [step.fit.ln.likelihoods.fullmesh.enum]
+#' is the reference O(max.possible.rank) full-mesh enumeration kept for
+#' validation; [step.fit.ln.likelihoods.fullmesh] wraps the compact method
+#' to produce the same fullmesh output format.
 #'
 #' [friends.test.bic] finds whether there column(s) that are friends for a row
 #' and find them if they do. The friends presence is tested by comparing the

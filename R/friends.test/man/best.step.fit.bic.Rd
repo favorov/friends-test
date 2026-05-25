@@ -7,9 +7,9 @@
 best.step.fit.bic(ranks, max.possible.rank, prior.to.have.friends)
 }
 \arguments{
-\item{ranks}{vector of ranks of a row in different columns}
+\item{ranks}{integer vector of ranks of a row in different columns}
 
-\item{max.possible.rank}{number of rows, i.e. maximal rank}
+\item{max.possible.rank}{number of rows, i.e. maximal possible rank}
 
 \item{prior.to.have.friends}{The prior for a row is important enough to
 have friendly columns}

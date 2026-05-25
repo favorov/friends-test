@@ -22,7 +22,7 @@
 #' step <- best.step.fit(TF.ranks[42, ], genes.no)
 #' @export
 best.step.fit <- function(ranks, max.possible.rank) {
-    step.models <- friends.test:::.step_fit_compact(ranks, max.possible.rank)
+    step.models <- .step_fit_compact(ranks, max.possible.rank)
     k <- length(ranks)
 
     # Valid k1 values: 1..(k-1) with a non-empty valid l1 range

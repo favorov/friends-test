@@ -32,7 +32,7 @@
 #' nostep <- best.step.fit.bic(TF.ranks[42, ], genes.no, 1E-50)
 #' @export
 best.step.fit.bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
-    step.models <- friends.test:::.step_fit_compact(ranks, max.possible.rank)
+    step.models <- .step_fit_compact(ranks, max.possible.rank)
     k <- length(ranks)
 
     valid_k1 <- which(is.finite(step.models$best_ll_by_k1))

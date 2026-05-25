@@ -2,42 +2,49 @@
 % Please edit documentation in R/step.fit.ln.likelihoods.r
 \name{step.fit.ln.likelihoods}
 \alias{step.fit.ln.likelihoods}
-\title{(descending in each column) ranks of the same row
-in different columns
-(the \code{ranks} parameter)
-The input ranks are integers in \eqn{1..max.possible.rank}.
-Each of the split rank values \eqn{1 .. max.possible.rank-1}
-split all the ranks into two steps: "this or less" and
-"greater than this".}
+\title{Fit step models for a row's rank profile (compact O(ncol) method)}
 \usage{
 step.fit.ln.likelihoods(ranks, max.possible.rank)
 }
 \arguments{
-\item{ranks}{vector of ranks of a row in different columns}
+\item{ranks}{integer vector of ranks of a row in different columns}
 
-\item{max.possible.rank}{number of rows, i.e. maximal rank}
+\item{max.possible.rank}{number of rows, i.e. maximal possible rank}
 }
 \value{
-a list of three values: \cr
-\code{columns.order} is the order of ranks in, column-by-column\cr
-\code{ln.likelihoods} the ln of the likelihood of each of models
-corresponding to each split rank value in \eqn{1..max.possible.rank-1}
-and the last, correspond to just uniform, no step\cr
-\code{k1.by.l1} contains \eqn{k_1}, that is the number of ranks on the
-on left of the step, including the split value, for split values
-\eqn{1..max.possible.rank};\cr
+a list of four values:\cr
+\code{columns.order} is the permutation that sorts \code{ranks} ascending;\cr
+\code{best_ll_by_k1} length-\eqn{k} numeric vector; entry \eqn{k_1} is the
+maximum log-likelihood over all valid \eqn{\ell_1} for that number of
+friends (\code{-Inf} when no valid \eqn{\ell_1} exists);\cr
+\code{best_l1_by_k1} length-\eqn{k} integer vector; the \eqn{\ell_1}
+achieving \code{best_ll_by_k1};\cr
+\code{uniform_ll} log-likelihood of the uniform (no-friends) model.\cr
 }
 \description{
-The function fits the step (bi-uniform) model for each
-integer splitting value in \eqn{1..max.possible.rank-1};
-the splitting value is in the maximal value in the left part
-of the ordering (the original ranks are descending, so best
-columns are in the left part) and calculates the likelihood.
-The last value with the index \eqn{max.possible.rank} is calculated for a
-non-step uniform model.
+For each possible number of friends \eqn{k_1 \in 1 \ldots k-1}, finds
+the log-likelihood-maximising split rank \eqn{\ell_1} by exploiting the
+convexity of the log-likelihood in \eqn{\ell_1} over the valid range
+\eqn{[\mathrm{sorted\_ranks}[k_1],\ \mathrm{sorted\_ranks}[k_1+1]-1]}.
+Total work is O(k) = O(ncol) per row, compared to O(max.possible.rank)
+for the full-mesh enumeration in \link{step.fit.ln.likelihoods.fullmesh.enum}.
+}
+\details{
+The input ranks are integers in \eqn{1 \ldots \mathrm{max.possible.rank}}.
+A step model splits columns into a "friends" group (ranks
+\eqn{\leq \ell_1}) and a "non-friends" group (ranks \eqn{> \ell_1}).
+When adjacent ranks are tied the valid range for that \eqn{k_1} is empty
+and the corresponding entry is \code{-Inf}.
+
 See \link{friends.test} documentation for details.
 }
 \examples{
 example(row.int.ranks)
 steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
+}
+\seealso{
+\link{step.fit.ln.likelihoods.fullmesh.enum} for the full-mesh
+O(max.possible.rank) reference implementation,
+\link{step.fit.ln.likelihoods.fullmesh} for the same result in fullmesh format
+computed via this function.
 }
