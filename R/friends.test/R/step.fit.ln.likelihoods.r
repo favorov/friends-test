@@ -222,7 +222,8 @@ step.fit.ln.likelihoods.fullmesh <- function(ranks, max.possible.rank) {
         ll <- k1 * log(p1 / l1) +
             (k - k1) * log((1 - p1) / (max.possible.rank - l1))
 
-        # >= to prefer larger l1 on exact tie (same convention as .step_fit_compact)
+        # >= to prefer larger l1 on exact tie
+        # (same convention as .step_fit_compact)
         if (ll >= best_ll_by_k1[k1]) {
             best_ll_by_k1[k1] <- ll
             best_l1_by_k1[k1] <- l1
@@ -280,7 +281,8 @@ step.fit.ln.likelihoods.fullmesh <- function(ranks, max.possible.rank) {
             best_l1_by_k1[k1] <- l1_min
             best_ll_by_k1[k1] <- ll_min
         } else {
-            # Prefer larger l1 on exact tie (consistent with max(which(...)) convention)
+            # Prefer larger l1 on exact tie
+            # (consistent with max(which(...)) convention)
             ll_max <- k1 * (log_p1 - log(l1_max)) +
                 (k - k1) * (log_1p1 - log(max.possible.rank - l1_max))
             if (ll_max >= ll_min) {

@@ -50,7 +50,9 @@ best.step.fit <- function(ranks, max.possible.rank) {
     list(
         step.models        = step.models,
         best.step.rank     = best.step.rank,
-        columns.on.left    = step.models$columns.order[seq_len(population.on.left)],
+        columns.on.left    = step.models$columns.order[
+            seq_len(population.on.left)
+        ],
         columns.on.right   = step.models$columns.order[
             seq(population.on.left + 1L, k)
         ],
