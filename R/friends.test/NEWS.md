@@ -4,8 +4,8 @@
 
 - Parallel backend switched from mirai/purrr to BiocParallel (pass `BPPARAM` to both main functions; default is serial).
 - The step-model likelihood search is rewritten from O(n_rows) to O(n_cols) per marker using a convexity argument, giving ~N00× speedup on large matrices.
-- `step.fit.ln.likelihoods` return format changed: now returns a compact list `(columns.order, best_ll_by_k1, best_l1_by_k1, uniform_ll)` instead of a full likelihood profile.
-- New function `step.fit.ln.likelihoods.fullmesh` added: wraps the above and reconstructs the previous full-profile return format `(columns.order, ln.likelihoods, k1.by.l1)` for users who need the complete likelihood landscape.
+- `step.fit.ln.likelihoods` return format changed: now returns a compact list instead of a full likelihood profile.
+- Function wrap `step.fit.ln.likelihoods.fullmesh` returns the previous full-profile return format.
 
 ## friends.test 0.99.18
 
