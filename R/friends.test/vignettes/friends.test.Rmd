@@ -271,7 +271,7 @@ To perform an example of gene set enrichment analysis, we use the Bayesian versi
         featureLoadings,
         prior.to.have.friends = 1E-4,
         max.friends.n = 4,
-        BPPARAM = BiocParallel::MulticoreParam(workers = 2)
+        BPPARAM = BiocParallel::SnowParam(workers = 2)
     )
     ```
 

@@ -32,6 +32,6 @@ example(row.int.ranks)
 steps <- step.fit.ln.likelihoods.fullmesh(TF.ranks[42, ], genes.no)
 }
 \seealso{
-\link{step.fit.ln.likelihoods.fullmesh.enum},
-\link{step.fit.ln.likelihoods}
+\link{step.fit.ln.likelihoods},
+\link{step.fit.ln.likelihoods.fullmesh}
 }

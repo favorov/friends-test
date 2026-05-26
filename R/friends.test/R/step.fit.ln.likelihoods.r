@@ -25,10 +25,8 @@
 #' \code{best_l1_by_k1} length-\eqn{k} integer vector; the \eqn{\ell_1}
 #' achieving \code{best_ll_by_k1};\cr
 #' \code{uniform_ll} log-likelihood of the uniform (no-friends) model.\cr
-#' @seealso [step.fit.ln.likelihoods.fullmesh.enum] for the full-mesh
-#' O(max.possible.rank) reference implementation,
-#' [step.fit.ln.likelihoods.fullmesh] for the same result in fullmesh format
-#' computed via this function.
+#' @seealso [step.fit.ln.likelihoods.fullmesh] for the same result in fullmesh
+#' format computed via this function.
 #' @examples
 #' example(row.int.ranks)
 #' steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
@@ -55,86 +53,6 @@ step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
 }
 
 
-#' Fit step models for a row's rank profile (full-mesh enumeration)
-#'
-#' Fits the bi-uniform step model by enumerating every possible split rank
-#' \eqn{\ell_1 \in 1 \ldots \mathrm{max.possible.rank}-1} explicitly.
-#' The last entry (\eqn{\ell_1 = \mathrm{max.possible.rank}}) stores the
-#' log-likelihood of the uniform (no-friends) model.
-#' Total work is O(max.possible.rank) per row.
-#'
-#' This is the original reference implementation, kept for validation and
-#' for use cases where the full log-likelihood profile over all split ranks
-#' is needed (e.g. plotting).  For all production work, prefer
-#' [step.fit.ln.likelihoods], which is O(ncol) and returns the same
-#' optimal split.
-#'
-#' See [friends.test] documentation for details.
-#'
-#' @inheritParams step.fit.ln.likelihoods
-#' @return a list of three values:\cr
-#' \code{columns.order} is the permutation that sorts \code{ranks}
-#' ascending;\cr
-#' \code{ln.likelihoods} length-\eqn{\mathrm{max.possible.rank}} numeric
-#' vector; entry \eqn{\ell_1} is the log-likelihood of the step model with
-#' split rank \eqn{\ell_1} (or the uniform model for the last entry);\cr
-#' \code{k1.by.l1} length-\eqn{\mathrm{max.possible.rank}} integer vector;
-#' entry \eqn{\ell_1} is the number of ranks \eqn{\leq \ell_1}.\cr
-#' @seealso [step.fit.ln.likelihoods] for the O(ncol) compact method,
-#' [step.fit.ln.likelihoods.fullmesh] for the fullmesh format derived from it.
-#' @examples
-#' example(row.int.ranks)
-#' steps <- step.fit.ln.likelihoods.fullmesh.enum(TF.ranks[42, ], genes.no)
-#' @export
-step.fit.ln.likelihoods.fullmesh.enum <- function(ranks, max.possible.rank) {
-    if (max.possible.rank < max(ranks)) {
-        stop("Rows_no parameter is the maximal possible rank,
-    it cannot be less then max(ranks)!")
-    }
-    if (!all(ranks - floor(ranks) == 0)) {
-        stop("Ranks are to be integer!")
-    }
-    if (!all(ranks >= 1)) {
-        stop("Ranks are to be integer!")
-    }
-    if (!is.null(dim(ranks))) {
-        warning("Ranks has not-NULL dim(), it is not a vector.\n")
-    }
-
-    columns.order <- order(ranks)
-    sorted_ranks <- ranks[columns.order]
-    ln.likelihoods <- rep(0, max.possible.rank)
-    k1.by.l1 <- rep(0, max.possible.rank)
-    k <- length(sorted_ranks)
-    k1 <- 0
-    # l1==max.possible.rank is "no step"
-    for (l1 in seq_len(max.possible.rank - 1)) {
-        while (k1 < k && sorted_ranks[k1 + 1] <= l1) {
-            k1 <- k1 + 1
-        }
-        k1.by.l1[l1] <- k1
-        p1 <- k1 / k
-        if (p1 > 0) {
-            ln.likelihoods[l1] <-
-                ln.likelihoods[l1] + k1 * log(p1 / l1)
-        }
-        if (p1 < 1) {
-            ln.likelihoods[l1] <-
-                ln.likelihoods[l1] +
-                (k - k1) * log((1 - p1) / (max.possible.rank - l1))
-        }
-    }
-    ln.likelihoods[max.possible.rank] <- k * log(1 / max.possible.rank)
-    k1.by.l1[max.possible.rank] <- k
-
-    list(
-        columns.order = columns.order,
-        ln.likelihoods = ln.likelihoods,
-        k1.by.l1 = k1.by.l1
-    )
-}
-
-
 #' Fit step models for a row's rank profile (fullmesh format via compact method)
 #'
 #' A wrapper around [step.fit.ln.likelihoods] that expands the compact
@@ -150,8 +68,8 @@ step.fit.ln.likelihoods.fullmesh.enum <- function(ranks, max.possible.rank) {
 #' @return Identical format to [step.fit.ln.likelihoods.fullmesh.enum]:
 #' a list with \code{columns.order}, \code{ln.likelihoods}, and
 #' \code{k1.by.l1}.
-#' @seealso [step.fit.ln.likelihoods.fullmesh.enum],
-#' [step.fit.ln.likelihoods]
+#' @seealso [step.fit.ln.likelihoods],
+#' [step.fit.ln.likelihoods.fullmesh]
 #' @examples
 #' example(row.int.ranks)
 #' steps <- step.fit.ln.likelihoods.fullmesh(TF.ranks[42, ], genes.no)

@@ -43,8 +43,6 @@ example(row.int.ranks)
 steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
 }
 \seealso{
-\link{step.fit.ln.likelihoods.fullmesh.enum} for the full-mesh
-O(max.possible.rank) reference implementation,
-\link{step.fit.ln.likelihoods.fullmesh} for the same result in fullmesh format
-computed via this function.
+\link{step.fit.ln.likelihoods.fullmesh} for the same result in fullmesh
+format computed via this function.
 }
