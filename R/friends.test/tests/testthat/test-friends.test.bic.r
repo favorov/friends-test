@@ -94,6 +94,14 @@ test_that("passes non-diagonal diagonal test with high prior to have friend", {
 })
 
 test_that("best friend is determined correctly in parallel mode", {
+    # SnowParam starts fresh Rscript worker processes. They inherit .libPaths()
+    # but not pkgload-loaded packages (load_all() only lives in the parent
+    # session's memory). In R CMD check the package is properly installed, so
+    # workers find it; in test_local() (dev mode) they cannot.
+    skip_if(
+        pkgload::is_dev_package("friends.test"),
+        "SnowParam workers require an installed package; skipping in dev mode"
+    )
     text <- "    col1     col2     col3      col4     col5
             row1 0.1765568 0.7176185 0.2121425 0.01339033 0.5995658
             row2 0.6870228 0.9919061 0.6516738 0.38238796 0.4935413

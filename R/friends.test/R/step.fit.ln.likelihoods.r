@@ -5,7 +5,7 @@
 #' convexity of the log-likelihood in \eqn{\ell_1} over the valid range
 #' \eqn{[\mathrm{sorted\_ranks}[k_1],\ \mathrm{sorted\_ranks}[k_1+1]-1]}.
 #' Total work is O(k) = O(ncol) per row, compared to O(max.possible.rank)
-#' for the full-mesh enumeration in [step.fit.ln.likelihoods.fullmesh.enum].
+#' compared to the O(max.possible.rank) full-mesh enumeration.
 #'
 #' The input ranks are integers in \eqn{1 \ldots \mathrm{max.possible.rank}}.
 #' A step model splits columns into a "friends" group (ranks
@@ -58,15 +58,13 @@ step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
 #' A wrapper around [step.fit.ln.likelihoods] that expands the compact
 #' O(ncol) result into the full log-likelihood profile over all split ranks
 #' \eqn{\ell_1 \in 1 \ldots \mathrm{max.possible.rank}}, matching the output
-#' format of [step.fit.ln.likelihoods.fullmesh.enum].
+#' format of the former \code{step.fit.ln.likelihoods.fullmesh.enum}.
 #'
-#' This function exists primarily to verify that the fast compact algorithm
-#' and the reference full-mesh enumeration agree.  It carries the same
-#' O(max.possible.rank) expansion cost as the enumeration.
+#' This function exists primarily to let users inspect the full likelihood
+#' landscape.  It carries O(max.possible.rank) expansion cost.
 #'
 #' @inheritParams step.fit.ln.likelihoods
-#' @return Identical format to [step.fit.ln.likelihoods.fullmesh.enum]:
-#' a list with \code{columns.order}, \code{ln.likelihoods}, and
+#' @return A list with \code{columns.order}, \code{ln.likelihoods}, and
 #' \code{k1.by.l1}.
 #' @seealso [step.fit.ln.likelihoods],
 #' [step.fit.ln.likelihoods.fullmesh]

@@ -12,20 +12,18 @@ step.fit.ln.likelihoods.fullmesh(ranks, max.possible.rank)
 \item{max.possible.rank}{number of rows, i.e. maximal possible rank}
 }
 \value{
-Identical format to \link{step.fit.ln.likelihoods.fullmesh.enum}:
-a list with \code{columns.order}, \code{ln.likelihoods}, and
+A list with \code{columns.order}, \code{ln.likelihoods}, and
 \code{k1.by.l1}.
 }
 \description{
 A wrapper around \link{step.fit.ln.likelihoods} that expands the compact
 O(ncol) result into the full log-likelihood profile over all split ranks
 \eqn{\ell_1 \in 1 \ldots \mathrm{max.possible.rank}}, matching the output
-format of \link{step.fit.ln.likelihoods.fullmesh.enum}.
+format of the former \code{step.fit.ln.likelihoods.fullmesh.enum}.
 }
 \details{
-This function exists primarily to verify that the fast compact algorithm
-and the reference full-mesh enumeration agree.  It carries the same
-O(max.possible.rank) expansion cost as the enumeration.
+This function exists primarily to let users inspect the full likelihood
+landscape.  It carries O(max.possible.rank) expansion cost.
 }
 \examples{
 example(row.int.ranks)

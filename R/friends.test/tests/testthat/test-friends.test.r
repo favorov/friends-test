@@ -72,7 +72,14 @@ test_that("passes non-diagonal diagonal test", {
 })
 
 test_that("passes non-diagonal diagonal parallel test", {
-    # best.friends method is not illustrated well using square diagonal matrices
+    # SnowParam starts fresh Rscript worker processes. They inherit .libPaths()
+    # but not pkgload-loaded packages (load_all() only lives in the parent
+    # session's memory). In R CMD check the package is properly installed, so
+    # workers find it; in test_local() (dev mode) they cannot.
+    skip_if(
+        pkgload::is_dev_package("friends.test"),
+        "SnowParam workers require an installed package; skipping in dev mode"
+    )
     # we will use a rectangular matrix for this test (ncolls << nrows)
     set.seed(1) # actually, it works with like 9/10 of seeds
     nrows <- 100

@@ -27,7 +27,7 @@ the log-likelihood-maximising split rank \eqn{\ell_1} by exploiting the
 convexity of the log-likelihood in \eqn{\ell_1} over the valid range
 \eqn{[\mathrm{sorted\_ranks}[k_1],\ \mathrm{sorted\_ranks}[k_1+1]-1]}.
 Total work is O(k) = O(ncol) per row, compared to O(max.possible.rank)
-for the full-mesh enumeration in \link{step.fit.ln.likelihoods.fullmesh.enum}.
+compared to the O(max.possible.rank) full-mesh enumeration.
 }
 \details{
 The input ranks are integers in \eqn{1 \ldots \mathrm{max.possible.rank}}.
