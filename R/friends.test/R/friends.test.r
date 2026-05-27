@@ -139,18 +139,28 @@ friends.test <- function(A = NULL, threshold = 0.05,
     adj_nunif_pval <-
         ft_bplapply_dbl(
             all_rank_rows,
-            # Wrapped in local(envir=globalenv()) so the serialized function
-            # carries globalenv() as its closure environment, not the
-            # friends.test namespace. SnowParam workers can always deserialize
-            # globalenv(); friends.test is then loaded via BPOPTIONS before
-            # the function executes.
+            # local(envir=globalenv()): closure carries globalenv() so
+            # SnowParam workers can deserialize it without loading the
+            # friends.test namespace.  .libPaths(libs) propagates the
+            # parent's library paths so workers can find friends.test at
+            # execution time (R CMD build installs to a temp dir that is
+            # not in workers' default .libPaths()).
             local(
-                function(x, ...) friends.test::unif.ks.test(x, ...),
+                function(x, uniform.max, simulate.p.value, B, libs) {
+                    .libPaths(libs)
+                    friends.test::unif.ks.test(
+                        x,
+                        uniform.max = uniform.max,
+                        simulate.p.value = simulate.p.value,
+                        B = B
+                    )
+                },
                 envir = globalenv()
             ),
             uniform.max = uniform.max,
             simulate.p.value = simulate.p.value,
             B = B,
+            libs = .libPaths(),
             BPPARAM = BPPARAM
         ) |>
         p.adjust(
@@ -183,11 +193,14 @@ friends.test <- function(A = NULL, threshold = 0.05,
     )
     col_names <- colnames(A)
     ijrlist <- ft_bpmapply_list(
-        # local(envir=globalenv()): closure carries globalenv(), not the
-        # friends.test namespace, so SnowParam workers can deserialize it
-        # without needing friends.test installed; BPOPTIONS loads it first.
+        # local(envir=globalenv()): closure carries globalenv() so
+        # SnowParam workers can deserialize it without loading the
+        # friends.test namespace.  .libPaths(libs) propagates the
+        # parent's library paths so workers can find friends.test at
+        # execution time.
         local(
-            \(ranks, i, max.possible.rank, max.friends.n, col_names) {
+            \(ranks, i, max.possible.rank, max.friends.n, col_names, libs) {
+                .libPaths(libs)
                 step <- friends.test::best.step.fit(
                     ranks,
                     max.possible.rank = max.possible.rank
@@ -223,7 +236,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
         MoreArgs = list(
             max.possible.rank = max.possible.rank,
             max.friends.n = max.friends.n,
-            col_names = col_names
+            col_names = col_names,
+            libs = .libPaths()
         ),
         BPPARAM = BPPARAM
     )

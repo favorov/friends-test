@@ -110,11 +110,14 @@ friends.test.bic <- function(A = NULL,
     #marker, friend, friend.rank
     col_names <- colnames(A)
     ijrlist <- ft_bpmapply_list(
-        # local(envir=globalenv()): closure carries globalenv(), not the
-        # friends.test namespace, so SnowParam workers can deserialize it
-        # without needing friends.test installed; BPOPTIONS loads it first.
+        # local(envir=globalenv()): closure carries globalenv() so
+        # SnowParam workers can deserialize it without loading the
+        # friends.test namespace.  .libPaths(libs) propagates the
+        # parent's library paths so workers can find friends.test at
+        # execution time.
         local(
-            \(ranks, i, max.friends.n, max.possible.rank, prior.to.have.friends, col_names) {
+            \(ranks, i, max.friends.n, max.possible.rank, prior.to.have.friends, col_names, libs) {
+                .libPaths(libs)
                 step <- friends.test::best.step.fit.bic(
                     ranks,
                     max.possible.rank = max.possible.rank,
@@ -158,7 +161,8 @@ friends.test.bic <- function(A = NULL,
             max.friends.n = max.friends.n,
             max.possible.rank = max.possible.rank,
             prior.to.have.friends = prior.to.have.friends,
-            col_names = col_names
+            col_names = col_names,
+            libs = .libPaths()
         ),
         BPPARAM = BPPARAM
     )
