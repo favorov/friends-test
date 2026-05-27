@@ -47,8 +47,7 @@ ft_bplapply_dbl <- function(X, FUN, ..., BPPARAM) {
     unlist(
         BiocParallel::bplapply(
             X, FUN, ...,
-            BPPARAM = BPPARAM,
-            BPOPTIONS = BiocParallel::bpoptions(packages = "friends.test")
+            BPPARAM = BPPARAM
         ),
         use.names = FALSE
     )
@@ -83,7 +82,6 @@ ft_bpmapply_list <- function(FUN, ..., MoreArgs = NULL, BPPARAM) {
         MoreArgs = MoreArgs,
         SIMPLIFY = FALSE,
         USE.NAMES = FALSE,
-        BPPARAM = BPPARAM,
-        BPOPTIONS = BiocParallel::bpoptions(packages = "friends.test")
+        BPPARAM = BPPARAM
     )
 }

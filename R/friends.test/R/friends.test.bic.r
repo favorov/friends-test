@@ -110,42 +110,48 @@ friends.test.bic <- function(A = NULL,
     #marker, friend, friend.rank
     col_names <- colnames(A)
     ijrlist <- ft_bpmapply_list(
-        \(ranks, i, max.friends.n, max.possible.rank, prior.to.have.friends, col_names) {
-            step <- friends.test::best.step.fit.bic(
-                ranks,
-                max.possible.rank = max.possible.rank,
-                prior.to.have.friends = prior.to.have.friends
-            )
-            frn <- length(step$columns.on.left)
-            if (frn == 0 || frn > max.friends.n) {
-                return(NULL)
-                # here, we filer out the rows where
-                # uniform model wins
-                # (and so there is nothing to left of the step)
-                # or
-                # there are too much friends if we filter for it
-            }
-            # friends
-            friends <- step$columns.on.left
-            # the ranks of friends, the best is 1
-            friend.ranks <- which(
-                step$step.models$columns.order %in% friends
-            )
-            #if we give just i to pmap, the value will be the same,
-            #but we want the name of the friend ti be the name of
-            #elemant of the inner list
-            repi <- rep(i, length(friends))
-            names(repi) <- col_names[friends]
-            #list of vector trios
-            purrr::pmap(
-                list(
-                    marker = repi,
-                    friend = friends,
-                    rank = friend.ranks
-                ),
-                c
-            )
-        },
+        # local(envir=globalenv()): closure carries globalenv(), not the
+        # friends.test namespace, so SnowParam workers can deserialize it
+        # without needing friends.test installed; BPOPTIONS loads it first.
+        local(
+            \(ranks, i, max.friends.n, max.possible.rank, prior.to.have.friends, col_names) {
+                step <- friends.test::best.step.fit.bic(
+                    ranks,
+                    max.possible.rank = max.possible.rank,
+                    prior.to.have.friends = prior.to.have.friends
+                )
+                frn <- length(step$columns.on.left)
+                if (frn == 0 || frn > max.friends.n) {
+                    return(NULL)
+                    # here, we filer out the rows where
+                    # uniform model wins
+                    # (and so there is nothing to left of the step)
+                    # or
+                    # there are too much friends if we filter for it
+                }
+                # friends
+                friends <- step$columns.on.left
+                # the ranks of friends, the best is 1
+                friend.ranks <- which(
+                    step$step.models$columns.order %in% friends
+                )
+                #if we give just i to pmap, the value will be the same,
+                #but we want the name of the friend ti be the name of
+                #elemant of the inner list
+                repi <- rep(i, length(friends))
+                names(repi) <- col_names[friends]
+                #list of vector trios
+                purrr::pmap(
+                    list(
+                        marker = repi,
+                        friend = friends,
+                        rank = friend.ranks
+                    ),
+                    c
+                )
+            },
+            envir = globalenv()
+        ),
         all_rank_rows,
         seq_len(nrow(A)),
         MoreArgs = list(

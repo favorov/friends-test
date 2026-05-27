@@ -139,7 +139,15 @@ friends.test <- function(A = NULL, threshold = 0.05,
     adj_nunif_pval <-
         ft_bplapply_dbl(
             all_rank_rows,
-            friends.test::unif.ks.test,
+            # Wrapped in local(envir=globalenv()) so the serialized function
+            # carries globalenv() as its closure environment, not the
+            # friends.test namespace. SnowParam workers can always deserialize
+            # globalenv(); friends.test is then loaded via BPOPTIONS before
+            # the function executes.
+            local(
+                function(x, ...) friends.test::unif.ks.test(x, ...),
+                envir = globalenv()
+            ),
             uniform.max = uniform.max,
             simulate.p.value = simulate.p.value,
             B = B,
@@ -175,35 +183,41 @@ friends.test <- function(A = NULL, threshold = 0.05,
     )
     col_names <- colnames(A)
     ijrlist <- ft_bpmapply_list(
-        \(ranks, i, max.possible.rank, max.friends.n, col_names) {
-            step <- friends.test::best.step.fit(
-                ranks,
-                max.possible.rank = max.possible.rank
-            )
-            if (length(step$columns.on.left) > max.friends.n) {
-                return(NULL) # marker has too much friends
-            }
-            # friends
-            friends <- step$columns.on.left
-            # the ranks of friends, the best is 1
-            friend.ranks <- which(
-                step$step.models$columns.order %in% friends
-            )
-            #if we give just i to pmap, the value will be the same,
-            #but we want the name of the friend ti be the name of
-            #elemant of the inner list
-            repi <- rep(i, length(friends))
-            names(repi) <- col_names[friends]
-            #list of vector trios
-            purrr::pmap(
-                list(
-                    marker = repi,
-                    friend = friends,
-                    rank = friend.ranks
-                ),
-                c
-            )
-        },
+        # local(envir=globalenv()): closure carries globalenv(), not the
+        # friends.test namespace, so SnowParam workers can deserialize it
+        # without needing friends.test installed; BPOPTIONS loads it first.
+        local(
+            \(ranks, i, max.possible.rank, max.friends.n, col_names) {
+                step <- friends.test::best.step.fit(
+                    ranks,
+                    max.possible.rank = max.possible.rank
+                )
+                if (length(step$columns.on.left) > max.friends.n) {
+                    return(NULL) # marker has too much friends
+                }
+                # friends
+                friends <- step$columns.on.left
+                # the ranks of friends, the best is 1
+                friend.ranks <- which(
+                    step$step.models$columns.order %in% friends
+                )
+                #if we give just i to pmap, the value will be the same,
+                #but we want the name of the friend ti be the name of
+                #elemant of the inner list
+                repi <- rep(i, length(friends))
+                names(repi) <- col_names[friends]
+                #list of vector trios
+                purrr::pmap(
+                    list(
+                        marker = repi,
+                        friend = friends,
+                        rank = friend.ranks
+                    ),
+                    c
+                )
+            },
+            envir = globalenv()
+        ),
         marker_rank_rows,
         marker_indices,
         MoreArgs = list(
