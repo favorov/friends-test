@@ -97,6 +97,8 @@ friends.test.bic <- function(A = NULL,
 
     if (.progress) options(cli.progress_show_after = 0)
     BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
+    use_progressr <- .progress && class(BPPARAM) != "SnowParam" &&
+        requireNamespace("progressr", quietly = TRUE)
     # rank all the A elements in columns
     if (.progress) cli::cli_progress_step("Ranking...")
     all_ranks <- friends.test::row.int.ranks(A)
@@ -109,63 +111,80 @@ friends.test.bic <- function(A = NULL,
     #i, j, r -- vectors:
     #marker, friend, friend.rank
     col_names <- colnames(A)
-    ijrlist <- ft_bpmapply_list(
-        # local(envir=globalenv()): closure carries globalenv() so
-        # SnowParam workers can deserialize it without loading the
-        # friends.test namespace.  .libPaths(libs) propagates the
-        # parent's library paths so workers can find friends.test at
-        # execution time.
-        local(
-            \(ranks, i, max.friends.n, max.possible.rank, prior.to.have.friends, col_names, libs) {
-                .libPaths(libs)
-                step <- friends.test::best.step.fit.bic(
-                    ranks,
-                    max.possible.rank = max.possible.rank,
-                    prior.to.have.friends = prior.to.have.friends
-                )
-                frn <- length(step$columns.on.left)
-                if (frn == 0 || frn > max.friends.n) {
-                    return(NULL)
-                    # here, we filer out the rows where
-                    # uniform model wins
-                    # (and so there is nothing to left of the step)
-                    # or
-                    # there are too much friends if we filter for it
-                }
-                # friends
-                friends <- step$columns.on.left
-                # the ranks of friends, the best is 1
-                friend.ranks <- which(
-                    step$step.models$columns.order %in% friends
-                )
-                #if we give just i to pmap, the value will be the same,
-                #but we want the name of the friend ti be the name of
-                #elemant of the inner list
-                repi <- rep(i, length(friends))
-                names(repi) <- col_names[friends]
-                #list of vector trios
-                purrr::pmap(
-                    list(
-                        marker = repi,
-                        friend = friends,
-                        rank = friend.ranks
-                    ),
-                    c
-                )
-            },
-            envir = globalenv()
-        ),
-        all_rank_rows,
-        seq_len(nrow(A)),
-        MoreArgs = list(
-            max.friends.n = max.friends.n,
-            max.possible.rank = max.possible.rank,
-            prior.to.have.friends = prior.to.have.friends,
-            col_names = col_names,
-            libs = .libPaths()
-        ),
-        BPPARAM = BPPARAM
-    )
+
+    do_fit <- function(p) {
+        ft_bpmapply_list(
+            # local(envir=globalenv()): closure carries globalenv() so
+            # SnowParam workers can deserialize it without loading the
+            # friends.test namespace.  .libPaths(libs) propagates the
+            # parent's library paths so workers can find friends.test at
+            # execution time.
+            local(
+                \(ranks, i, max.friends.n, max.possible.rank,
+                  prior.to.have.friends, col_names, libs, p) {
+                    .libPaths(libs)
+                    if (!is.null(p)) p()
+                    step <- friends.test::best.step.fit.bic(
+                        ranks,
+                        max.possible.rank = max.possible.rank,
+                        prior.to.have.friends = prior.to.have.friends
+                    )
+                    frn <- length(step$columns.on.left)
+                    if (frn == 0 || frn > max.friends.n) {
+                        return(NULL)
+                        # here, we filer out the rows where
+                        # uniform model wins
+                        # (and so there is nothing to left of the step)
+                        # or
+                        # there are too much friends if we filter for it
+                    }
+                    # friends
+                    friends <- step$columns.on.left
+                    # the ranks of friends, the best is 1
+                    friend.ranks <- which(
+                        step$step.models$columns.order %in% friends
+                    )
+                    #if we give just i to pmap, the value will be the same,
+                    #but we want the name of the friend ti be the name of
+                    #elemant of the inner list
+                    repi <- rep(i, length(friends))
+                    names(repi) <- col_names[friends]
+                    #list of vector trios
+                    purrr::pmap(
+                        list(
+                            marker = repi,
+                            friend = friends,
+                            rank = friend.ranks
+                        ),
+                        c
+                    )
+                },
+                envir = globalenv()
+            ),
+            all_rank_rows,
+            seq_len(nrow(A)),
+            MoreArgs = list(
+                max.friends.n = max.friends.n,
+                max.possible.rank = max.possible.rank,
+                prior.to.have.friends = prior.to.have.friends,
+                col_names = col_names,
+                libs = .libPaths(),
+                p = p
+            ),
+            BPPARAM = BPPARAM
+        )
+    }
+
+    if (use_progressr) {
+        old_handlers <- progressr::handlers(progressr::handler_cli())
+        on.exit(progressr::handlers(old_handlers), add = TRUE)
+        progressr::with_progress(
+            ijrlist <- do_fit(progressr::progressor(steps = nrow(A)))
+        )
+    } else {
+        ijrlist <- do_fit(NULL)
+        if (.progress && class(BPPARAM) == "SnowParam") cat("\r")
+    }
     names(ijrlist) <- names(all_rank_rows)
 
     if (.progress) cli::cli_progress_step("Compacting...")

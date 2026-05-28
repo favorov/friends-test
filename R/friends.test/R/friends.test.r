@@ -124,6 +124,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
     if (.progress) options(cli.progress_show_after = 0)
     BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
+    use_progressr <- .progress && class(BPPARAM) != "SnowParam" &&
+        requireNamespace("progressr", quietly = TRUE)
 
     # rank all the A elements in columns
     if (.progress) cli::cli_progress_step("Ranking...")
@@ -131,12 +133,11 @@ friends.test <- function(A = NULL, threshold = 0.05,
     all_rank_rows <- purrr::array_branch(all_ranks, 1)
 
     # calculate the p-values for null hypothesis for all the rank rows
-    # pipeline : array tp list, list to double vector of p-values
+    # pipeline : array to list, list to double vector of p-values
     # adjust p-value
-    if (.progress) {
-        cli::cli_progress_step("Filtering out uniforms...")
-    }
-    adj_nunif_pval <-
+    if (.progress) cli::cli_progress_step("Filtering out uniforms...")
+
+    do_filter <- function(p) {
         ft_bplapply_dbl(
             all_rank_rows,
             # local(envir=globalenv()): closure carries globalenv() so
@@ -146,8 +147,9 @@ friends.test <- function(A = NULL, threshold = 0.05,
             # execution time (R CMD build installs to a temp dir that is
             # not in workers' default .libPaths()).
             local(
-                function(x, uniform.max, simulate.p.value, B, libs) {
+                function(x, uniform.max, simulate.p.value, B, libs, p) {
                     .libPaths(libs)
+                    if (!is.null(p)) p()
                     friends.test::unif.ks.test(
                         x,
                         uniform.max = uniform.max,
@@ -161,11 +163,23 @@ friends.test <- function(A = NULL, threshold = 0.05,
             simulate.p.value = simulate.p.value,
             B = B,
             libs = .libPaths(),
+            p = p,
             BPPARAM = BPPARAM
-        ) |>
-        p.adjust(
-            method = p.adjust.method
         )
+    }
+
+    if (use_progressr) {
+        old_handlers <- progressr::handlers(progressr::handler_cli())
+        on.exit(progressr::handlers(old_handlers), add = TRUE)
+        progressr::with_progress(
+            adj_nunif_pval <- do_filter(
+                progressr::progressor(steps = nrow(A))
+            ) |> p.adjust(method = p.adjust.method)
+        )
+    } else {
+        adj_nunif_pval <- do_filter(NULL) |> p.adjust(method = p.adjust.method)
+        if (.progress && class(BPPARAM) == "SnowParam") cat("\r")
+    }
 
     if (.progress) cli::cli_progress_done()
 
@@ -192,55 +206,69 @@ friends.test <- function(A = NULL, threshold = 0.05,
         1
     )
     col_names <- colnames(A)
-    ijrlist <- ft_bpmapply_list(
-        # local(envir=globalenv()): closure carries globalenv() so
-        # SnowParam workers can deserialize it without loading the
-        # friends.test namespace.  .libPaths(libs) propagates the
-        # parent's library paths so workers can find friends.test at
-        # execution time.
-        local(
-            \(ranks, i, max.possible.rank, max.friends.n, col_names, libs) {
-                .libPaths(libs)
-                step <- friends.test::best.step.fit(
-                    ranks,
-                    max.possible.rank = max.possible.rank
-                )
-                if (length(step$columns.on.left) > max.friends.n) {
-                    return(NULL) # marker has too much friends
-                }
-                # friends
-                friends <- step$columns.on.left
-                # the ranks of friends, the best is 1
-                friend.ranks <- which(
-                    step$step.models$columns.order %in% friends
-                )
-                #if we give just i to pmap, the value will be the same,
-                #but we want the name of the friend ti be the name of
-                #elemant of the inner list
-                repi <- rep(i, length(friends))
-                names(repi) <- col_names[friends]
-                #list of vector trios
-                purrr::pmap(
-                    list(
-                        marker = repi,
-                        friend = friends,
-                        rank = friend.ranks
-                    ),
-                    c
-                )
-            },
-            envir = globalenv()
-        ),
-        marker_rank_rows,
-        marker_indices,
-        MoreArgs = list(
-            max.possible.rank = max.possible.rank,
-            max.friends.n = max.friends.n,
-            col_names = col_names,
-            libs = .libPaths()
-        ),
-        BPPARAM = BPPARAM
-    )
+
+    do_fit <- function(p) {
+        ft_bpmapply_list(
+            # local(envir=globalenv()): closure carries globalenv() so
+            # SnowParam workers can deserialize it without loading the
+            # friends.test namespace.  .libPaths(libs) propagates the
+            # parent's library paths so workers can find friends.test at
+            # execution time.
+            local(
+                \(ranks, i, max.possible.rank, max.friends.n, col_names, libs, p) {
+                    .libPaths(libs)
+                    if (!is.null(p)) p()
+                    step <- friends.test::best.step.fit(
+                        ranks,
+                        max.possible.rank = max.possible.rank
+                    )
+                    if (length(step$columns.on.left) > max.friends.n) {
+                        return(NULL) # marker has too much friends
+                    }
+                    # friends
+                    friends <- step$columns.on.left
+                    # the ranks of friends, the best is 1
+                    friend.ranks <- which(
+                        step$step.models$columns.order %in% friends
+                    )
+                    #if we give just i to pmap, the value will be the same,
+                    #but we want the name of the friend ti be the name of
+                    #elemant of the inner list
+                    repi <- rep(i, length(friends))
+                    names(repi) <- col_names[friends]
+                    #list of vector trios
+                    purrr::pmap(
+                        list(
+                            marker = repi,
+                            friend = friends,
+                            rank = friend.ranks
+                        ),
+                        c
+                    )
+                },
+                envir = globalenv()
+            ),
+            marker_rank_rows,
+            marker_indices,
+            MoreArgs = list(
+                max.possible.rank = max.possible.rank,
+                max.friends.n = max.friends.n,
+                col_names = col_names,
+                libs = .libPaths(),
+                p = p
+            ),
+            BPPARAM = BPPARAM
+        )
+    }
+
+    if (use_progressr) {
+        progressr::with_progress(
+            ijrlist <- do_fit(progressr::progressor(steps = length(marker_indices)))
+        )
+    } else {
+        ijrlist <- do_fit(NULL)
+        if (.progress && class(BPPARAM) == "SnowParam") cat("\r")
+    }
     names(ijrlist) <- names(marker_rank_rows)
 
     if (.progress) cli::cli_progress_step("Compacting...")

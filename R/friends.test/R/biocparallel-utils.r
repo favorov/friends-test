@@ -21,7 +21,10 @@ ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
     if (is.null(BPPARAM)) {
         BPPARAM <- BiocParallel::SerialParam()
     }
-    BiocParallel::bpprogressbar(BPPARAM) <- isTRUE(.progress)
+    # For SnowParam use BiocParallel's own progress bar; for other backends
+    # (MulticoreParam, SerialParam) progressr + handler_cli() is used instead.
+    use_bp_bar <- isTRUE(.progress) && class(BPPARAM) == "SnowParam"
+    BiocParallel::bpprogressbar(BPPARAM) <- use_bp_bar
     BPPARAM
 }
 

@@ -28,7 +28,7 @@ biocViews: Annotation, StatisticalMethod
 URL: https://github.com/favorov/friends.test,
     https://arxiv.org/abs/2512.24843
 BugReports: https://github.com/favorov/friends.test/issues
-Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat, pkgload, dplyr, msigdbr, fgsea, tibble
+Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat, pkgload, dplyr, msigdbr, fgsea, tibble, progressr
 VignetteBuilder: knitr
 Packaged: 2025-03-18 2:30:05 EST; favorov
 Imports: stats, utils, data.table, purrr, cli, BiocParallel, rtlr
