@@ -136,7 +136,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
     if (use_serial_progress) {
         cli::cli_progress_done() # close "Ranking..."
         adj_nunif_pval <- vapply(
-            cli::cli_progress_along(all_rank_rows, name = "Filtering out uniforms"),
+            cli::cli_progress_along(all_rank_rows, name = "Filtering out uniforms", clear = FALSE),
             function(i) unif.ks.test(
                 all_rank_rows[[i]],
                 uniform.max = uniform.max,
@@ -216,7 +216,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
             purrr::pmap(list(marker = repi, friend = friends, rank = friend.ranks), c)
         }
         ijrlist <- lapply(
-            cli::cli_progress_along(marker_rank_rows, name = "Identifying friends"),
+            cli::cli_progress_along(marker_rank_rows, name = "Identifying friends", clear = FALSE),
             function(idx) fit_one(marker_rank_rows[[idx]], marker_indices[[idx]])
         )
     } else {
