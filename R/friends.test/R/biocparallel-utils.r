@@ -21,7 +21,7 @@ ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
     if (is.null(BPPARAM)) {
         BPPARAM <- BiocParallel::SerialParam()
     }
-    BiocParallel::bpprogressbar(BPPARAM) <- isTRUE(.progress)
+    BiocParallel::bpprogressbar(BPPARAM) <- FALSE
     BPPARAM
 }
 
