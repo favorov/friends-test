@@ -1,5 +1,5 @@
 #run from friends.test 
-detach("package:friends.test", unload = TRUE, character.only = TRUE)
-remove.packages("freinds.test")
-pak::pak("~/friend-test/R/friends.test")
+try(detach("package:friends.test", unload = TRUE, character.only = TRUE), silent = TRUE)
+try(remove.packages("friends.test"), silent = TRUE)
+pak::pak("~/friends-test/R/friends.test")
 library(friends.test)
