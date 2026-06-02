@@ -128,7 +128,12 @@ friends.test.bic <- function(A = NULL,
             purrr::pmap(list(marker = repi, friend = friends, rank = friend.ranks), c)
         }
         ijrlist <- lapply(
-            cli::cli_progress_along(all_rank_rows, name = "Fitting the models", clear = FALSE),
+            cli::cli_progress_along(
+                all_rank_rows,
+                name = "Fitting the models",
+                clear = FALSE,
+                format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"
+            ),
             function(idx) fit_one(all_rank_rows[[idx]], idx)
         )
     } else {

@@ -136,7 +136,12 @@ friends.test <- function(A = NULL, threshold = 0.05,
     if (use_serial_progress) {
         cli::cli_progress_done() # close "Ranking..."
         adj_nunif_pval <- vapply(
-            cli::cli_progress_along(all_rank_rows, name = "Filtering out uniforms", clear = FALSE),
+            cli::cli_progress_along(
+                all_rank_rows,
+                name = "Filtering out uniforms",
+                clear = FALSE,
+                format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"
+            ),
             function(i) unif.ks.test(
                 all_rank_rows[[i]],
                 uniform.max = uniform.max,
@@ -193,7 +198,6 @@ friends.test <- function(A = NULL, threshold = 0.05,
 
     # find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
-    if (.progress) cli::cli_progress_step("Identifying friends...")
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
@@ -216,7 +220,12 @@ friends.test <- function(A = NULL, threshold = 0.05,
             purrr::pmap(list(marker = repi, friend = friends, rank = friend.ranks), c)
         }
         ijrlist <- lapply(
-            cli::cli_progress_along(marker_rank_rows, name = "Identifying friends", clear = FALSE),
+            cli::cli_progress_along(
+                marker_rank_rows,
+                name = "Identifying friends",
+                clear = FALSE,
+                format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"
+            ),
             function(idx) fit_one(marker_rank_rows[[idx]], marker_indices[[idx]])
         )
     } else {
