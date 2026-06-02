@@ -1,5 +1,10 @@
 # Friends.test version history
 
+## friends.test 0.99.20
+
+- Progress indicators are improved.
+- Progress bars are switched off in parallel; purrr map does not work with BiocParallel and cli progress bar does not work.
+
 ## friends.test 0.99.19
 
 - Parallel backend switched from mirai/purrr to BiocParallel (pass `BPPARAM` to both main functions; default is serial).
