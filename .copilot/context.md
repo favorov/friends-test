@@ -70,6 +70,54 @@ MulticoreParam-тесты работают в dev-режиме (fork насле�
 нежизнеспособный подход. Правильная интеграция progressr + BiocParallel требует
 другого механизма. Ветка `devel-fancy-progress` заброшена, работа слита в `devel`.
 
+### Архитектура progress bar в коде (важно для будущей работы)
+
+**`ft_bpparam()` в `R/biocparallel-utils.r`:**
+```r
+ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
+    if (is.null(BPPARAM)) BPPARAM <- BiocParallel::SerialParam()
+    BiocParallel::bpprogressbar(BPPARAM) <- FALSE  # всегда FALSE
+    BPPARAM
+}
+```
+Параметр `.progress` принимается, но на `bpprogressbar` не влияет — оставлено намеренно.
+Чтобы включить BiocParallel-бар: изменить `FALSE` →
+`if (.progress && !is(BPPARAM, "SerialParam")) TRUE else FALSE`
+и добавить `BiocParallel::bptasks(BPPARAM) <- n_rows` (число строк матрицы),
+чтобы бар двигался по одному элементу, а не скачками на число воркеров.
+BiocParallel внутри делает `min(tasks, length(X))`, поэтому `.Machine$integer.max`
+тоже безопасен как sentinel — но лучше передавать реальное число.
+`ft_bpparam()` вызывается до диспетчеризации и не знает числа строк — его нужно
+передавать отдельно (или менять сигнатуру функции).
+
+**`use_serial_progress` в `friends.test.r` и `friends.test.bic.r`:**
+```r
+use_serial_progress <- .progress && is(BPPARAM, "SerialParam")
+```
+- `TRUE` → `cli_progress_along()` с живым баром и `format_done` с elapsed time
+- `FALSE` → только `cli_progress_step()` (текстовая метка без динамики)
+
+**`cli_progress_along` format_done (SerialParam):**
+```r
+cli::cli_progress_along(
+    X, name = "...", clear = FALSE,
+    format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"
+)
+```
+
+**Проблема пустой строки от BiocParallel `txtProgressBar`:**
+BiocParallel вызывает два `cat("\n")` при завершении бара — один в `step()` когда
+`ntasks == max`, второй в `close(txt)` → `kill()`. Итог: одна лишняя пустая строка.
+Фикс (был реализован и отменён вместе со всем параллельным прогресс-кодом):
+`cat("\033[1A\033[2K")` сразу после параллельного вызова — ANSI Move Up + Erase Line.
+
+**Потенциальные подходы к параллельному прогрессу (ещё не пробовались):**
+- `bpprogressbar=TRUE` + `bptasks=nrow(A)` + `cat("\033[1A\033[2K")` —
+  самый простой, использует встроенный механизм BiocParallel.
+- Нативная интеграция `progressr` с BiocParallel через `progressr::handlers("txtprogressbar")`
+  или будущий BiocParallel-хэндлер в progressr (следить за progressr changelog).
+- Кастомный `bpprogressbar`-обработчик через S4-класс (сложно, но правильно).
+
 ### Что было сделано в devel-fancy-progress (май–июнь 2026)
 
 **SerialParam — отполировано, слито в devel:**
