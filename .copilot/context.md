@@ -68,7 +68,32 @@ MulticoreParam-тесты работают в dev-режиме (fork насле�
 
 **Вывод**: передача `progressor` как аргумента в параллельные воркеры BiocParallel —
 нежизнеспособный подход. Правильная интеграция progressr + BiocParallel требует
-другого механизма. Ветка заброшена, остались на `devel`.
+другого механизма. Ветка `devel-fancy-progress` заброшена, работа слита в `devel`.
+
+### Что было сделано в devel-fancy-progress (май–июнь 2026)
+
+**SerialParam — отполировано, слито в devel:**
+1. `cli_progress_along()` с `clear = FALSE` — бар остаётся виден после завершения.
+2. `format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"` —
+   вместо "ETA: 0s" при завершении показывается затраченное время.
+3. Убран дублирующий `cli_progress_step("Identifying friends...")` в `friends.test.r`,
+   который открывался до `if/else` и снова внутри parallel `else` ветки.
+
+**Параллельные бэкенды (MulticoreParam, SnowParam):**
+- `bpprogressbar = FALSE` принудительно (в `biocparallel-utils.r`).
+- Показывается только текстовая метка шага через `cli_progress_step`.
+- Несколько подходов к красивому прогресс-бару опробовано и отвергнуто:
+  - per-worker `cli_progress_along` (нет TTY в суб-процессах),
+  - `bpprogressbar = TRUE` + ANSI cleanup (двойная строка, нельзя управлять курсором),
+  - mcparallel + tempfile polling (слишком сложно).
+- **Открытый вопрос**: параллельный прогресс-бар так и не решён.
+
+### zzz.R: приветственное сообщение
+
+- Версионная фраза хранится в `yiddish` как Unicode-escapes в `R/zzz.R`.
+- Отображение: VS Code → `intToUtf8(rev(utf8ToInt(yiddish)))`, иначе → `str_rtl(yiddish)`.
+- Версия 0.99.20: `"\u05E2\u05E8\u05E9\u05D8\u05E2\u05E8 \u05D6\u05D5\u05DE\u05E2\u05E8-\u05D8\u05D0\u05B8\u05D2"`
+  ("ערשטער זומער-טאָג" = "First summer day").
 
 ## Команды
 
@@ -76,7 +101,7 @@ MulticoreParam-тесты работают в dev-режиме (fork насле�
 # Из R/friends.test/
 Rscript -e 'testthat::test_local()'
 R CMD build .
-R CMD check --as-cran friends.test_0.99.19.tar.gz
+R CMD check --as-cran friends.test_0.99.20.tar.gz
 Rscript -e 'BiocCheck::BiocCheck(".")'
 ```
 
@@ -90,7 +115,8 @@ FAIL 0 | WARN 0 | SKIP 2 (SnowParam в dev-режиме) | PASS 83
 - Не переписывать историю после начала ревью.
 - Ветка должна называться `devel` (не `master`).
 - `~/friends.test` (master) — копия для Bioconductor; синхронизируется вручную.
+- После каждой серии изменений: скопировать изменившиеся source-файлы в `~/friends.test`.
 
 ## Версия
 
-Текущая: **0.99.19**
+Текущая: **0.99.20** "First summer day" ("ערשטער זומער-טאָג")
