@@ -2,7 +2,6 @@ Package: friends.test
 Type: Package
 Title: In a matrix, we look for columns that are friendly to a row
 Version: 0.99.20
-Date: 2026-06-01
 Encoding: UTF-8
 Authors@R: c(
     person("Alexandra","Suvorikova",email = "a.suvorikova@gmail.com",role=c("aut","ctb")),
@@ -22,7 +21,6 @@ Description: We have two sets:T (rows) and C (columns) and
     If it does, those c for which the t is relevant, 
     are the t's friend. And, the t is the c's marker.
 License: Artistic-2.0
-LazyLoad: yes
 Depends: R (>= 4.5.0)
 biocViews: Annotation, StatisticalMethod
 URL: https://github.com/favorov/friends.test,
@@ -30,7 +28,6 @@ URL: https://github.com/favorov/friends.test,
 BugReports: https://github.com/favorov/friends.test/issues
 Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat, pkgload, dplyr, msigdbr, fgsea, tibble
 VignetteBuilder: knitr
-Packaged: 2025-03-18 2:30:05 EST; favorov
 Imports: stats, utils, data.table, purrr, cli, BiocParallel, rtlr
 Roxygen: list(markdown = TRUE)
 LazyData: false
