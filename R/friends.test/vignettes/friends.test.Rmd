@@ -1,5 +1,6 @@
 ---
 title: "In a matrix, we look for columns that are friendly to a row"
+date: "`r format(Sys.Date(), '%d %b %Y')`"
 output: 
   html_vignette:
         toc: true
@@ -14,8 +15,6 @@ vignette: >
 
 
 [SI AUGUSTUS CERNATUR, CERNANTUR QOUQUE AMICI]{style="float:right"}
-
-`r format(Sys.Date(), "%d %b %Y")` 
 
 `r library(knitr)`
 `r library(markdown)`
