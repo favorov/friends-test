@@ -9,6 +9,7 @@
 *.zip
 .*
 !.copilot
+!.claude
 .Rproj.user
 *.Rproj
 *.BiocCheck
