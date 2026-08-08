@@ -10,6 +10,7 @@
 .*
 !.copilot
 !.claude
+!.Rbuildignore
 .Rproj.user
 *.Rproj
 *.BiocCheck

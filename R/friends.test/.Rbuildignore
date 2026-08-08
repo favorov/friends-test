@@ -1,0 +1,7 @@
+^doc$
+^Meta$
+^\.github$
+^biocparallel\.md$
+^data-raw$
+^Dockerfile$
+^.*\.BiocCheck$
