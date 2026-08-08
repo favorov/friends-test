@@ -3,7 +3,7 @@
 \docType{data}
 \name{friends.test.cogaps.example}
 \alias{friends.test.cogaps.example}
-\title{An exaple of loadings of genes in CoGAPS - identified patterns.}
+\title{An example of loadings of genes in CoGAPS - identified patterns.}
 \format{
 An object of class \code{list} of length 3.
 }
@@ -14,6 +14,6 @@ An object of class \code{list} of length 3.
 data(friends.test.cogaps.example)
 }
 \description{
-An exaple of loadings of genes in CoGAPS - identified patterns.
+An example of loadings of genes in CoGAPS - identified patterns.
 }
 \keyword{datasets}
