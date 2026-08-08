@@ -70,6 +70,7 @@
 #' @importFrom stats p.adjust
 #' @importFrom purrr array_branch compact pmap
 #' @importFrom cli cli_progress_step cli_progress_done cli_progress_along
+#' @importFrom methods is
 #' @export
 #'
 friends.test <- function(A = NULL, threshold = 0.05,
