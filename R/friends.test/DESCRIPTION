@@ -16,7 +16,6 @@ Authors@R: c(
 Description: A method for identifying specificity in interactions represented by
 a numeric matrix by detecting structural breaks. Rank-based representation of the columns of the interaction matrix ensures invariance to heterogeneous data and allows for integrating data from diverse sources. To automatically locate the boundary between specific interactions and background activity, we employ model fitting.
 License: Artistic-2.0
-LazyLoad: yes
 Depends: R (>= 4.5.0)
 biocViews: Annotation, StatisticalMethod
 URL: https://github.com/favorov/friends.test,

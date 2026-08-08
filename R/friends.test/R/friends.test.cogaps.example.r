@@ -1,4 +1,4 @@
-#' An exaple of loadings of genes in CoGAPS - identified patterns.
+#' An example of loadings of genes in CoGAPS - identified patterns.
 #'
 #' @source <https://zenodo.org/records/7709664/files/cogapsresult.Rds>
 "friends.test.cogaps.example"

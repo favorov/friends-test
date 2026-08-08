@@ -82,7 +82,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
                          BPPARAM = NULL) {
     # parameter checks
     if (is.null(A) || (length(dim(A)) != 2))  {
-        stop("The first parameter is to be a non-empty 2D matrix-like thing.")
+        stop("The first parameter must be a non-empty 2D matrix-like object.")
     }
 
     if (is.null(max.friends.n) || is.na(max.friends.n) ||

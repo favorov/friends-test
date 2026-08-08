@@ -65,7 +65,7 @@ friends.test.bic <- function(A = NULL,
                              BPPARAM = NULL) {
     # parameter checks
     if (is.null(A) || (length(dim(A)) != 2))  {
-        stop("The first parameter is to be a non-empty 2D matrix-like thing.")
+        stop("The first parameter must be a non-empty 2D matrix-like object.")
     }
 
     if (is.null(max.friends.n) || is.na(max.friends.n) ||
@@ -84,7 +84,7 @@ friends.test.bic <- function(A = NULL,
     }
     if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
         stop("friends.test.bic requires the prior.to.have.friends
-          value to be explicitely provided and to be a prior.")
+          value to be explicitly provided and to be a prior.")
     }
     # add names to A matrix rows if necessary
     if (is.null(dimnames(A)[[1]])) {

@@ -38,7 +38,7 @@ row.int.ranks <- function(
 ) {
     dims <- dim(attention)
     if (min(dims) < 2) {
-        stop("The friends.test requires both dimentions of the
+        stop("The friends.test requires both dimensions of the
         A matrix to be more than 1")
     }
     if (neglect_diagonal) {
