@@ -17,6 +17,14 @@
 #'
 #' @keywords internal
 #' @noRd
+# cli progress bar format for a finished bar: show the elapsed time
+# instead of the "ETA: 0s" the default format ends with.
+ft_pb_format_done <- paste0(
+    "{cli::pb_name}{cli::pb_bar} ",
+    "{cli::pb_percent} | {cli::pb_elapsed}"
+)
+
+
 ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
     if (is.null(BPPARAM)) {
         BPPARAM <- BiocParallel::SerialParam()

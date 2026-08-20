@@ -19,10 +19,12 @@
 #' example(row.int.ranks)
 #' ks.p.vals <- apply(TF.ranks, 1, "unif.ks.test")
 #' @export
-unif.ks.test <- function(ranks,
-                         uniform.max = NA,
-                         simulate.p.value = FALSE,
-                         B = 2000) {
+unif.ks.test <- function(
+    ranks,
+    uniform.max = NA,
+    simulate.p.value = FALSE,
+    B = 2000
+) {
     jranks <- jitter(ranks, amount = 0.1E-6)
     jrmin <- min(jranks)
     if (is.na(uniform.max)) {

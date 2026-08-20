@@ -167,7 +167,7 @@ step.fit.ln.likelihoods.fullmesh <- function(ranks, max.possible.rank) {
 # Public entry point with checks: step.fit.ln.likelihoods().
 #
 # Returns a list with:
-#   columns.order   — integer vector of column indices sorted by ascending rank
+#   columns.order   — column indices sorted by ascending rank
 #   best_ll_by_k1   — length-k vector; entry k1 = best log-likelihood for k1
 #                     friends (-Inf when the valid range for that k1 is empty)
 #   best_l1_by_k1   — length-k vector; entry k1 = the optimal split rank l1

@@ -59,11 +59,13 @@
 #' @importFrom methods is
 #' @export
 #'
-friends.test.bic <- function(A = NULL,
-                             prior.to.have.friends = -1,
-                             max.friends.n = "all",
-                             .progress = FALSE,
-                             BPPARAM = NULL) {
+friends.test.bic <- function(
+    A = NULL,
+    prior.to.have.friends = -1,
+    max.friends.n = "all",
+    .progress = FALSE,
+    BPPARAM = NULL
+) {
     # parameter checks
     if (is.null(A) || (length(dim(A)) != 2))  {
         stop("The first parameter must be a non-empty 2D matrix-like object.")
@@ -74,18 +76,20 @@ friends.test.bic <- function(A = NULL,
             max.friends.n == "a") {
         max.friends.n <- ncol(A)
     } else if (!is.numeric(max.friends.n)) {
-        stop(paste(
-            "max.friends.n must be numeric,",
-            " or one of 'all', 'al', 'a', NA, or NULL."
-        ))
+        stop(
+            "max.friends.n must be numeric, ",
+            "or one of 'all', 'al', 'a', NA, or NULL."
+        )
     }
 
     if (max.friends.n < 1 || max.friends.n > ncol(A)) {
         stop("max.friends.n must be between 1 and the number of columns.")
     }
     if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
-        stop("friends.test.bic requires the prior.to.have.friends
-          value to be explicitly provided and to be a prior.")
+        stop(
+            "friends.test.bic requires the prior.to.have.friends value ",
+            "to be explicitly provided and to be a prior."
+        )
     }
     # add names to A matrix rows if necessary
     if (is.null(dimnames(A)[[1]])) {
@@ -126,14 +130,17 @@ friends.test.bic <- function(A = NULL,
             )
             repi <- rep(i, length(friends))
             names(repi) <- col_names[friends]
-            purrr::pmap(list(marker = repi, friend = friends, rank = friend.ranks), c)
+            purrr::pmap(
+                list(marker = repi, friend = friends, rank = friend.ranks),
+                c
+            )
         }
         ijrlist <- lapply(
             cli::cli_progress_along(
                 all_rank_rows,
                 name = "Fitting the models",
                 clear = FALSE,
-                format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"
+                format_done = ft_pb_format_done
             ),
             function(idx) fit_one(all_rank_rows[[idx]], idx)
         )
@@ -146,7 +153,10 @@ friends.test.bic <- function(A = NULL,
             # parent's library paths so workers can find friends.test at
             # execution time.
             local(
-                \(ranks, i, max.friends.n, max.possible.rank, prior.to.have.friends, col_names, libs) {
+                \(
+                    ranks, i, max.friends.n, max.possible.rank,
+                    prior.to.have.friends, col_names, libs
+                ) {
                     .libPaths(libs)
                     step <- friends.test::best.step.fit.bic(
                         ranks,

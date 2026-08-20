@@ -73,14 +73,17 @@
 #' @importFrom methods is
 #' @export
 #'
-friends.test <- function(A = NULL, threshold = 0.05,
-                         p.adjust.method = "BH",
-                         max.friends.n = "all",
-                         uniform.max = "m",
-                         simulate.p.value = FALSE,
-                         B = 2000,
-                         .progress = FALSE,
-                         BPPARAM = NULL) {
+friends.test <- function(
+    A = NULL,
+    threshold = 0.05,
+    p.adjust.method = "BH",
+    max.friends.n = "all",
+    uniform.max = "m",
+    simulate.p.value = FALSE,
+    B = 2000,
+    .progress = FALSE,
+    BPPARAM = NULL
+) {
     # parameter checks
     if (is.null(A) || (length(dim(A)) != 2))  {
         stop("The first parameter must be a non-empty 2D matrix-like object.")
@@ -91,10 +94,10 @@ friends.test <- function(A = NULL, threshold = 0.05,
             max.friends.n == "a") {
         max.friends.n <- ncol(A)
     } else if (!is.numeric(max.friends.n)) {
-        stop(paste(
-            "max.friends.n must be numeric,",
-            " or one of 'all', 'al', 'a', NA, or NULL."
-        ))
+        stop(
+            "max.friends.n must be numeric, ",
+            "or one of 'all', 'al', 'a', NA, or NULL."
+        )
     }
 
     if (max.friends.n < 1 || max.friends.n > ncol(A)) {
@@ -133,7 +136,8 @@ friends.test <- function(A = NULL, threshold = 0.05,
     all_rank_rows <- purrr::array_branch(all_ranks, 1)
 
     # calculate the p-values for null hypothesis for all the rank rows
-    # pipeline : array to list, list to double vector of p-values, adjust p-value
+    # pipeline: array to list, list to double vector of p-values,
+    # then adjust the p-values
     if (use_serial_progress) {
         cli::cli_progress_done() # close "Ranking..."
         adj_nunif_pval <- vapply(
@@ -141,7 +145,7 @@ friends.test <- function(A = NULL, threshold = 0.05,
                 all_rank_rows,
                 name = "Filtering out uniforms",
                 clear = FALSE,
-                format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"
+                format_done = ft_pb_format_done
             ),
             function(i) unif.ks.test(
                 all_rank_rows[[i]],
@@ -218,16 +222,21 @@ friends.test <- function(A = NULL, threshold = 0.05,
             )
             repi <- rep(i, length(friends))
             names(repi) <- col_names[friends]
-            purrr::pmap(list(marker = repi, friend = friends, rank = friend.ranks), c)
+            purrr::pmap(
+                list(marker = repi, friend = friends, rank = friend.ranks),
+                c
+            )
         }
         ijrlist <- lapply(
             cli::cli_progress_along(
                 marker_rank_rows,
                 name = "Identifying friends",
                 clear = FALSE,
-                format_done = "{cli::pb_name}{cli::pb_bar} {cli::pb_percent} | {cli::pb_elapsed}"
+                format_done = ft_pb_format_done
             ),
-            function(idx) fit_one(marker_rank_rows[[idx]], marker_indices[[idx]])
+            function(idx) {
+                fit_one(marker_rank_rows[[idx]], marker_indices[[idx]])
+            }
         )
     } else {
         if (.progress) cli::cli_progress_step("Identifying friends...")

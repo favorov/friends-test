@@ -4,14 +4,21 @@ Title: Rank-Based Method for Feature Selection in Interaction Matrices
 Version: 0.99.20
 Encoding: UTF-8
 Authors@R: c(
-    person("Alexandra","Suvorikova",email = "a.suvorikova@gmail.com",role=c("aut","ctb")),
-    person("Alexey","Kroshnin",email = "kroshnin@wias-berlin.de",role=c("aut","ctb")),
-    person("Dmitrijs","Lvovs",email = "dmitrijs.lvovs@gmail.com",role=c("aut","ctb")),
-    person("Vera","Mukhina",email = "atgc@vigg.ru",role=c("aut","ctb")),
-    person("Andrey A.","Mironov", email="mironov@bioinf.fbb.msu.ru",role=c("aut","ctb")),
-    person("Ludmila","Danilova", email="ludmila.danilova@gmail.com",role=c("aut","ctb")),
-    person("Alexander","Favorov", email = "favorov@sensi.org", role=c("aut","cre"),
-        comment=c(ORCID="0000-0003-2595-1091"))
+    person("Alexandra", "Suvorikova", email = "a.suvorikova@gmail.com",
+        role = c("aut", "ctb")),
+    person("Alexey", "Kroshnin", email = "kroshnin@wias-berlin.de",
+        role = c("aut", "ctb")),
+    person("Dmitrijs", "Lvovs", email = "dmitrijs.lvovs@gmail.com",
+        role = c("aut", "ctb")),
+    person("Vera", "Mukhina", email = "atgc@vigg.ru",
+        role = c("aut", "ctb")),
+    person("Andrey A.", "Mironov", email = "mironov@bioinf.fbb.msu.ru",
+        role = c("aut", "ctb")),
+    person("Ludmila", "Danilova", email = "ludmila.danilova@gmail.com",
+        role = c("aut", "ctb")),
+    person("Alexander", "Favorov", email = "favorov@sensi.org",
+        role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0003-2595-1091"))
     )
 Description: A method for identifying specificity in interactions represented
     by a numeric matrix by detecting structural breaks. Rank-based
@@ -20,12 +27,13 @@ Description: A method for identifying specificity in interactions represented
     sources. To automatically locate the boundary between specific
     interactions and background activity, we employ model fitting.
 License: Artistic-2.0
-Depends: R (>= 4.5.0)
+Depends: R (>= 4.6.0)
 biocViews: Annotation, StatisticalMethod
 URL: https://github.com/favorov/friends.test,
     https://arxiv.org/abs/2512.24843
 BugReports: https://github.com/favorov/friends.test/issues
-Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat, pkgload, dplyr, msigdbr, fgsea, tibble
+Suggests: knitr, rmarkdown, devtools, markdown, BiocStyle, testthat,
+    pkgload, dplyr, msigdbr, fgsea, tibble
 VignetteBuilder: knitr
 Imports: stats, utils, methods, data.table, purrr, cli, BiocParallel
 Roxygen: list(markdown = TRUE)

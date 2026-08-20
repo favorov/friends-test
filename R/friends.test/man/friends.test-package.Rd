@@ -3,7 +3,7 @@
 \docType{package}
 \name{friends.test-package}
 \alias{friends.test-package}
-\title{friends.test: In a matrix, we look for columns that are friendly to a row}
+\title{friends.test: Rank-Based Method for Feature Selection in Interaction Matrices}
 \description{
 We have two sets:T (rows) and C (columns) and
 A real matrix A(t,c) that describes the strength of association
