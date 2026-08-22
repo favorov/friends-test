@@ -4,7 +4,7 @@
     packageStartupMessage(
         paste0(
             "Welcome to friends.test, version ",
-            version, " Summer Solstice.\n "
+            version, " Summer Almost Gone.\n "
         )
     )
 }
