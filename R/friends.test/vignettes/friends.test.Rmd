@@ -1,12 +1,12 @@
 ---
-title: "Rank-Based Method for Feature Selection in Interaction Matrices"
+title: "In a matrix, we look for columns that are friendly to a row"
 date: "`r format(Sys.Date(), '%d %b %Y')`"
 output: 
   html_vignette:
         toc: true
         toc_depth: 2
 vignette: >
- %\VignetteIndexEntry{Rank-Based Method for Feature Selection in Interaction Matrices}
+ %\VignetteIndexEntry{In a matrix, we look for columns that are friendly to a row}
  %\VignetteEngine{knitr::rmarkdown}
  %\VignetteEncoding{UTF-8}
  %\VignetteDepends{devtools}
