@@ -1,5 +1,17 @@
 # Friends.test version history
 
+## friends.test 0.99.21
+
+- Exported function names no longer contain dots, as the dot is reserved for S3
+  dispatch: `friends.test()`, `friends.test.bic()`, `row.int.ranks()`,
+  `unif.ks.test()`, `best.step.fit()`, `best.step.fit.bic()` and
+  `step.fit.ln.likelihoods()` became `friends_test()`, `friends_test_bic()`,
+  `row_int_ranks()`, `unif_ks_test()`, `best_step_fit()`, `best_step_fit_bic()`
+  and `step_fit_ln_likelihoods()`. Argument names are unchanged.
+- `step.fit.ln.likelihoods.fullmesh()` is no longer exported.
+- `is()` is imported from `methods`.
+- Source file names follow the function names, with the `.R` extension.
+
 ## friends.test 0.99.20
 
 - Progress indicators are improved.
