@@ -13,7 +13,7 @@
 #' When adjacent ranks are tied the valid range for that \eqn{k_1} is empty
 #' and the corresponding entry is \code{-Inf}.
 #'
-#' See [friends.test] documentation for details.
+#' See [friends_test] documentation for details.
 #'
 #' @param ranks integer vector of ranks of a row in different columns
 #' @param max.possible.rank number of rows, i.e. maximal possible rank
@@ -25,13 +25,11 @@
 #' \code{best_l1_by_k1} length-\eqn{k} integer vector; the \eqn{\ell_1}
 #' achieving \code{best_ll_by_k1};\cr
 #' \code{uniform_ll} log-likelihood of the uniform (no-friends) model.\cr
-#' @seealso [step.fit.ln.likelihoods.fullmesh] for the same result in fullmesh
-#' format computed via this function.
 #' @examples
-#' example(row.int.ranks)
-#' steps <- step.fit.ln.likelihoods(TF.ranks[42, ], genes.no)
+#' example(row_int_ranks)
+#' steps <- step_fit_ln_likelihoods(TF.ranks[42, ], genes.no)
 #' @export
-step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
+step_fit_ln_likelihoods <- function(ranks, max.possible.rank) {
     if (max.possible.rank < max(ranks)) {
         stop("Rows_no parameter is the maximal possible rank,
     it cannot be less than max(ranks)!")
@@ -46,34 +44,27 @@ step.fit.ln.likelihoods <- function(ranks, max.possible.rank) {
         warning("Ranks has not-NULL dim(), it is not a vector.\n")
     }
     if (max.possible.rank <= length(ranks)) {
-        .step_fit_fullmesh(ranks, max.possible.rank)
+        .step_fit_enum(ranks, max.possible.rank)
     } else {
         .step_fit_compact(ranks, max.possible.rank)
     }
 }
 
 
-#' Fit step models for a row's rank profile (fullmesh format via compact method)
-#'
-#' A wrapper around [step.fit.ln.likelihoods] that expands the compact
-#' O(ncol) result into the full log-likelihood profile over all split ranks
-#' \eqn{\ell_1 \in 1 \ldots \mathrm{max.possible.rank}}, matching the output
-#' format of the former \code{step.fit.ln.likelihoods.fullmesh.enum}.
-#'
-#' This function exists primarily to let users inspect the full likelihood
-#' landscape.  It carries O(max.possible.rank) expansion cost.
-#'
-#' @inheritParams step.fit.ln.likelihoods
-#' @return A list with \code{columns.order}, \code{ln.likelihoods}, and
-#' \code{k1.by.l1}.
-#' @seealso [step.fit.ln.likelihoods],
-#' [step.fit.ln.likelihoods.fullmesh]
-#' @examples
-#' example(row.int.ranks)
-#' steps <- step.fit.ln.likelihoods.fullmesh(TF.ranks[42, ], genes.no)
-#' @export
-step.fit.ln.likelihoods.fullmesh <- function(ranks, max.possible.rank) {
-    compact <- step.fit.ln.likelihoods(ranks, max.possible.rank)
+# Full log-likelihood profile of the step model, over every split rank
+# l1 in 1:max.possible.rank.  Costs O(max.possible.rank), against the O(ncol)
+# of the compact fitter, so it is kept for inspection and for the tests that
+# validate the compact result -- not for the hot path.
+#
+# Returns a list with:
+#   columns.order   - integer vector of column indices sorted by ascending rank
+#   ln.likelihoods  - length-max.possible.rank vector; entry l1 = the model's
+#                     log-likelihood when the split sits at rank l1; the last
+#                     entry is the uniform (no-step) log-likelihood
+#   k1.by.l1        - length-max.possible.rank vector; entry l1 = how many
+#                     columns fall on the left of that split
+.step_fit_profile <- function(ranks, max.possible.rank) {
+    compact <- step_fit_ln_likelihoods(ranks, max.possible.rank)
     columns.order <- compact$columns.order
     sorted_ranks <- ranks[columns.order]
     k <- length(sorted_ranks)
@@ -117,11 +108,11 @@ step.fit.ln.likelihoods.fullmesh <- function(ranks, max.possible.rank) {
 # Total work: O(max.possible.rank) = O(nrow) per row.
 #
 # No parameter checks — callers are responsible for valid input.
-# Public entry point with checks: step.fit.ln.likelihoods().
+# Public entry point with checks: step_fit_ln_likelihoods().
 #
 # Returns the same compact list as .step_fit_compact:
 #   columns.order, best_ll_by_k1, best_l1_by_k1, uniform_ll
-.step_fit_fullmesh <- function(ranks, max.possible.rank) {
+.step_fit_enum <- function(ranks, max.possible.rank) {
     columns.order <- order(ranks)
     sorted_ranks <- ranks[columns.order]  # ascending
     k <- length(sorted_ranks)
@@ -164,7 +155,7 @@ step.fit.ln.likelihoods.fullmesh <- function(ranks, max.possible.rank) {
 # Total work: O(k) = O(ncol) per row instead of O(nrow).
 #
 # No parameter checks — callers are responsible for valid input.
-# Public entry point with checks: step.fit.ln.likelihoods().
+# Public entry point with checks: step_fit_ln_likelihoods().
 #
 # Returns a list with:
 #   columns.order   — column indices sorted by ascending rank

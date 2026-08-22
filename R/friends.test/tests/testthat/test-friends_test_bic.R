@@ -2,7 +2,7 @@ test_that("no errors in simplest case", {
     mat <- diag(nrow = 5, ncol = 5)
     rownames(mat) <- paste0("row", 1:5)
     colnames(mat) <- paste0("col", 1:5)
-    expect_no_error(friends.test.bic(mat, .5))
+    expect_no_error(friends_test_bic(mat, .5))
 })
 
 test_that("best friend is determined correctly", {
@@ -14,7 +14,7 @@ test_that("best friend is determined correctly", {
             row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
     attention <- as.matrix(read.table(text = text, header = TRUE))
 
-    friends <- friends.test.bic(attention, .25, max.friends.n = 1)
+    friends <- friends_test_bic(attention, .25, max.friends.n = 1)
     expected <- list(
         row5 = list(
             col5 = c(marker = 5, friend = 5, rank = 1)
@@ -22,7 +22,7 @@ test_that("best friend is determined correctly", {
     )
     expect_equivalent(friends, expected)
 
-    friends <- friends.test.bic(attention, .5, max.friends.n = 1)
+    friends <- friends_test_bic(attention, .5, max.friends.n = 1)
     #we expct two friend now
     expected <- list(
         row3 = list(
@@ -81,12 +81,12 @@ expected <- list(
 
 
 test_that("passes non-diagonal diagonal test with low prior to have friend", {
-    res <- friends.test.bic(almost_diagon_mat, .001)
+    res <- friends_test_bic(almost_diagon_mat, .001)
     expect_equivalent(res, expected)
 })
 
 test_that("passes non-diagonal diagonal test with high prior to have friend", {
-    res <- friends.test.bic(almost_diagon_mat, .5)
+    res <- friends_test_bic(almost_diagon_mat, .5)
     resflat <- purrr::flatten(res)
     expflat <- purrr::flatten(expected)
     expect_equivalent(setdiff(expflat, resflat), list())
@@ -109,7 +109,7 @@ test_that("best friend is determined correctly in parallel mode", {
             row4 0.7698414 0.7774452 0.2672207 0.34034900 0.8273733
             row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
     attention <- as.matrix(read.table(text = text, header = TRUE))
-    friends <- friends.test.bic(
+    friends <- friends_test_bic(
         attention,
         .25,
         max.friends.n = 1,
@@ -122,7 +122,7 @@ test_that("best friend is determined correctly in parallel mode", {
     )
     expect_equivalent(friends, expected)
 
-    friends <- friends.test.bic(
+    friends <- friends_test_bic(
         attention,
         .5,
         max.friends.n = 1,
@@ -150,7 +150,7 @@ test_that("best friend is determined correctly with MulticoreParam", {
             row4 0.7698414 0.7774452 0.2672207 0.34034900 0.8273733
             row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
     attention <- as.matrix(read.table(text = text, header = TRUE))
-    friends <- friends.test.bic(
+    friends <- friends_test_bic(
         attention,
         .25,
         max.friends.n = 1,
@@ -161,7 +161,7 @@ test_that("best friend is determined correctly with MulticoreParam", {
     )
     expect_equivalent(friends, expected)
 
-    friends <- friends.test.bic(
+    friends <- friends_test_bic(
         attention,
         .5,
         max.friends.n = 1,

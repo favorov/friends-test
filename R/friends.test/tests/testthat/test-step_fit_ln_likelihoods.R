@@ -1,6 +1,6 @@
 # Reference implementation (O(nrow) full-mesh enumeration) kept here for
 # validation only — not part of the public API.
-.fullmesh_enum_ref <- function(ranks, max.possible.rank) {
+.profile_ref <- function(ranks, max.possible.rank) {
     columns.order <- order(ranks)
     sorted_ranks <- ranks[columns.order]
     ln.likelihoods <- rep(0, max.possible.rank)
@@ -26,10 +26,10 @@
     )
 }
 
-test_that("step.fit.ln.likelihoods returns compact format for known input", {
+test_that("step_fit_ln_likelihoods returns compact format for known input", {
     ranks <- c(97, 1, 98, 99, 100)
     rows.no <- 100
-    result <- step.fit.ln.likelihoods(ranks, rows.no)
+    result <- step_fit_ln_likelihoods(ranks, rows.no)
     k <- length(ranks)
     expect_equal(length(result$columns.order), k)
     expect_equal(length(result$best_ll_by_k1), k)
@@ -39,12 +39,12 @@ test_that("step.fit.ln.likelihoods returns compact format for known input", {
 })
 
 test_that(paste0(
-    "step.fit.ln.likelihoods.fullmesh returns ",
+    ".step_fit_profile returns ",
     "fullmesh format for known input"
 ), {
     ranks <- c(97, 1, 98, 99, 100)
     rows.no <- 100
-    result <- step.fit.ln.likelihoods.fullmesh(ranks, rows.no)
+    result <- .step_fit_profile(ranks, rows.no)
     expect_equal(length(result$columns.order), length(ranks))
     expect_equal(length(result$ln.likelihoods), rows.no)
     expect_equal(length(result$k1.by.l1), rows.no)
@@ -54,12 +54,12 @@ test_that(paste0(
 test_that("returns error when a rank is higher than row.no", {
     ranks <- c(1, 2, 3, 4, 6)
     rows.no <- 5
-    expect_error(step.fit.ln.likelihoods(ranks, rows.no))
-    expect_error(step.fit.ln.likelihoods.fullmesh(ranks, rows.no))
+    expect_error(step_fit_ln_likelihoods(ranks, rows.no))
+    expect_error(.step_fit_profile(ranks, rows.no))
 })
 
 test_that(paste0(
-    "step.fit.ln.likelihoods.fullmesh and ",
+    ".step_fit_profile and ",
     "reference enum agree on 3 representative examples"
 ), {
     set.seed(42)
@@ -74,8 +74,8 @@ test_that(paste0(
         max.possible.rank <- case$max.possible.rank
         shape <- case$shape
 
-        fm  <- step.fit.ln.likelihoods.fullmesh(ranks, max.possible.rank)
-        ref <- .fullmesh_enum_ref(ranks, max.possible.rank)
+        fm  <- .step_fit_profile(ranks, max.possible.rank)
+        ref <- .profile_ref(ranks, max.possible.rank)
 
         expect_equal(fm$columns.order,  ref$columns.order,
             info = paste("columns.order mismatch:", shape))
@@ -87,7 +87,7 @@ test_that(paste0(
 })
 
 test_that(
-    ".step_fit_compact and .step_fit_fullmesh agree on targeted cases",
+    ".step_fit_compact and .step_fit_enum agree on targeted cases",
     {
         # Each case exercises a specific algorithmic property.
         # For all cases we compare the two private implementations directly.
@@ -134,7 +134,7 @@ test_that(
 
         for (case in cases) {
             cpt <- .step_fit_compact(case$ranks, case$M)
-            fmh <- .step_fit_fullmesh(case$ranks, case$M)
+            fmh <- .step_fit_enum(case$ranks, case$M)
 
             expect_equal(cpt$columns.order, fmh$columns.order,
                 info = paste("columns.order:", case$label))

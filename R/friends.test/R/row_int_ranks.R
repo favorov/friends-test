@@ -1,10 +1,10 @@
 #'
-#' row.int.ranks
+#' row_int_ranks
 #'
 #' Given the (\code{attention}) \eqn{|T| \times |C|} matrix,
 #' convert it to matrix of descending ranks of rows in
 #' columns (columns).
-#' See [friends.test] documentation for details.
+#' See [friends_test] documentation for details.
 #' @param attention original attention matrix
 #' @param distance_like if \code{TRUE}, ranks are ascending
 #' (the smaller is the better). Default is \code{FALSE}.
@@ -29,9 +29,9 @@
 #' rownames(regulation) <- gene.names
 #' colnames(regulation) <- TF.names
 #'
-#' TF.ranks <- row.int.ranks(regulation)
+#' TF.ranks <- row_int_ranks(regulation)
 #' @export
-row.int.ranks <- function(
+row_int_ranks <- function(
     attention = NULL,
     distance_like = FALSE,
     neglect_diagonal = FALSE

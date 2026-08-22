@@ -123,18 +123,18 @@ other hand its rank in other TF-based columns is much lower.
 First, let's apply the Bayesian version of the method, `best.friends.bic`.
 
 ```{r reg bic .5 1}
-friends.test.bic(regulation, prior.to.have.friends = .5, max.friends.n = 1)
+friends_test_bic(regulation, prior.to.have.friends = .5, max.friends.n = 1)
 ```
 
 We see the expected Gene2-TF1 pair as well as the Gene1-TF1 pair, that is
 similar to the expected, Gene1 has rank of 3 in the TF1 column.
 
 The lower is the prior to have friends for a row (it is an obligatory parameter
-for `friends.test.bic`), the less marker-friend pairs we get.
+for `friends_test_bic`), the less marker-friend pairs we get.
 
 ```{r reg bic .33 .25 1}
-friends.test.bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
-friends.test.bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
+friends_test_bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
+friends_test_bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
 ```
 
 In all the three examples above, the `max.friends.n` parameter was set to 1. It
@@ -144,11 +144,11 @@ relax the restriction, we get more results, and the `rank` that shows the rank
 of the friend for the marker, can differ from 1:
 
 ```{r reg bic .25}
-friends.test.bic(regulation, prior.to.have.friends = .25)
+friends_test_bic(regulation, prior.to.have.friends = .25)
 ```
 
-Note that `max.friends.n = "all"` is the default value for both `friends.test`
-(see below) and `friends.test.bic`.
+Note that `max.friends.n = "all"` is the default value for both `friends_test`
+(see below) and `friends_test_bic`.
 
 ### The same toy example: the KS option
 
@@ -157,7 +157,7 @@ sensitive on small dataset, so we use unpractical threshold for the p-value to
 see the result.
 
 ```{r reg ks .5 noadj 1}
-friends.test(regulation, threshold = .5, p.adjust.method = "no",
+friends_test(regulation, threshold = .5, p.adjust.method = "no",
                 max.friends.n = 1)
 ```
 
@@ -165,7 +165,7 @@ And, as usual, if we relax the `max.friends.no` restriction, we will see more
 pairs, but now the friends are not required to be unique for a marker.
 
 ```{r reg ks .5 noadj}
-friends.test(regulation, threshold = .5, p.adjust.method = "no")
+friends_test(regulation, threshold = .5, p.adjust.method = "no")
 ```
 
 ### Iris example
@@ -178,7 +178,7 @@ print(head(iris, n = 5))
 We use only numeric columns:
 
 ```{r iris bic}
-friends.test.bic(iris[1:4], prior.to.have.friends = .001)
+friends_test_bic(iris[1:4], prior.to.have.friends = .001)
 ```
 
 So, we see that the flower #14 is important for (we also can think about it as
@@ -222,17 +222,17 @@ head(featureLoadings)
 
 ### Friends test application to the loading matrix
 
-Let's look for marker genes for the patterns using `friends.test`. In this
+Let's look for marker genes for the patterns using `friends_test`. In this
 setup, genes (possibly, markers) are rows, patterns (possibly, friends for the
 markers) are columns.
 
 
-We use here the default version of `friends.test` that selects markers by the KS
+We use here the default version of `friends_test` that selects markers by the KS
 test. As far as there is ~15000 genes, we use Bonferroni p-value adjustment
 rather than the default "BH".
 
 ```{r patterns are genes friends}
-friends_of_genes <- friends.test(
+friends_of_genes <- friends_test(
     featureLoadings,
     p.adjust.method = "bonferroni"
 )
@@ -267,7 +267,7 @@ names(friends_of_genes[[1]])[1]
 
 The format is flexible enough, we exemplify possible transformations
 [later](#the-result-format-transformations). The format is common for the
-`friends.test` and `friends.test.bic` main functions.
+`friends_test` and `friends_test_bic` main functions.
 
 ### Ranks of a marker in its friends and non-friends
 
@@ -275,7 +275,7 @@ Let's look what happens in the friends.test. First, we rank all the genes inside
 the loadings matrix.
 
 ```{r ranking of loadings}
-ranks <- row.int.ranks(featureLoadings)
+ranks <- row_int_ranks(featureLoadings)
 head(ranks)
 ```
 
@@ -302,7 +302,7 @@ part of the calculation, it filters out the genes that has more than
 `max.friends.n` friends, these genes are not stored in the output.
 
 ```{r 'patterns are only best genes friends'}
-best_friends_of_genes <- friends.test(
+best_friends_of_genes <- friends_test(
     featureLoadings,
     p.adjust.method = "bonferroni",
     max.friends.n = 1
@@ -328,14 +328,14 @@ other patterns and it is significantly higher than all of them.
 ## Gene set enrichment
 
 To perform an example of gene set enrichment analysis, we use the Bayesian
-version of the test, `friends.test.bic`. We restrict the number of friends for a
+version of the test, `friends_test_bic`. We restrict the number of friends for a
 marker by 4, a half of number of the patterns, to keep them all in the similar
 "direction". The required parameter `prior.to.have.friends` is set to
 approximately 1/(number of genes). We run 2 parallel processes, see
 [Parallel calculation](#parallel-calculation).
 
 ```{r 'patterns are good genes friends'}
-good_friends_of_genes <- friends.test.bic(
+good_friends_of_genes <- friends_test_bic(
     featureLoadings,
     prior.to.have.friends = 1E-4,
     max.friends.n = 4,
@@ -444,7 +444,7 @@ hallmarks_by_markers
 
 ## Ranking and random numbers
 
-The result of both `friends.test` and `friends.test.bic` functions depends on
+The result of both `friends_test` and `friends_test_bic` functions depends on
 random state generator. The dependency is because the test starts with ranking
 of the elements of the input matrix in the columns. The test requires the rank
 values to be integer, so the ties are resolved randomly. It you want a
@@ -456,7 +456,7 @@ approach is the only is if some additional information is used in the ranking.
 
 ## Parallel calculation
 
-Both main functions, `friends.test` and `friends.test.bic`, can distribute the
+Both main functions, `friends_test` and `friends_test_bic`, can distribute the
 row-wise work through `BiocParallel`. Pass
 `BPPARAM = BiocParallel::MulticoreParam(workers = n)` on Unix-like systems or
 `BPPARAM = BiocParallel::SnowParam(workers = n)` on all platforms. If you also
@@ -479,7 +479,7 @@ toy_attention <- matrix(
     nrow = 6, ncol = 5, byrow = TRUE
 )
 
-friends.test(
+friends_test(
     toy_attention,
     threshold = 0.05,
     .progress = TRUE,

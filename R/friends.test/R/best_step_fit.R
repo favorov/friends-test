@@ -1,13 +1,13 @@
 #'
-#' best.step.fit
+#' best_step_fit
 #'
 #' finds the ML-best step model for one row
 #'
-#' See [friends.test] documentation for details.
+#' See [friends_test] documentation for details.
 #'
-#' @inheritParams step.fit.ln.likelihoods
+#' @inheritParams step_fit_ln_likelihoods
 #' @return a list of four values: \cr
-#' \code{step.models} is return from [step.fit.ln.likelihoods] call,
+#' \code{step.models} is return from [step_fit_ln_likelihoods] call,
 #' which the function starts with
 #' \code{best.step.rank} is the rank value that makes the best step;
 #' it is not obligatory one on the \code{ranks} value.\cr
@@ -18,10 +18,10 @@
 #' \code{population.on.left} is how many ranks are on left of split;
 #' they are friends! \cr
 #' @examples
-#' example(row.int.ranks)
-#' step <- best.step.fit(TF.ranks[42, ], genes.no)
+#' example(row_int_ranks)
+#' step <- best_step_fit(TF.ranks[42, ], genes.no)
 #' @export
-best.step.fit <- function(ranks, max.possible.rank) {
+best_step_fit <- function(ranks, max.possible.rank) {
     step.models <- .step_fit_compact(ranks, max.possible.rank)
     k <- length(ranks)
 

@@ -1,4 +1,4 @@
-test_that("Signal-noise test for ks", {
+test_that("Signal-noise test for bic", {
     #if to adjust parameters, the satistics can be much better
     #we need just a test here
     set.seed(42)
@@ -47,9 +47,11 @@ test_that("Signal-noise test for ks", {
 
     signoise <- sig.noise.obj()
 
-    friends <- friends.test(
-        signoise[["M"]]
+    friends <- friends_test_bic(
+        signoise[["M"]],
+        prior.to.have.friends = 0.01
     )
+
     #here, we convert list-of-lists to matrix
     #and yes, we can write ones instead of ranks
 
@@ -64,16 +66,17 @@ test_that("Signal-noise test for ks", {
         j_vec <- trio_matrix[, 2]
         friends.mask[cbind(i_vec, j_vec)] <- 1
     }
-    #testing..
+    #testing.. 
+
     err <- compute_error(signoise[["mask"]], friends.mask)
-    expect_true(err[["TP"]] > 0.1, # not a superresult
-        info = "True Positive rate should be greater than 55%"
+    expect_true(err[["TP"]] > 0.25,
+        info = "True Positive rate should be greater than 25%"
     )
     expect_true(err[["PR"]] > 0.25,
         info = "Precision should be greater than 25%"
     )
-    expect_true(err[["RCL"]] > 0.1,
-        info = "Recall should be greater than 10%"
+    expect_true(err[["RCL"]] > 0.25,
+        info = "Recall should be greater than 25%"
     )
     expect_true(err[["FP"]] < 0.1,
         info = "False Positive rate should be less than 10%"

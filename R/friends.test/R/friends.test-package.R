@@ -16,25 +16,23 @@
 #' @keywords internal
 "_PACKAGE"
 #' @section friends.test functions:
-#' [friends.test] finds whether there column(s) that are friends for a row
+#' [friends_test] finds whether there column(s) that are friends for a row
 #' and find them if they do. The friends presence is tested by rejecting
 #' the null hypothesis that claims that all the ranks of a row in different
 #' columns are uniformly i.i.d
 #'
-#' [unif.ks.test] tests uniformity of a integer vector, the uniformity
+#' [unif_ks_test] tests uniformity of a integer vector, the uniformity
 #' corresponds to the "has-no-friends" uniform null model.
 #'
-#' [step.fit.ln.likelihoods] fits an integer vector with the one-step model
-#' using the compact O(ncol) algorithm;
-#' [step.fit.ln.likelihoods.fullmesh] wraps the compact method
-#' to produce the full log-likelihood profile over all split ranks.
+#' [step_fit_ln_likelihoods] fits an integer vector with the one-step model
+#' using the compact O(ncol) algorithm.
 #'
-#' [friends.test.bic] finds whether there column(s) that are friends for a row
+#' [friends_test_bic] finds whether there column(s) that are friends for a row
 #' and find them if they do. The friends presence is tested by comparing the
 #' likelihood of splitting and non-splitting models
 #'
 #'
-#' [row.int.ranks] is use by all above to prepare the integer vector to test.
+#' [row_int_ranks] is use by all above to prepare the integer vector to test.
 #' They are ranks of attentian that a column pays to different rows.
 #' The ranking happens inside different columns separately.
 #' The ties are resolved at random, to keep the ranks integer.

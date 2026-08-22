@@ -2,7 +2,7 @@ test_that("no errors in simplest case", {
     mat <- diag(nrow = 5, ncol = 5)
     rownames(mat) <- paste0("row", 1:5)
     colnames(mat) <- paste0("col", 1:5)
-    expect_no_error(friends.test(mat))
+    expect_no_error(friends_test(mat))
 })
 
 test_that("best friend is determined correctly", {
@@ -14,7 +14,7 @@ test_that("best friend is determined correctly", {
             row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
     attention <- as.matrix(read.table(text = text, header = TRUE))
 
-    friends <- friends.test(attention)
+    friends <- friends_test(attention)
     expected <- list(
         row5 = list(
             col5 = c(marker = 5, friend = 5, rank = 1)
@@ -35,7 +35,7 @@ test_that("passes non-diagonal diagonal test", {
     diag(almost_diagon_mat) <- 19
     rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
     colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
-    friends <- friends.test(almost_diagon_mat)
+    friends <- friends_test(almost_diagon_mat)
     expected <- list(
         row1 = list(
             col1 = c(marker = 1, friend = 1, rank = 1)
@@ -89,7 +89,7 @@ test_that("passes non-diagonal diagonal parallel test", {
     diag(almost_diagon_mat) <- 19
     rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
     colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
-    friends <- friends.test(
+    friends <- friends_test(
         almost_diagon_mat,
         BPPARAM = BiocParallel::SnowParam(workers = 2, progressbar = FALSE)
     )
@@ -139,7 +139,7 @@ test_that("passes non-diagonal diagonal parallel test with MulticoreParam", {
     diag(almost_diagon_mat) <- 19
     rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
     colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
-    friends <- friends.test(
+    friends <- friends_test(
         almost_diagon_mat,
         BPPARAM = BiocParallel::MulticoreParam(workers = 2, progressbar = FALSE)
     )
