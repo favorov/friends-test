@@ -47,7 +47,7 @@ test_that("Signal-noise test for ks", {
 
     signoise <- sig.noise.obj()
 
-    friends <- friends_test(
+    friends <- friends_test_ks(
         signoise[["M"]]
     )
     #here, we convert list-of-lists to matrix

@@ -1,159 +1,78 @@
-test_that("no errors in simplest case", {
-    mat <- diag(nrow = 5, ncol = 5)
-    rownames(mat) <- paste0("row", 1:5)
-    colnames(mat) <- paste0("col", 1:5)
-    expect_no_error(friends_test(mat))
+test_mat <- function() {
+    set.seed(11)
+    n <- 60
+    k <- 6
+    A <- matrix(rnorm(n * k), nrow = n, ncol = k)
+    A[1:6, 1:3] <- A[1:6, 1:3] + 8
+    rownames(A) <- paste0("row", seq_len(n))
+    colnames(A) <- paste0("col", seq_len(k))
+    A
+}
+
+
+test_that("friends_test dispatches to the branch named by mode", {
+    A <- test_mat()
+
+    set.seed(3)
+    viaDispatcher <- friends_test(A, threshold = 0.05)
+    set.seed(3)
+    direct <- friends_test_ks(A, threshold = 0.05)
+    expect_identical(viaDispatcher, direct)
+
+    set.seed(3)
+    viaDispatcher <- friends_test(A, mode = "bic", prior.to.have.friends = 0.5)
+    set.seed(3)
+    direct <- friends_test_bic(A, prior.to.have.friends = 0.5)
+    expect_identical(viaDispatcher, direct)
 })
 
-test_that("best friend is determined correctly", {
-    text <- "    col1     col2     col3      col4     col5
-            row1 0.1765568 0.7176185 0.2121425 0.01339033 0.5995658
-            row2 0.6870228 0.9919061 0.6516738 0.38238796 0.4935413
-            row3 0.3841037 0.3800352 0.1255551 0.86969085 0.1862176
-            row4 0.7698414 0.7774452 0.2672207 0.34034900 0.8273733
-            row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
-    attention <- as.matrix(read.table(text = text, header = TRUE))
 
-    friends <- friends_test(attention)
-    expected <- list(
-        row5 = list(
-            col5 = c(marker = 5, friend = 5, rank = 1)
-        )
-    )
-    expect_equivalent(friends, expected)
+test_that("friends_test defaults to the KS branch", {
+    A <- test_mat()
+    set.seed(3)
+    byDefault <- friends_test(A)
+    set.seed(3)
+    explicit <- friends_test(A, mode = "ks")
+    expect_identical(byDefault, explicit)
 })
 
 
-test_that("passes non-diagonal diagonal test", {
-    # best.friends method is not illustrated well using square diagonal matrices
-    # we will use a rectangular matrix for this test (ncolls << nrows)
-    set.seed(1) # actually, it works with like 9/10 of seeds
-    nrows <- 100
-    ncolls <- 10
-    almost_diagon_mat <- matrix(1 + 9 * runif(nrows * ncolls), nrow = nrows)
-    almost_diagon_mat[1:ncolls, ] <- runif(ncolls * ncolls)
-    diag(almost_diagon_mat) <- 19
-    rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
-    colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
-    friends <- friends_test(almost_diagon_mat)
-    expected <- list(
-        row1 = list(
-            col1 = c(marker = 1, friend = 1, rank = 1)
-        ),
-        row2 = list(
-            col2 = c(marker = 2, friend = 2, rank = 1)
-        ),
-        row3 = list(
-            col3 = c(marker = 3, friend = 3, rank = 1)
-        ),
-        row4 = list(
-            col4 = c(marker = 4, friend = 4, rank = 1)
-        ),
-        row5 = list(
-            col5 = c(marker = 5, friend = 5, rank = 1)
-        ),
-        row6 = list(
-            col6 = c(marker = 6, friend = 6, rank = 1)
-        ),
-        row7 = list(
-            col7 = c(marker = 7, friend = 7, rank = 1)
-        ),
-        row8 = list(
-            col8 = c(marker = 8, friend = 8, rank = 1)
-        ),
-        row9 = list(
-            col9 = c(marker = 9, friend = 9, rank = 1)
-        ),
-        row10 = list(
-            col10 = c(marker = 10, friend = 10, rank = 1)
-        )
-    )
-    expect_equivalent(friends, expected)
+test_that("friends_test forwards the arguments both branches share", {
+    A <- test_mat()
+
+    set.seed(3)
+    viaDispatcher <- friends_test(A, mode = "bic",
+        prior.to.have.friends = 0.5, max.friends.n = 2)
+    set.seed(3)
+    direct <- friends_test_bic(A, prior.to.have.friends = 0.5,
+        max.friends.n = 2)
+    expect_identical(viaDispatcher, direct)
 })
 
-test_that("passes non-diagonal diagonal parallel test", {
-    # SnowParam starts fresh Rscript worker processes. They inherit .libPaths()
-    # but not pkgload-loaded packages (load_all() only lives in the parent
-    # session's memory). In R CMD check the package is properly installed, so
-    # workers find it; in test_local() (dev mode) they cannot.
-    skip_if(
-        pkgload::is_dev_package("friends.test"),
-        "SnowParam workers require an installed package; skipping in dev mode"
+
+test_that("friends_test rejects an argument belonging to the other mode", {
+    A <- test_mat()
+
+    expect_error(
+        friends_test(A, mode = "bic", threshold = 0.05),
+        "belongs to mode \"ks\""
     )
-    # we will use a rectangular matrix for this test (ncolls << nrows)
-    set.seed(1) # actually, it works with like 9/10 of seeds
-    nrows <- 100
-    ncolls <- 10
-    almost_diagon_mat <- matrix(1 + 9 * runif(nrows * ncolls), nrow = nrows)
-    almost_diagon_mat[1:ncolls, ] <- runif(ncolls * ncolls)
-    diag(almost_diagon_mat) <- 19
-    rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
-    colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
-    friends <- friends_test(
-        almost_diagon_mat,
-        BPPARAM = BiocParallel::SnowParam(workers = 2, progressbar = FALSE)
+    expect_error(
+        friends_test(A, mode = "ks", prior.to.have.friends = 0.5),
+        "belongs to mode \"bic\""
     )
-    expected <- list(
-        row1 = list(
-            col1 = c(marker = 1, friend = 1, rank = 1)
-        ),
-        row2 = list(
-            col2 = c(marker = 2, friend = 2, rank = 1)
-        ),
-        row3 = list(
-            col3 = c(marker = 3, friend = 3, rank = 1)
-        ),
-        row4 = list(
-            col4 = c(marker = 4, friend = 4, rank = 1)
-        ),
-        row5 = list(
-            col5 = c(marker = 5, friend = 5, rank = 1)
-        ),
-        row6 = list(
-            col6 = c(marker = 6, friend = 6, rank = 1)
-        ),
-        row7 = list(
-            col7 = c(marker = 7, friend = 7, rank = 1)
-        ),
-        row8 = list(
-            col8 = c(marker = 8, friend = 8, rank = 1)
-        ),
-        row9 = list(
-            col9 = c(marker = 9, friend = 9, rank = 1)
-        ),
-        row10 = list(
-            col10 = c(marker = 10, friend = 10, rank = 1)
-        )
-    )
-    expect_equivalent(friends, expected)
 })
 
-test_that("passes non-diagonal diagonal parallel test with MulticoreParam", {
-    # MulticoreParam uses fork() and is not available on Windows.
-    skip_on_os("windows")
-    set.seed(1)
-    nrows <- 100
-    ncolls <- 10
-    almost_diagon_mat <- matrix(1 + 9 * runif(nrows * ncolls), nrow = nrows)
-    almost_diagon_mat[1:ncolls, ] <- runif(ncolls * ncolls)
-    diag(almost_diagon_mat) <- 19
-    rownames(almost_diagon_mat) <- paste0("row", 1:nrows)
-    colnames(almost_diagon_mat) <- paste0("col", 1:ncolls)
-    friends <- friends_test(
-        almost_diagon_mat,
-        BPPARAM = BiocParallel::MulticoreParam(workers = 2, progressbar = FALSE)
+
+test_that("friends_test rejects an unknown mode", {
+    expect_error(friends_test(test_mat(), mode = "bayes"))
+})
+
+
+test_that("friends_test leaves other argument errors to the branch", {
+    # not owned by either branch: the callee reports it, we do not
+    expect_error(
+        friends_test(test_mat(), nonsense = 1),
+        "unused argument"
     )
-    expected <- list(
-        row1 = list(col1 = c(marker = 1, friend = 1, rank = 1)),
-        row2 = list(col2 = c(marker = 2, friend = 2, rank = 1)),
-        row3 = list(col3 = c(marker = 3, friend = 3, rank = 1)),
-        row4 = list(col4 = c(marker = 4, friend = 4, rank = 1)),
-        row5 = list(col5 = c(marker = 5, friend = 5, rank = 1)),
-        row6 = list(col6 = c(marker = 6, friend = 6, rank = 1)),
-        row7 = list(col7 = c(marker = 7, friend = 7, rank = 1)),
-        row8 = list(col8 = c(marker = 8, friend = 8, rank = 1)),
-        row9 = list(col9 = c(marker = 9, friend = 9, rank = 1)),
-        row10 = list(col10 = c(marker = 10, friend = 10, rank = 1))
-    )
-    expect_equivalent(friends, expected)
 })

@@ -16,10 +16,14 @@
 #' @keywords internal
 "_PACKAGE"
 #' @section friends.test functions:
-#' [friends_test] finds whether there column(s) that are friends for a row
-#' and find them if they do. The friends presence is tested by rejecting
-#' the null hypothesis that claims that all the ranks of a row in different
-#' columns are uniformly i.i.d
+#' [friends_test] is the entry point: it finds whether there are column(s)
+#' that are friends for a row, and finds them if there are. Its \code{mode}
+#' argument selects which test decides that, and it passes the rest of its
+#' arguments on to the selected one.
+#'
+#' [friends_test_ks] is the \code{mode = "ks"} branch. The friends presence is
+#' tested by rejecting the null hypothesis that claims that all the ranks of a
+#' row in different columns are uniformly i.i.d
 #'
 #' [unif_ks_test] tests uniformity of a integer vector, the uniformity
 #' corresponds to the "has-no-friends" uniform null model.
@@ -27,9 +31,8 @@
 #' [step_fit_ln_likelihoods] fits an integer vector with the one-step model
 #' using the compact O(ncol) algorithm.
 #'
-#' [friends_test_bic] finds whether there column(s) that are friends for a row
-#' and find them if they do. The friends presence is tested by comparing the
-#' likelihood of splitting and non-splitting models
+#' [friends_test_bic] is the \code{mode = "bic"} branch. The friends presence
+#' is tested by comparing the likelihood of splitting and non-splitting models
 #'
 #'
 #' [row_int_ranks] is use by all above to prepare the integer vector to test.

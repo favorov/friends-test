@@ -9,29 +9,33 @@
 #' If it does, those c for which the t is relevant,
 #' are the t's friend. And, the t is the c's marker.
 #'
+#' Two ways of deciding whether a row really has friends are provided, and
+#' they ask different questions.  \code{mode = "ks"} (the default) runs
+#' [friends_test_ks], which tests whether the row's ranks are uniformly
+#' spread over the columns, wherever that spread happens to sit.
+#' \code{mode = "bic"} runs [friends_test_bic], which compares a step model
+#' against a uniform one over the whole rank scale.  Both return the same
+#' structure, so a pipeline can switch between them.
+#'
+#' Arguments other than the ones listed below are passed to the function
+#' selected by \code{mode}; see its documentation for what each mode accepts.
+#' Passing an argument that belongs to the other mode is an error.
+#'
 #' If you want to run the row-wise calculations in parallel,
 #' pass a [BiocParallel::BiocParallelParam-class] object via \code{BPPARAM},
 #' for instance \code{BiocParallel::MulticoreParam(workers = 4)} on Unix-like
 #' systems or \code{BiocParallel::SnowParam(workers = 4)} on all platforms.
 #'
 #' @param A original association matrix
-#' @param threshold The adjusted p-value threshold for KS test for
-#' non-uniformity of ranks.
-#' @param p.adjust.method Multiple testing correction method,
-#' see \link[stats]{p.adjust}.
+#' @param mode which test decides whether a row has friends: \code{"ks"}
+#' (default) for the Kolmogorov-Smirnov branch, [friends_test_ks], or
+#' \code{"bic"} for the Bayesian one, [friends_test_bic].
+#' @param ... further arguments for the function selected by \code{mode}.
 #' @param max.friends.n The maximal number of friends for a marker.
 #' A value $n$ means that we filter out a row if it has more
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
 #' The string "all" (default) means the same as \code{ncols(A)} value,
 #' do not filter markers by this parameter.
-#' @param uniform.max The maximum of the uniform distribution of the ranks we
-#' fit the null model, it can be the maximal possible rank that is common for
-#' all rows and equals the number of rows \code{'c'} or the maximal observed
-#' rank for the row we test now, \code{'m'} (default).
-#' @param simulate.p.value K-S by Monte-Carlo if \code{TRUE};
-#' default is \code{FALSE}, see [stats::ks.test()].
-#' @param B number of or replicates if \code{simulate.p.value=TRUE}
-#' default is 2000, see [stats::ks.test()].
 #' @param .progress if \code{TRUE}, show simple progress messages and enable
 #' the text progress bar of the selected \code{BPPARAM}. The default is
 #' \code{FALSE}.
@@ -49,6 +53,7 @@
 #' vector represents a marker+friend pair,
 #' the inner lists enumerate friends,
 #' the outer (return) list enumerate markers.
+#' @seealso [friends_test_ks], [friends_test_bic]
 #' @examples
 #' A <- matrix(
 #'     c(
@@ -63,241 +68,48 @@
 #' )
 #' A
 #' friends_test(A, threshold = .05)
-#' friends_test(A, threshold = .0001)
-#' friends_test(A, threshold = .05, uniform.max = "m")
-#' friends_test(A, threshold = .0001, uniform.max = "m")
+#' friends_test(A, mode = "bic", prior.to.have.friends = 0.5)
 #'
-#' @importFrom stats p.adjust
-#' @importFrom purrr array_branch compact pmap
-#' @importFrom cli cli_progress_step cli_progress_done cli_progress_along
-#' @importFrom methods is
 #' @export
 #'
 friends_test <- function(
     A = NULL,
-    threshold = 0.05,
-    p.adjust.method = "BH",
+    mode = c("ks", "bic"),
+    ...,
     max.friends.n = "all",
-    uniform.max = "m",
-    simulate.p.value = FALSE,
-    B = 2000,
     .progress = FALSE,
     BPPARAM = NULL
 ) {
-    # parameter checks
-    if (is.null(A) || (length(dim(A)) != 2))  {
-        stop("The first parameter must be a non-empty 2D matrix-like object.")
-    }
+    mode <- match.arg(mode)
+    fun <- switch(mode, ks = friends_test_ks, bic = friends_test_bic)
+    other <- switch(mode, ks = friends_test_bic, bic = friends_test_ks)
 
-    if (is.null(max.friends.n) || is.na(max.friends.n) ||
-            max.friends.n == "all" || max.friends.n == "al" ||
-            max.friends.n == "a") {
-        max.friends.n <- ncol(A)
-    } else if (!is.numeric(max.friends.n)) {
-        stop(
-            "max.friends.n must be numeric, ",
-            "or one of 'all', 'al', 'a', NA, or NULL."
-        )
-    }
-
-    if (max.friends.n < 1 || max.friends.n > ncol(A)) {
-        stop("max.friends.n must be between 1 and the number of columns.")
-    }
-    if (threshold < 0 || threshold > 1) {
-        stop("threshold must be between 0 and 1.")
-    }
-    # case for uniform.max: M or m assign nrow(A) (max rank),
-    # for C or c assign NA, any other fails
-    if (uniform.max == "m" || uniform.max == "M") {
-        uniform.max <- NA
-    } else if (uniform.max == "c" || uniform.max == "C") {
-        uniform.max <- nrow(A)
-    } else if (!is.numeric(uniform.max)) {
-        stop("uniform.max must be either 'm', 'M', 'c', 'C' or numeric.")
-    }
-
-
-    # add names to A matrix rows if necessary
-    if (is.null(dimnames(A)[[1]])) {
-        rownames(A) <- seq_len(nrow(A))
-    }
-    # add names to A matrix cols if necessary
-    if (is.null(dimnames(A)[[2]])) {
-        colnames(A) <- seq_len(ncol(A))
-    }
-
-    if (.progress) options(cli.progress_show_after = 0)
-    BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
-    use_serial_progress <- .progress && is(BPPARAM, "SerialParam")
-
-    # rank all the A elements in columns
-    if (.progress) cli::cli_progress_step("Ranking...")
-    all_ranks <- row_int_ranks(A)
-    all_rank_rows <- purrr::array_branch(all_ranks, 1)
-
-    # calculate the p-values for null hypothesis for all the rank rows
-    # pipeline: array to list, list to double vector of p-values,
-    # then adjust the p-values
-    if (use_serial_progress) {
-        cli::cli_progress_done() # close "Ranking..."
-        adj_nunif_pval <- vapply(
-            cli::cli_progress_along(
-                all_rank_rows,
-                name = "Filtering out uniforms",
-                clear = FALSE,
-                format_done = ft_pb_format_done
-            ),
-            function(i) unif_ks_test(
-                all_rank_rows[[i]],
-                uniform.max = uniform.max,
-                simulate.p.value = simulate.p.value,
-                B = B
-            ),
-            numeric(1)
-        ) |> p.adjust(method = p.adjust.method)
-    } else {
-        if (.progress) cli::cli_progress_step("Filtering out uniforms...")
-        adj_nunif_pval <-
-            ft_bplapply_dbl(
-                all_rank_rows,
-                # local(envir=globalenv()): closure carries globalenv() so
-                # SnowParam workers can deserialize it without loading the
-                # friends.test namespace.  .libPaths(libs) propagates the
-                # parent's library paths so workers can find friends.test at
-                # execution time (R CMD build installs to a temp dir that is
-                # not in workers' default .libPaths()).
-                local(
-                    function(x, uniform.max, simulate.p.value, B, libs) {
-                        .libPaths(libs)
-                        friends.test::unif_ks_test(
-                            x,
-                            uniform.max = uniform.max,
-                            simulate.p.value = simulate.p.value,
-                            B = B
-                        )
-                    },
-                    envir = globalenv()
-                ),
-                uniform.max = uniform.max,
-                simulate.p.value = simulate.p.value,
-                B = B,
-                libs = .libPaths(),
-                BPPARAM = BPPARAM
-            ) |>
-            p.adjust(
-                method = p.adjust.method
-            )
-        if (.progress) cli::cli_progress_done()
-    }
-
-    is_marker <- (adj_nunif_pval <= threshold)
-    # is it a marker?
-
-    if (sum(is_marker) == 0) {
-        message("No rows with non-uniform ranks found for given threshold.")
-        return(list())
-        # empty matrix return
-    }
-
-    marker_indices <- which(is_marker)
-
-    # find friends that make in-marker ranks non-uniform
-    max.possible.rank <- dim(A)[1]
-    #run ut all in purrr style
-    #return: list of list of, trios
-    #i, j, r -- vectors:
-    #marker, friend, friend.rank
-    marker_rank_rows <- purrr::array_branch(
-        all_ranks[marker_indices, , drop = FALSE],
-        1
+    # An argument belonging to the branch we are not running is a mistake about
+    # the mode rather than a typo, and the message should say so.  Names that
+    # belong to neither branch are left to the callee, which reports them as
+    # unused arguments, and abbreviated names are left to R's own matching.
+    misplaced <- intersect(
+        ...names(),
+        setdiff(names(formals(other)), names(formals(fun)))
     )
-    col_names <- colnames(A)
-    if (use_serial_progress) {
-        fit_one <- function(ranks, i) {
-            step <- best_step_fit(ranks, max.possible.rank = max.possible.rank)
-            if (length(step$columns.on.left) > max.friends.n) return(NULL)
-            friends <- step$columns.on.left
-            friend.ranks <- which(
-                step$step.models$columns.order %in% friends
-            )
-            repi <- rep(i, length(friends))
-            names(repi) <- col_names[friends]
-            purrr::pmap(
-                list(marker = repi, friend = friends, rank = friend.ranks),
-                c
-            )
-        }
-        ijrlist <- lapply(
-            cli::cli_progress_along(
-                marker_rank_rows,
-                name = "Identifying friends",
-                clear = FALSE,
-                format_done = ft_pb_format_done
+    if (length(misplaced) > 0L) {
+        stop(
+            sprintf(
+                "argument%s %s belong%s to mode \"%s\", not to mode \"%s\".",
+                if (length(misplaced) > 1L) "s" else "",
+                paste(sQuote(misplaced), collapse = ", "),
+                if (length(misplaced) > 1L) "" else "s",
+                switch(mode, ks = "bic", bic = "ks"),
+                mode
             ),
-            function(idx) {
-                fit_one(marker_rank_rows[[idx]], marker_indices[[idx]])
-            }
-        )
-    } else {
-        if (.progress) cli::cli_progress_step("Identifying friends...")
-        #run ut all in purrr style
-        #return: list of list of, trios
-        #i, j, r -- vectors:
-        #marker, friend, friend.rank
-        ijrlist <- ft_bpmapply_list(
-            # local(envir=globalenv()): closure carries globalenv() so
-            # SnowParam workers can deserialize it without loading the
-            # friends.test namespace.  .libPaths(libs) propagates the
-            # parent's library paths so workers can find friends.test at
-            # execution time.
-            local(
-                \(ranks, i, max.possible.rank, max.friends.n, col_names, libs) {
-                    .libPaths(libs)
-                    step <- friends.test::best_step_fit(
-                        ranks,
-                        max.possible.rank = max.possible.rank
-                    )
-                    if (length(step$columns.on.left) > max.friends.n) {
-                        return(NULL) # marker has too much friends
-                    }
-                    # friends
-                    friends <- step$columns.on.left
-                    # the ranks of friends, the best is 1
-                    friend.ranks <- which(
-                        step$step.models$columns.order %in% friends
-                    )
-                    #if we give just i to pmap, the value will be the same,
-                    #but we want the name of the friend ti be the name of
-                    #elemant of the inner list
-                    repi <- rep(i, length(friends))
-                    names(repi) <- col_names[friends]
-                    #list of vector trios
-                    purrr::pmap(
-                        list(
-                            marker = repi,
-                            friend = friends,
-                            rank = friend.ranks
-                        ),
-                        c
-                    )
-                },
-                envir = globalenv()
-            ),
-            marker_rank_rows,
-            marker_indices,
-            MoreArgs = list(
-                max.possible.rank = max.possible.rank,
-                max.friends.n = max.friends.n,
-                col_names = col_names,
-                libs = .libPaths()
-            ),
-            BPPARAM = BPPARAM
+            call. = FALSE
         )
     }
-    names(ijrlist) <- names(marker_rank_rows)
 
-    if (.progress) cli::cli_progress_step("Compacting...")
-    ijrlist <- purrr::compact(ijrlist)
-    if (.progress) cli::cli_progress_done()
-    ijrlist
+    fun(
+        A, ...,
+        max.friends.n = max.friends.n,
+        .progress = .progress,
+        BPPARAM = BPPARAM
+    )
 }

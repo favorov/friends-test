@@ -1,7 +1,7 @@
 #' Normalise a BiocParallel backend parameter
 #'
 #' Validates and configures a \code{BiocParallelParam} object for use in
-#' \code{friends_test} and \code{friends_test_bic}.  When \code{BPPARAM} is
+#' \code{friends_test_ks} and \code{friends_test_bic}.  When \code{BPPARAM} is
 #' \code{NULL} the function falls back to
 #' \code{\link[BiocParallel]{SerialParam}}
 #' so that callers always receive a usable backend.  The progress bar is
