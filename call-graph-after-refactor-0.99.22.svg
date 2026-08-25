@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 700" width="980" height="700" role="img" aria-labelledby="t d">
+<title id="t">friends.test call graph after the 0.99.22 refactoring</title>
+<desc id="d">friends_test dispatches by mode to friends_test_ks or friends_test_bic. Both use the new shared internals .ft_prepare and .ft_map_rows. .ft_map_rows drives unif_ks_test, best_step_fit and best_step_fit_bic one row at a time, serially or through BiocParallel. Both step fitters share .step_fit_compact, .best_valid_k1 and .assemble_step; step_fit_ln_likelihoods picks between .step_fit_compact and .step_fit_enum by matrix shape.</desc>
+
+<style>
+  svg { --bg:#FCFCFA; --ink:#1A1C20; --muted:#6B7078; --accent:#2F4B7C; --rule:#D8D8D2;
+        color: var(--ink); }
+  @media (prefers-color-scheme: dark) {
+    svg { --bg:#15171B; --ink:#E6E8EA; --muted:#98A0A8; --accent:#86A9DC; --rule:#2C3038; }
+  }
+  .bg   { fill: var(--bg); }
+  .node { fill: var(--bg); stroke: currentColor; stroke-width: 1.4; }
+  .int  { fill: var(--bg); stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 4 3; }
+  .new  { fill: var(--bg); stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 4 3; }
+  .grp  { fill: none; stroke: var(--rule); stroke-width: 1; stroke-dasharray: 2 4; }
+  .fn   { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px;
+          fill: currentColor; text-anchor: middle; }
+  .fni  { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px;
+          fill: var(--muted); text-anchor: middle; }
+  .fna  { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px;
+          fill: var(--accent); text-anchor: middle; }
+  .sub  { font-family: system-ui, -apple-system, sans-serif; font-size: 10.5px;
+          fill: var(--muted); text-anchor: middle; }
+  .lbl  { font-family: system-ui, -apple-system, sans-serif; font-size: 11px;
+          fill: var(--muted); text-anchor: middle; }
+  .grl  { font-family: system-ui, -apple-system, sans-serif; font-size: 10px;
+          fill: var(--muted); letter-spacing: .09em; }
+  .edge { fill: none; stroke: currentColor; stroke-width: 1.2; }
+  .edga { fill: none; stroke: var(--accent); stroke-width: 1.3; }
+</style>
+
+<defs>
+  <marker id="a" markerWidth="9" markerHeight="7" refX="8.5" refY="3.5" orient="auto">
+    <polygon points="0,0 9,3.5 0,7" fill="currentColor"/>
+  </marker>
+  <marker id="aa" markerWidth="9" markerHeight="7" refX="8.5" refY="3.5" orient="auto">
+    <polygon points="0,0 9,3.5 0,7" fill="var(--accent)"/>
+  </marker>
+</defs>
+
+<rect class="bg" x="0" y="0" width="980" height="700"/>
+
+<!-- ===== entry point ===== -->
+<rect class="node" x="410" y="26" width="160" height="34" rx="3"/>
+<text class="fn" x="490" y="48">friends_test</text>
+
+<path class="edge" d="M 455 60 L 285 100" marker-end="url(#a)"/>
+<path class="edge" d="M 525 60 L 690 100" marker-end="url(#a)"/>
+<text class="lbl" x="330" y="74">mode = "ks"</text>
+<text class="lbl" x="648" y="74">mode = "bic"</text>
+
+<rect class="node" x="170" y="104" width="175" height="34" rx="3"/>
+<text class="fn" x="257" y="126">friends_test_ks</text>
+<rect class="node" x="620" y="104" width="180" height="34" rx="3"/>
+<text class="fn" x="710" y="126">friends_test_bic</text>
+
+<!-- ===== shared internals ===== -->
+<rect class="grp" x="120" y="176" width="740" height="112" rx="4"/>
+<text class="grl" x="132" y="192">NEW HELPERS</text>
+
+<path class="edge" d="M 257 138 L 257 200" marker-end="url(#a)"/>
+<path class="edge" d="M 710 138 L 710 200" marker-end="url(#a)"/>
+
+<rect class="new" x="175" y="206" width="190" height="52" rx="3"/>
+<text class="fna" x="270" y="228">.ft_prepare</text>
+<text class="sub" x="270" y="246">validate · name dims · rank</text>
+
+<rect class="new" x="575" y="206" width="200" height="52" rx="3"/>
+<text class="fna" x="675" y="228">.ft_map_rows</text>
+<text class="sub" x="675" y="246">serial with bar, or BiocParallel</text>
+
+<path class="edga" d="M 367 232 L 567 232" marker-end="url(#aa)"/>
+<text class="lbl" x="467" y="198">ranks, validated arguments</text>
+
+<!-- ===== per-row functions ===== -->
+<path class="edge" d="M 220 258 L 182 328" marker-end="url(#a)"/>
+<path class="edge" d="M 640 258 L 440 328" marker-end="url(#a)"/>
+<path class="edge" d="M 672 258 L 628 328" marker-end="url(#a)"/>
+<path class="edge" d="M 710 258 L 825 328" marker-end="url(#a)"/>
+
+<text class="lbl" x="140" y="306">calls</text>
+<text class="lbl" x="450" y="300">ks stage 1</text>
+<text class="lbl" x="600" y="300">ks stage 2</text>
+<text class="lbl" x="812" y="300">bic</text>
+
+<rect class="node" x="90" y="336" width="170" height="34" rx="3"/>
+<text class="fn" x="175" y="358">row_int_ranks</text>
+<rect class="node" x="345" y="336" width="165" height="34" rx="3"/>
+<text class="fn" x="427" y="358">unif_ks_test</text>
+<rect class="node" x="540" y="336" width="170" height="34" rx="3"/>
+<text class="fn" x="625" y="358">best_step_fit</text>
+<rect class="node" x="740" y="336" width="185" height="34" rx="3"/>
+<text class="fn" x="832" y="358">best_step_fit_bic</text>
+
+<text class="sub" x="427" y="386">wraps stats::ks.test</text>
+
+<!-- ===== step model internals ===== -->
+<rect class="grp" x="470" y="404" width="470" height="190" rx="4"/>
+<text class="grl" x="482" y="420">STEP MODEL</text>
+
+<path class="edge" d="M 620 370 L 592 428" marker-end="url(#a)"/>
+<path class="edge" d="M 820 370 L 648 428" marker-end="url(#a)"/>
+
+<rect class="int" x="495" y="436" width="190" height="46" rx="3"/>
+<text class="fni" x="590" y="456">.step_fit_compact</text>
+<text class="sub" x="590" y="472">O(ncol)</text>
+
+<rect class="int" x="495" y="506" width="190" height="46" rx="3"/>
+<text class="fni" x="590" y="526">.step_fit_enum</text>
+<text class="sub" x="590" y="542">O(nrow), wide matrices</text>
+
+<rect class="new" x="730" y="436" width="185" height="34" rx="3"/>
+<text class="fna" x="822" y="458">.best_valid_k1</text>
+<rect class="new" x="730" y="506" width="185" height="34" rx="3"/>
+<text class="fna" x="822" y="528">.assemble_step</text>
+
+<path class="edga" d="M 687 453 L 722 453" marker-end="url(#aa)"/>
+<path class="edga" d="M 822 470 L 822 498" marker-end="url(#aa)"/>
+<text class="sub" x="822" y="566">both fitters share these</text>
+
+<!-- ===== standalone step fitting ===== -->
+<rect class="node" x="70" y="436" width="240" height="34" rx="3"/>
+<text class="fn" x="190" y="458">step_fit_ln_likelihoods</text>
+<rect class="int" x="70" y="506" width="205" height="34" rx="3"/>
+<text class="fni" x="172" y="528">.step_fit_profile</text>
+<text class="sub" x="172" y="556">inspection and tests only</text>
+
+<path class="edge" d="M 312 450 L 487 450" marker-end="url(#a)"/>
+<path class="edge" d="M 312 464 L 487 518" marker-end="url(#a)"/>
+<path class="edge" d="M 277 516 L 487 472" marker-end="url(#a)"/>
+<text class="lbl" x="399" y="440">by matrix shape</text>
+
+<!-- ===== legend ===== -->
+<line x1="70" y1="626" x2="910" y2="626" stroke="var(--rule)" stroke-width="1"/>
+
+<rect class="node" x="72" y="646" width="26" height="16" rx="2"/>
+<text class="lbl" x="110" y="659" style="text-anchor:start">exported — 8 functions</text>
+
+<rect class="int" x="292" y="646" width="26" height="16" rx="2"/>
+<text class="lbl" x="330" y="659" style="text-anchor:start">internal, exists today</text>
+
+<rect class="new" x="512" y="646" width="26" height="16" rx="2"/>
+<text class="lbl" x="550" y="659" style="text-anchor:start">internal, created by this refactoring</text>
+
+<text class="sub" x="490" y="688">Four helpers are new. Every exported function keeps the behaviour it has today.</text>
+</svg>
