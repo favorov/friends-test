@@ -12,6 +12,54 @@ each round pushed during review, so several bumps are fine and probably desirabl
 
 ---
 
+## Status, 25 August 2026
+
+Everything below is either done or listed as still open. Package is at 0.99.22;
+tests 115 pass, 2 skip; `R CMD check --as-cran` 2 NOTE; `BiocCheck` 0 ERRORS,
+0 WARNINGS, 5 NOTES.
+
+**Done**
+
+| § | what | commit |
+|---|---|---|
+| 2 | `friends_test` became the dispatcher, KS branch renamed `friends_test_ks` | `1094ee6` |
+| 3.3 | one driver for the row-wise stages, `.libPaths` set only when it differs | `9ce63b7` |
+| 3.2 | shared prologue `.ft_prepare` | `9ce63b7` |
+| 3.1 | shared core of the two step fitters | `aa984a0` |
+| 4 | `options()` restored with `on.exit` | `ea62393` |
+| 5 | abbreviations of `max.friends.n` dropped | `ea62393` |
+| 6 | validity messages name their argument | `ae76560` |
+| — | `.progress` documented truthfully and tested | `346750c` |
+| 1.2, 1.3, 1.4 | `uniform.null` replaces `uniform.max`; duplicated KS test removed | `cea5d04` |
+| 7.1–7.6 | BiocStyle, Installation, `###` subsections, setup chunk, `noquote` | `efdf99c` |
+| 8 | CoGAPS data documented, with provenance and licences | `910e410` |
+
+Two things happened along the way that were not asked for and are worth a look:
+
+* A pass over the CoGAPS matrix went from 2.08 to 1.58 seconds. `.libPaths()`
+  was being *set* once per row, at 34 microseconds against 0.2 for reading it.
+* `best_step_fit_bic()` used to raise an error when every rank in a row was
+  tied and the prior was exactly 1. It now reports no friends, like every
+  other prior. Sixteen corner cases were compared against the old code and
+  this is the only one that differs.
+
+**Still open**
+
+| § | what | who |
+|---|---|---|
+| 9 | re-measure coverage — it was 75.57% before any of this, and the files have changed | me |
+| 10 | answers rather than changes: `integer(0L)`, dots in argument names, `shareObject`/`mori` | me, then you |
+| 13.1 | Monte-Carlo critical values for the fitted-endpoint statistic | Suvorikova, Kroshnin |
+| 13.2 | keep or drop the startup message | you |
+| 13.3 | one role per co-author in `Authors@R` | you |
+| 13.4 | a funder for the `fnd` role | you |
+| 7.7 | vignette numbers move only if the `uniform.null` default changes, which it is not | — |
+
+Two NOTES will not go away and that is deliberate: function length (§3.4) and
+the formatting ones, which are dominated by roxygen output in `man/`.
+
+---
+
 ## 0. The target shape
 
 Nothing is released, so this is the last cheap moment to settle the whole
