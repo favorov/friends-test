@@ -469,9 +469,14 @@ approach is the only is if some additional information is used in the ranking.
 Both main functions, `friends_test_ks` and `friends_test_bic`, can distribute
 the row-wise work through `BiocParallel`. Pass
 `BPPARAM = BiocParallel::MulticoreParam(workers = n)` on Unix-like systems or
-`BPPARAM = BiocParallel::SnowParam(workers = n)` on all platforms. If you also
-set `.progress = TRUE`, the selected `BiocParallel` backend shows its text
-progress bar.
+`BPPARAM = BiocParallel::SnowParam(workers = n)` on all platforms.
+
+`.progress = TRUE` reports what the call is doing. On a serial backend that is
+a progress bar with a percentage and the elapsed time; on a parallel one it is
+just the name of the stage being run, because the text progress bar of
+`BiocParallel` is switched off. Neither of them appears when the output is
+redirected rather than shown in a terminal, which is why nothing of the sort
+shows up in this vignette.
 
 Here is a minimal parallel example using a socket backend that also works on
 Windows:

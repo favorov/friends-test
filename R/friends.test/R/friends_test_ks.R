@@ -32,9 +32,12 @@
 #' default is \code{FALSE}, see [stats::ks.test()].
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
 #' default is 2000, see [stats::ks.test()].
-#' @param .progress if \code{TRUE}, show simple progress messages and enable
-#' the text progress bar of the selected \code{BPPARAM}. The default is
-#' \code{FALSE}.
+#' @param .progress if \code{TRUE}, report what the call is doing. What you see
+#' depends on the backend: a serial one draws a \code{cli} progress bar with a
+#' percentage and the elapsed time, a parallel one only names the stage it has
+#' reached, since the text progress bar of \code{BPPARAM} is switched off.
+#' Neither renders when the output is redirected rather than shown in a
+#' terminal, so build logs stay quiet. The default is \code{FALSE}.
 #' @param BPPARAM a [BiocParallel::BiocParallelParam-class] instance that
 #' controls whether the row-wise work is run serially or in parallel. The
 #' default is \code{BiocParallel::SerialParam()}.

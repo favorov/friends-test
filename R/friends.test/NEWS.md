@@ -22,6 +22,11 @@
 - `max.friends.n` no longer accepts the abbreviations `"al"` and `"a"`, nor
   `NA`. `"all"` and `NULL` still mean every column, and a number still means a
   number.
+- The documentation of `.progress` said it enabled the text progress bar of the
+  chosen `BPPARAM`. It does not: that bar has been off since 0.99.20 and the
+  package draws its own. What you actually see now says so, including that
+  neither kind renders when the output is redirected rather than shown in a
+  terminal.
 - The validity messages of `step_fit_ln_likelihoods()` name the argument they
   are about. The first one used to refer to a `Rows_no` parameter, which the
   function has never had, and two different problems shared the message

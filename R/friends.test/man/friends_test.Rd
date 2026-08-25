@@ -28,9 +28,12 @@ than $n$ friendly columns. 1 means we look only for unique (best) friends.
 The string \code{"all"} (the default) and \code{NULL} both mean
 \code{ncol(A)}, that is, do not filter markers by this parameter.}
 
-\item{.progress}{if \code{TRUE}, show simple progress messages and enable
-the text progress bar of the selected \code{BPPARAM}. The default is
-\code{FALSE}.}
+\item{.progress}{if \code{TRUE}, report what the call is doing. What you see
+depends on the backend: a serial one draws a \code{cli} progress bar with a
+percentage and the elapsed time, a parallel one only names the stage it has
+reached, since the text progress bar of \code{BPPARAM} is switched off.
+Neither renders when the output is redirected rather than shown in a
+terminal, so build logs stay quiet. The default is \code{FALSE}.}
 
 \item{BPPARAM}{a \link[BiocParallel:BiocParallelParam-class]{BiocParallel::BiocParallelParam} instance that
 controls whether the row-wise work is run serially or in parallel. The
