@@ -66,147 +66,66 @@ friends_test_bic <- function(
     .progress = FALSE,
     BPPARAM = NULL
 ) {
-    # parameter checks
-    if (is.null(A) || (length(dim(A)) != 2))  {
-        stop("The first parameter must be a non-empty 2D matrix-like object.")
-    }
-
-    if (is.null(max.friends.n) || is.na(max.friends.n) ||
-            max.friends.n == "all" || max.friends.n == "al" ||
-            max.friends.n == "a") {
-        max.friends.n <- ncol(A)
-    } else if (!is.numeric(max.friends.n)) {
-        stop(
-            "max.friends.n must be numeric, ",
-            "or one of 'all', 'al', 'a', NA, or NULL."
-        )
-    }
-
-    if (max.friends.n < 1 || max.friends.n > ncol(A)) {
-        stop("max.friends.n must be between 1 and the number of columns.")
-    }
     if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
         stop(
             "friends_test_bic requires the prior.to.have.friends value ",
             "to be explicitly provided and to be a prior."
         )
     }
-    # add names to A matrix rows if necessary
-    if (is.null(dimnames(A)[[1]])) {
-        rownames(A) <- seq_len(nrow(A))
-    }
-    # add names to A matrix cols if necessary
-    if (is.null(dimnames(A)[[2]])) {
-        colnames(A) <- seq_len(ncol(A))
-    }
 
-    if (.progress) options(cli.progress_show_after = 0)
-    BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
-    use_serial_progress <- .progress && is(BPPARAM, "SerialParam")
-    # rank all the A elements in columns
-    if (.progress) cli::cli_progress_step("Ranking...")
-    all_ranks <- row_int_ranks(A)
-    max.possible.rank <- dim(A)[1]
-    all_rank_rows <- purrr::array_branch(all_ranks, 1)
+    prep <- .ft_prepare(A, max.friends.n, .progress, BPPARAM)
+    A <- prep$A
+    max.friends.n <- prep$max.friends.n
+    BPPARAM <- prep$BPPARAM
+    all_rank_rows <- prep$rows
+    max.possible.rank <- nrow(A)
 
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
     #marker, friend, friend.rank
     col_names <- colnames(A)
-    if (use_serial_progress) {
-        cli::cli_progress_done() # close "Ranking..."
-        fit_one <- function(ranks, i) {
-            step <- best_step_fit_bic(
-                ranks,
+    # return: list of lists of trios -- marker, friend, friend.rank
+    ijrlist <- .ft_map_rows(
+        function(
+            row, i, max.friends.n, max.possible.rank,
+            prior.to.have.friends, col_names
+        ) {
+            step <- friends.test::best_step_fit_bic(
+                row,
                 max.possible.rank = max.possible.rank,
                 prior.to.have.friends = prior.to.have.friends
             )
             frn <- length(step$columns.on.left)
-            if (frn == 0 || frn > max.friends.n) return(NULL)
+            if (frn == 0 || frn > max.friends.n) {
+                # either the uniform model won, so there is nothing to the left
+                # of the step, or the marker has too many friends
+                return(NULL)
+            }
             friends <- step$columns.on.left
-            friend.ranks <- which(
-                step$step.models$columns.order %in% friends
-            )
+            # the ranks of the friends, the best is 1
+            friend.ranks <- which(step$step.models$columns.order %in% friends)
+            # pmap over a repeated i so that each inner element is named after
+            # its friend
             repi <- rep(i, length(friends))
             names(repi) <- col_names[friends]
             purrr::pmap(
                 list(marker = repi, friend = friends, rank = friend.ranks),
                 c
             )
-        }
-        ijrlist <- lapply(
-            cli::cli_progress_along(
-                all_rank_rows,
-                name = "Fitting the models",
-                clear = FALSE,
-                format_done = ft_pb_format_done
-            ),
-            function(idx) fit_one(all_rank_rows[[idx]], idx)
-        )
-    } else {
-        if (.progress) cli::cli_progress_step("Fitting the models...")
-        ijrlist <- ft_bpmapply_list(
-            # local(envir=globalenv()): closure carries globalenv() so
-            # SnowParam workers can deserialize it without loading the
-            # friends.test namespace.  .libPaths(libs) propagates the
-            # parent's library paths so workers can find friends.test at
-            # execution time.
-            local(
-                \(
-                    ranks, i, max.friends.n, max.possible.rank,
-                    prior.to.have.friends, col_names, libs
-                ) {
-                    .libPaths(libs)
-                    step <- friends.test::best_step_fit_bic(
-                        ranks,
-                        max.possible.rank = max.possible.rank,
-                        prior.to.have.friends = prior.to.have.friends
-                    )
-                    frn <- length(step$columns.on.left)
-                    if (frn == 0 || frn > max.friends.n) {
-                        return(NULL)
-                        # here, we filer out the rows where
-                        # uniform model wins
-                        # (and so there is nothing to left of the step)
-                        # or
-                        # there are too much friends if we filter for it
-                    }
-                    # friends
-                    friends <- step$columns.on.left
-                    # the ranks of friends, the best is 1
-                    friend.ranks <- which(
-                        step$step.models$columns.order %in% friends
-                    )
-                    #if we give just i to pmap, the value will be the same,
-                    #but we want the name of the friend ti be the name of
-                    #elemant of the inner list
-                    repi <- rep(i, length(friends))
-                    names(repi) <- col_names[friends]
-                    #list of vector trios
-                    purrr::pmap(
-                        list(
-                            marker = repi,
-                            friend = friends,
-                            rank = friend.ranks
-                        ),
-                        c
-                    )
-                },
-                envir = globalenv()
-            ),
-            all_rank_rows,
-            seq_len(nrow(A)),
-            MoreArgs = list(
-                max.friends.n = max.friends.n,
-                max.possible.rank = max.possible.rank,
-                prior.to.have.friends = prior.to.have.friends,
-                col_names = col_names,
-                libs = .libPaths()
-            ),
-            BPPARAM = BPPARAM
-        )
-    }
+        },
+        rows = all_rank_rows,
+        idx = seq_len(nrow(A)),
+        MoreArgs = list(
+            max.friends.n = max.friends.n,
+            max.possible.rank = max.possible.rank,
+            prior.to.have.friends = prior.to.have.friends,
+            col_names = col_names
+        ),
+        BPPARAM = BPPARAM,
+        .progress = .progress,
+        label = "Fitting the models"
+    )
     names(ijrlist) <- names(all_rank_rows)
 
     if (.progress) cli::cli_progress_step("Compacting...")
