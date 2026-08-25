@@ -399,6 +399,19 @@ that owns both paths, the `local(envir = globalenv())` wrapping and the `.libPat
 propagation. Four bodies collapse to one; the worker body stops being written twice;
 progress handling becomes the only difference between the paths.
 
+**The one way to lose performance here.** A generic driver invites `do.call(fit,
+c(list(row), MoreArgs))`, which rebuilds the argument list once per row. Measured on
+this machine, per call:
+
+| call style | cost |
+|---|---|
+| direct call | 1.26 us |
+| closure over the constants | 1.24 us |
+| `do.call` rebuilding the list | 2.00 us |
+
+Sixty per cent, paid on every row. Capture the constants in a closure once and call
+it directly; do not assemble arguments per row.
+
 ### 3.4 What this does to the function-length NOTE
 
 BiocCheck: `friends_test()` 195 lines, `friends_test_bic()` 140, against a
@@ -602,6 +615,31 @@ of anything that stops being exported.
 Section 3 is a pure refactor: it must not change a single number. Before starting it,
 save the output of both main functions on the CoGAPS example with a fixed seed, and
 compare after — `identical()` on the returned lists, not a glance at the counts.
+
+It must not change the speed either, so time it as well. Baseline on this machine,
+`friends_test_ks()` over the whole CoGAPS matrix, 15176 x 8:
+
+| stage | time | share |
+|---|---|---|
+| ranking | 0.02 s | 1% |
+| 15176 KS tests | 1.12 s | 54% |
+| step fits, 649 markers | 0.02 s | 1% |
+| **total** | **2.07 s** | |
+
+Per row: `unif_ks_test` 74 us, `best_step_fit` 29 us, `.step_fit_compact` 11.7 us.
+For scale, `.step_fit_enum` — the O(nrow) core that 0.99.19 replaced — is 2295 us on
+the same input, so the compact fitter is the 197x that must not be given back. It is
+not touched by any of section 3.
+
+The helpers section 3 adds cost roughly one R call each, 1.15 us, so about 0.02 s over
+the whole matrix, near 1% of the total. Anything beyond a few per cent means the
+driver is doing per-row work it should not.
+
+Two things checked and found not to be problems, so nobody re-opens them: routing
+through the validating `step_fit_ln_likelihoods()` instead of `.step_fit_compact()`
+costs 0.7 us per row, and on a wide matrix (40 x 4000) the two cores measure 200 us
+against 210 us because `order(ranks)` dominates both. Keep `best_step_fit()` calling
+`.step_fit_compact()` directly anyway — no reason to pay even that.
 
 ---
 
