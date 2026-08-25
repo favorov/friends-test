@@ -179,8 +179,10 @@ ft_bpmapply_list <- function(FUN, ..., MoreArgs = NULL, BPPARAM) {
 #' is then left with only the checks of its own parameters.
 #'
 #' @param A The association matrix.
-#' @param max.friends.n The caller's value; \code{"all"} and its abbreviations,
-#'   \code{NA} and \code{NULL} all mean \code{ncol(A)}.
+#' @param max.friends.n The caller's value; \code{"all"} and \code{NULL} both
+#'   mean \code{ncol(A)}.  The caller is responsible for
+#'   \code{cli.progress_show_after}: the option has to outlive this call, so it
+#'   cannot be restored from here.
 #' @param .progress Logical scalar.
 #' @param BPPARAM A \code{BiocParallelParam} object or \code{NULL}.
 #'
@@ -194,15 +196,11 @@ ft_bpmapply_list <- function(FUN, ..., MoreArgs = NULL, BPPARAM) {
         stop("The first parameter must be a non-empty 2D matrix-like object.")
     }
 
-    if (is.null(max.friends.n) || is.na(max.friends.n) ||
-            max.friends.n == "all" || max.friends.n == "al" ||
-            max.friends.n == "a") {
+    if (is.null(max.friends.n) || identical(max.friends.n, "all")) {
         max.friends.n <- ncol(A)
-    } else if (!is.numeric(max.friends.n)) {
-        stop(
-            "max.friends.n must be numeric, ",
-            "or one of 'all', 'al', 'a', NA, or NULL."
-        )
+    } else if (!is.numeric(max.friends.n) ||
+            length(max.friends.n) != 1L || is.na(max.friends.n)) {
+        stop("max.friends.n must be a single number, \"all\", or NULL.")
     }
     if (max.friends.n < 1 || max.friends.n > ncol(A)) {
         stop("max.friends.n must be between 1 and the number of columns.")
@@ -211,7 +209,6 @@ ft_bpmapply_list <- function(FUN, ..., MoreArgs = NULL, BPPARAM) {
     if (is.null(dimnames(A)[[1]])) rownames(A) <- seq_len(nrow(A))
     if (is.null(dimnames(A)[[2]])) colnames(A) <- seq_len(ncol(A))
 
-    if (.progress) options(cli.progress_show_after = 0)
     BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
 
     if (.progress) cli::cli_progress_step("Ranking...")

@@ -22,8 +22,8 @@
 #' @param max.friends.n The maximal number of friends for a marker.
 #' A value $n$ means that we filter out a row if it has more
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
-#' The string "all" (default) means the same as \code{ncols(A)} value,
-#' do not filter markers by this parameter.
+#' The string \code{"all"} (the default) and \code{NULL} both mean
+#' \code{ncol(A)}, that is, do not filter markers by this parameter.
 #' @param uniform.max The maximum of the uniform distribution of the ranks we
 #' fit the null model, it can be the maximal possible rank that is common for
 #' all rows and equals the number of rows \code{'c'} or the maximal observed
@@ -84,6 +84,13 @@ friends_test_ks <- function(
     .progress = FALSE,
     BPPARAM = NULL
 ) {
+    if (.progress) {
+        # cli needs the bar to appear at once; put the user's setting back
+        # whichever way this call ends
+        old_options <- options(cli.progress_show_after = 0)
+        on.exit(options(old_options), add = TRUE)
+    }
+
     if (threshold < 0 || threshold > 1) {
         stop("threshold must be between 0 and 1.")
     }

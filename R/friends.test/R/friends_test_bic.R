@@ -19,8 +19,8 @@
 #' @param max.friends.n The maximal number of friends for a marker.
 #' A value $n$ means that we filter out a row if it has more
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
-#' The string "all" (default) means the same as \code{ncols(A)} value,
-#' do not filter markers by this parameter.
+#' The string \code{"all"} (the default) and \code{NULL} both mean
+#' \code{ncol(A)}, that is, do not filter markers by this parameter.
 #' @param .progress if \code{TRUE}, show simple progress messages and enable
 #' the text progress bar of the selected \code{BPPARAM}. The default is
 #' \code{FALSE}.
@@ -66,6 +66,13 @@ friends_test_bic <- function(
     .progress = FALSE,
     BPPARAM = NULL
 ) {
+    if (.progress) {
+        # cli needs the bar to appear at once; put the user's setting back
+        # whichever way this call ends
+        old_options <- options(cli.progress_show_after = 0)
+        on.exit(options(old_options), add = TRUE)
+    }
+
     if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
         stop(
             "friends_test_bic requires the prior.to.have.friends value ",

@@ -20,8 +20,8 @@ friends_test_bic(
 \item{max.friends.n}{The maximal number of friends for a marker.
 A value $n$ means that we filter out a row if it has more
 than $n$ friendly columns. 1 means we look only for unique (best) friends.
-The string "all" (default) means the same as \code{ncols(A)} value,
-do not filter markers by this parameter.}
+The string \code{"all"} (the default) and \code{NULL} both mean
+\code{ncol(A)}, that is, do not filter markers by this parameter.}
 
 \item{.progress}{if \code{TRUE}, show simple progress messages and enable
 the text progress bar of the selected \code{BPPARAM}. The default is
