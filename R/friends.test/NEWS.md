@@ -7,6 +7,16 @@
   Passing an argument that belongs to the other mode is an error.
 - The Kolmogorov-Smirnov branch, previously `friends_test()` itself, is now
   `friends_test_ks()`. `friends_test_bic()` is unchanged. All three are exported.
+- The row-wise stages of both branches now go through one internal driver
+  instead of a serial and a parallel copy each, and the two step fitters share
+  their search and their assembly. No result changes.
+- Worker library paths are only set when they differ from the ones already in
+  effect. Setting them costs about 34 microseconds against 0.2 for reading
+  them, and it was being done once per row: a pass over the 15176 by 8 example
+  matrix drops from 2.08 to 1.58 seconds.
+- `best_step_fit_bic()` no longer raises an error when every rank in a row is
+  tied and `prior.to.have.friends` is 1; it reports no friends, as it already
+  did for every other prior.
 
 ## friends.test 0.99.21
 
