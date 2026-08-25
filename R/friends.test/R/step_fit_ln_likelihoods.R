@@ -30,18 +30,20 @@
 #' steps <- step_fit_ln_likelihoods(TF.ranks[42, ], genes.no)
 #' @export
 step_fit_ln_likelihoods <- function(ranks, max.possible.rank) {
-    if (max.possible.rank < max(ranks)) {
-        stop("Rows_no parameter is the maximal possible rank,
-    it cannot be less than max(ranks)!")
+    if (!is.null(dim(ranks))) {
+        warning("ranks has a dim() attribute, so it is not a vector.")
     }
-    if (!all(ranks - floor(ranks) == 0)) {
-        stop("Ranks are to be integer!")
+    if (!all(ranks == floor(ranks))) {
+        stop("ranks must be whole numbers.")
     }
     if (!all(ranks >= 1)) {
-        stop("Ranks are to be integer!")
+        stop("ranks must be 1 or greater.")
     }
-    if (!is.null(dim(ranks))) {
-        warning("Ranks has not-NULL dim(), it is not a vector.\n")
+    if (max.possible.rank < max(ranks)) {
+        stop(
+            "max.possible.rank is the largest rank a row can take, ",
+            "so it cannot be smaller than max(ranks)."
+        )
     }
     if (max.possible.rank <= length(ranks)) {
         .step_fit_enum(ranks, max.possible.rank)
