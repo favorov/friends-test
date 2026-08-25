@@ -9,7 +9,7 @@ friends_test_ks(
   threshold = 0.05,
   p.adjust.method = "BH",
   max.friends.n = "all",
-  uniform.max = "m",
+  uniform.null = c("observed", "continuity", "randomized"),
   simulate.p.value = FALSE,
   B = 2000,
   .progress = FALSE,
@@ -31,10 +31,12 @@ than $n$ friendly columns. 1 means we look only for unique (best) friends.
 The string \code{"all"} (the default) and \code{NULL} both mean
 \code{ncol(A)}, that is, do not filter markers by this parameter.}
 
-\item{uniform.max}{The maximum of the uniform distribution of the ranks we
-fit the null model, it can be the maximal possible rank that is common for
-all rows and equals the number of rows \code{'c'} or the maximal observed
-rank for the row we test now, \code{'m'} (default).}
+\item{uniform.null}{how the support of the uniform null hypothesis is
+chosen, passed to \link{unif_ks_test}: \code{"observed"} (default) fits it to the
+row's own range, which makes the test invariant to shift and scale;
+\code{"continuity"} and \code{"randomized"} fix it at the whole rank scale
+and are calibrated but count concentration as evidence. See \link{unif_ks_test}
+for what each one means.}
 
 \item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
 default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}.}
@@ -96,7 +98,6 @@ A <- matrix(
 A
 friends_test_ks(A, threshold = .05)
 friends_test_ks(A, threshold = .0001)
-friends_test_ks(A, threshold = .05, uniform.max = "m")
-friends_test_ks(A, threshold = .0001, uniform.max = "m")
+friends_test_ks(A, threshold = .05, uniform.null = "continuity")
 
 }

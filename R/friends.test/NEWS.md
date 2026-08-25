@@ -22,6 +22,23 @@
 - `max.friends.n` no longer accepts the abbreviations `"al"` and `"a"`, nor
   `NA`. `"all"` and `NULL` still mean every column, and a number still means a
   number.
+- `unif_ks_test()` computed its test twice, once on ranks mapped to the unit
+  interval and once on the raw scale, and threw the first result away. The two
+  are the same test, so the duplicate is gone. It also jittered the ranks a
+  second time while keeping the first jitter's maximum as the upper end of the
+  support, which could put a point outside the declared support.
+- `uniform.max` is replaced by `uniform.null`, which names the whole
+  convention rather than one endpoint. `"observed"`, the default, keeps the
+  present behaviour: the support is the row's own range, so the test is
+  invariant to where the profile sits and a row spread evenly over part of the
+  scale still counts as uniform. `"continuity"` and `"randomized"` fix the
+  support at the whole rank scale instead; they are calibrated, but treat
+  concentration as evidence. They need `max.possible.rank`.
+- The `"c"` setting of `uniform.max` is withdrawn rather than renamed. It took
+  the lower end of the support from the data and the upper end from the rank
+  scale, which is not a null hypothesis: measured against uniform rows it
+  rejected at 0.066 instead of 0.05 with eight columns, and at 0.084 with
+  three.
 - The documentation of `.progress` said it enabled the text progress bar of the
   chosen `BPPARAM`. It does not: that bar has been off since 0.99.20 and the
   package draws its own. What you actually see now says so, including that

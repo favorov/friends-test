@@ -4,13 +4,24 @@
 \alias{unif_ks_test}
 \title{unif_ks_test}
 \usage{
-unif_ks_test(ranks, uniform.max = NA, simulate.p.value = FALSE, B = 2000)
+unif_ks_test(
+  ranks,
+  uniform.null = c("observed", "continuity", "randomized"),
+  max.possible.rank = NA,
+  simulate.p.value = FALSE,
+  B = 2000
+)
 }
 \arguments{
 \item{ranks}{vector of ranks of a row in different columns, \eqn{1 .. N})}
 
-\item{uniform.max}{the maximal rank in the uniform, default is NA which means
-that we take the max(ranks) as the maximal value}
+\item{uniform.null}{how the support of the uniform null is chosen; one of
+\code{"observed"} (default), \code{"continuity"} or \code{"randomized"},
+described above.}
+
+\item{max.possible.rank}{the largest rank a row can take, \eqn{N}, that is
+the number of rows of the matrix the ranks came from. Required unless
+\code{uniform.null} is \code{"observed"}, which does not use it.}
 
 \item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
 default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
@@ -22,13 +33,41 @@ default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 p-value for the KS test comparing the ranks distribution with uniform
 }
 \description{
-returns the Kolomogorov-Smirnov p-value for uniformity of the values.
-The values are the ranks of the same row in different columns.
+Kolmogorov-Smirnov p-value for the uniformity of a row's ranks across the
+columns.  Rejecting uniformity is what makes a row a marker.
 }
 \details{
+The ranks are integers in \eqn{1 \ldots N}, but \code{\link[stats]{ks.test}}
+needs a continuous null, so a support has to be named.  Three conventions
+are offered and they answer slightly different questions.
+
+\describe{
+\item{\code{"observed"}}{(default) the support is the observed range of
+the row, \code{min(ranks)} to \code{max(ranks)}.  The test is then
+invariant to where the profile sits and how wide it is, so a row whose
+ranks are spread evenly over part of the scale counts as uniform.  That
+is deliberate: the method looks for a structural break, not for a shift.
+The price is that both endpoints are fitted to the sample, so the
+p-value is conservative -- with three columns the test cannot reject at
+all.}
+\item{\code{"continuity"}}{the support is \eqn{[0.5, N + 0.5]}, spreading
+each integer \eqn{i} over \eqn{[i - 0.5, i + 0.5]}.  Nothing is fitted,
+so the p-value is calibrated, but concentration into part of the scale
+now counts against the null.}
+\item{\code{"randomized"}}{the same support, reached exactly rather than
+by approximation: each rank is displaced by \eqn{U(-1/2, 1/2)}, and
+\eqn{X + U} is exactly uniform on \eqn{[0.5, N + 0.5]} when \eqn{X} is
+uniform on the integers.  The cost is that two runs on the same data
+give different p-values.}
+}
+
+\code{"continuity"} and \code{"randomized"} need to know \eqn{N}, which is
+\code{max.possible.rank}.
+
 See \link{friends_test} documentation for details.
 }
 \examples{
 example(row_int_ranks)
 ks.p.vals <- apply(TF.ranks, 1, "unif_ks_test")
+unif_ks_test(TF.ranks[42, ], "continuity", max.possible.rank = genes.no)
 }

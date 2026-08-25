@@ -24,10 +24,12 @@
 #' than $n$ friendly columns. 1 means we look only for unique (best) friends.
 #' The string \code{"all"} (the default) and \code{NULL} both mean
 #' \code{ncol(A)}, that is, do not filter markers by this parameter.
-#' @param uniform.max The maximum of the uniform distribution of the ranks we
-#' fit the null model, it can be the maximal possible rank that is common for
-#' all rows and equals the number of rows \code{'c'} or the maximal observed
-#' rank for the row we test now, \code{'m'} (default).
+#' @param uniform.null how the support of the uniform null hypothesis is
+#' chosen, passed to [unif_ks_test]: \code{"observed"} (default) fits it to the
+#' row's own range, which makes the test invariant to shift and scale;
+#' \code{"continuity"} and \code{"randomized"} fix it at the whole rank scale
+#' and are calibrated but count concentration as evidence. See [unif_ks_test]
+#' for what each one means.
 #' @param simulate.p.value K-S by Monte-Carlo if \code{TRUE};
 #' default is \code{FALSE}, see [stats::ks.test()].
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
@@ -67,8 +69,7 @@
 #' A
 #' friends_test_ks(A, threshold = .05)
 #' friends_test_ks(A, threshold = .0001)
-#' friends_test_ks(A, threshold = .05, uniform.max = "m")
-#' friends_test_ks(A, threshold = .0001, uniform.max = "m")
+#' friends_test_ks(A, threshold = .05, uniform.null = "continuity")
 #'
 #' @importFrom stats p.adjust
 #' @importFrom purrr array_branch compact pmap
@@ -81,7 +82,7 @@ friends_test_ks <- function(
     threshold = 0.05,
     p.adjust.method = "BH",
     max.friends.n = "all",
-    uniform.max = "m",
+    uniform.null = c("observed", "continuity", "randomized"),
     simulate.p.value = FALSE,
     B = 2000,
     .progress = FALSE,
@@ -97,15 +98,7 @@ friends_test_ks <- function(
     if (threshold < 0 || threshold > 1) {
         stop("threshold must be between 0 and 1.")
     }
-    # uniform.max: 'm' fits the null to the observed range, 'c' to the whole
-    # rank scale, that is nrow(A); anything else must be a number
-    if (uniform.max == "m" || uniform.max == "M") {
-        uniform.max <- NA
-    } else if (uniform.max == "c" || uniform.max == "C") {
-        uniform.max <- nrow(A)
-    } else if (!is.numeric(uniform.max)) {
-        stop("uniform.max must be either 'm', 'M', 'c', 'C' or numeric.")
-    }
+    uniform.null <- match.arg(uniform.null)
 
     prep <- .ft_prepare(A, max.friends.n, .progress, BPPARAM)
     A <- prep$A
@@ -117,10 +110,14 @@ friends_test_ks <- function(
     # calculate the p-values for null hypothesis for all the rank rows
     adj_nunif_pval <- unlist(
         .ft_map_rows(
-            function(row, i, uniform.max, simulate.p.value, B) {
+            function(
+                row, i, uniform.null, max.possible.rank,
+                simulate.p.value, B
+            ) {
                 friends.test::unif_ks_test(
                     row,
-                    uniform.max = uniform.max,
+                    uniform.null = uniform.null,
+                    max.possible.rank = max.possible.rank,
                     simulate.p.value = simulate.p.value,
                     B = B
                 )
@@ -128,7 +125,8 @@ friends_test_ks <- function(
             rows = all_rank_rows,
             idx = seq_along(all_rank_rows),
             MoreArgs = list(
-                uniform.max = uniform.max,
+                uniform.null = uniform.null,
+                max.possible.rank = nrow(A),
                 simulate.p.value = simulate.p.value,
                 B = B
             ),
