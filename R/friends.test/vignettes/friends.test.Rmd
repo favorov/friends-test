@@ -152,8 +152,8 @@ Note that `max.friends.n = "all"` is the default value for both
 
 The two are reachable through one entry point, `friends_test()`, whose `mode`
 argument picks the branch and which passes everything else on. `mode = "ks"`
-is the default, so `friends_test(A)` is the KS test; the call below is the
-same as the `friends_test_bic()` one above.
+is the default, so `friends_test(A)` is the KS test. The call below runs
+exactly the `friends_test_bic()` above, through the entry point.
 
 ```{r 'dispatcher'}
 friends_test(regulation, mode = "bic",
