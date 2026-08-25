@@ -33,41 +33,13 @@
 #' @export
 best_step_fit_bic <- function(ranks, max.possible.rank, prior.to.have.friends) {
     step.models <- .step_fit_compact(ranks, max.possible.rank)
-    k <- length(ranks)
-
-    valid_k1 <- which(is.finite(step.models$best_ll_by_k1))
-    max.ln.l <- if (length(valid_k1) > 0L) {
-        max(step.models$best_ll_by_k1[valid_k1])
-    } else {
-        -Inf
-    }
-
-    if (max.ln.l + log(prior.to.have.friends) >=
-            step.models$uniform_ll + log(1 - prior.to.have.friends)) {
-        # Step model wins
-        tied_k1  <- valid_k1[step.models$best_ll_by_k1[valid_k1] == max.ln.l]
-        best_k1  <- tied_k1[which.max(step.models$best_l1_by_k1[tied_k1])]
-        best.step.rank     <- step.models$best_l1_by_k1[best_k1]
-        population.on.left <- best_k1
-        list(
-            step.models        = step.models,
-            best.step.rank     = best.step.rank,
-            columns.on.left    = step.models$columns.order[
-                seq_len(population.on.left)
-            ],
-            columns.on.right   = step.models$columns.order[
-                seq(population.on.left + 1L, k)
-            ],
-            population.on.left = population.on.left
-        )
-    } else {
-        # Uniform model wins: no friends
-        list(
-            step.models        = step.models,
-            best.step.rank     = max.possible.rank,
-            columns.on.left    = integer(0L),
-            columns.on.right   = step.models$columns.order,
-            population.on.left = 0L
-        )
-    }
+    best <- .best_valid_k1(step.models)
+    step_wins <- best$max.ln.l + log(prior.to.have.friends) >=
+        step.models$uniform_ll + log(1 - prior.to.have.friends)
+    .assemble_step(
+        step.models,
+        if (isTRUE(step_wins)) best$k1 else NA_integer_,
+        length(ranks),
+        max.possible.rank
+    )
 }

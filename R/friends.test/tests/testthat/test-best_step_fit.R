@@ -70,3 +70,23 @@ test_that("best_step_fit and independent code equal, c(1,1,1,1,6,6,6,6,6,6)", {
     bsf <- best_step_fit(ranks, row.lim) # best.friends
     expect_equal(bsf$population.on.left, cols_no)
 })
+
+
+test_that("a fully tied row yields no friends, whatever the prior", {
+    tied <- rep(5L, 6)
+    M <- 10
+
+    # no valid step exists, so maximum likelihood has nothing to accept
+    ml <- best_step_fit(tied, M)
+    expect_identical(ml$population.on.left, 0L)
+    expect_identical(ml$columns.on.left, integer(0L))
+
+    # prior = 1 makes the step model win the comparison by default; there is
+    # still no step to report, and this used to raise an error from seq_len()
+    for (prior in c(1e-6, 0.5, 1)) {
+        fit <- best_step_fit_bic(tied, M, prior)
+        expect_identical(fit$population.on.left, 0L,
+            info = paste("prior =", prior))
+        expect_identical(fit$best.step.rank, M, info = paste("prior =", prior))
+    }
+})
