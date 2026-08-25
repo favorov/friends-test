@@ -31,12 +31,12 @@ than $n$ friendly columns. 1 means we look only for unique (best) friends.
 The string \code{"all"} (the default) and \code{NULL} both mean
 \code{ncol(A)}, that is, do not filter markers by this parameter.}
 
-\item{uniform.null}{how the support of the uniform null hypothesis is
-chosen, passed to \link{unif_ks_test}: \code{"observed"} (default) fits it to the
-row's own range, which makes the test invariant to shift and scale;
-\code{"continuity"} and \code{"randomized"} fix it at the whole rank scale
-and are calibrated but count concentration as evidence. See \link{unif_ks_test}
-for what each one means.}
+\item{uniform.null}{how the support of the uniform null is chosen, passed
+on to \link{unif_ks_test}, which describes the three settings.
+\code{"observed"}, the default, fits it to the row's own range and so makes
+the test invariant to shift and scale. \code{"continuity"} and
+\code{"randomized"} fix it at the whole rank scale: they are calibrated,
+but count concentration as evidence.}
 
 \item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
 default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}.}

@@ -56,7 +56,9 @@ test_that("only the randomized convention varies between runs", {
 
     # displacing by half a unit is a real randomisation
     spread <- diff(range(
-        replicate(50, unif_ks_test(ranks, "randomized", max.possible.rank = 500))
+        replicate(50, unif_ks_test(
+            ranks, "randomized", max.possible.rank = 500
+        ))
     ))
     expect_gt(spread, 1e-6)
 })

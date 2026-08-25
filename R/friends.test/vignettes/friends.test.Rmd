@@ -1,28 +1,28 @@
 ---
 title: "In a matrix, we look for columns that are friendly to a row"
 date: "`r format(Sys.Date(), '%d %b %Y')`"
-output: 
-  html_vignette:
+output:
+    BiocStyle::html_document:
         toc: true
-        toc_depth: 2
+        toc_depth: 3
 vignette: >
- %\VignetteIndexEntry{In a matrix, we look for columns that are friendly to a row}
- %\VignetteEngine{knitr::rmarkdown}
- %\VignetteEncoding{UTF-8}
- %\VignetteDepends{devtools}
+    %\VignetteIndexEntry{In a matrix, we look for columns that are friendly to a row}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteDepends{BiocStyle}
 ---
-<!-- TOC enabled in YAML output block above -->
 
+```{r setup, include=FALSE}
+library(knitr)
+library(friends.test)
+options(width = 100, keep.source = TRUE)
+# caching is off: everything the vignette needs is either computed here or
+# shipped with the package
+opts_chunk$set(echo = TRUE, message = FALSE, cache = FALSE, warning = FALSE)
+set.seed(42)
+```
 
 [SI AUGUSTUS CERNATUR, CERNANTUR QOUQUE AMICI]{style="float:right"}
-
-`r library(knitr)`
-`r library(markdown)`
-`r library(friends.test)`
-`r options(width=100,keep.source=TRUE)`
-`r opts_chunk$set(echo=TRUE,message=FALSE,cache=FALSE,warning=FALSE)`
-`r set.seed(42)`
-<!-- cache is off, we save all the necessary things in Rda -->
 
 <div style="line-height: 1.5em;">
 
@@ -50,7 +50,7 @@ gene for the pattern, and the marked pattern is the a friend of this gene.
 There could be more then one friend for a marker. In this case, the marker is
 more important for the friends than for the non-friends.
 
-\paragraph{The test} 
+### The test
 
 We have two sets:T (rows) and C (columns) and A real matrix A(t,c) that
 describes the strength of relation between each t and each c; t is an element of
@@ -68,7 +68,9 @@ weighted graph                            vertex            another vertex      
 
 
 
-\paragraph{Goal} For each row, we want to identify whether there are columns(s)
+### Goal
+
+For each row, we want to identify whether there are columns(s)
 that particularly prefer(s) the row, and list the columns. Then such a column is
 a friend (or the best friend if there is only one) for the row. We intend to
 express the meaning of the word "particularly" in this context by a statistical
@@ -82,6 +84,19 @@ The main idea of the **friends.test** test is that if a row $t_i$ is not
 preferred by any column(s), the distribution of the ranks of the row in all the
 columns $r(t_i,c_j)$ behaves like $j$ i.i.d integers that are uniformly
 distributed in $1..n$.
+
+## Installation
+
+```{r 'installation', eval=FALSE}
+if (!require("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("friends.test")
+```
+
+```{r 'attach', eval=FALSE}
+library(friends.test)
+```
 
 ## Toy examples
 
@@ -113,7 +128,7 @@ regulation <-
             c("TF1", "TF2", "TF3")
         )
     )
-noquote(regulation)
+regulation
 ```
 
 What we want to identify is Gene2-TF1 pair. Gene2 is not the strongest
