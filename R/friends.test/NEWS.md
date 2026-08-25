@@ -1,5 +1,13 @@
 # Friends.test version history
 
+## friends.test 0.99.22
+
+- `friends_test()` is now the entry point for both branches: its `mode` argument
+  selects `"ks"` (the default) or `"bic"` and passes the remaining arguments on.
+  Passing an argument that belongs to the other mode is an error.
+- The Kolmogorov-Smirnov branch, previously `friends_test()` itself, is now
+  `friends_test_ks()`. `friends_test_bic()` is unchanged. All three are exported.
+
 ## friends.test 0.99.21
 
 - Exported function names no longer contain dots, as the dot is reserved for S3

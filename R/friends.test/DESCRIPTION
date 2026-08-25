@@ -1,7 +1,7 @@
 Package: friends.test
 Type: Package
 Title: Rank-Based Method for Feature Selection in Interaction Matrices
-Version: 0.99.21
+Version: 0.99.22
 Encoding: UTF-8
 Authors@R: c(
     person("Alexandra", "Suvorikova", email = "a.suvorikova@gmail.com",
