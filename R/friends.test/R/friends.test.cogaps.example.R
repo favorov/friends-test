@@ -1,4 +1,67 @@
-#' An example of loadings of genes in CoGAPS - identified patterns.
+#' Gene loadings from a CoGAPS decomposition, with two enrichment summaries
 #'
-#' @source <https://zenodo.org/records/7709664/files/cogapsresult.Rds>
+#' The worked example the vignette runs on. It holds the feature loadings of a
+#' CoGAPS non-negative matrix factorisation of a pancreatic cancer single-cell
+#' RNA-seq dataset, and, for each of the eight patterns, the gene sets that
+#' come out enriched against two MSigDB collections.
+#'
+#' Genes are the rows of the loading matrix and patterns are its columns, which
+#' is the arrangement [friends_test] expects: a gene is a candidate marker and
+#' a pattern is a candidate friend.
+#'
+#' @format A list of three elements.
+#' \describe{
+#'   \item{\code{loadings}}{a 15176 by 8 numeric matrix, genes by patterns.
+#'     Rows are named by gene symbol, columns \code{Pattern_1} to
+#'     \code{Pattern_8}. Entry (g, p) is how strongly gene g loads on pattern
+#'     p; the loadings are non-negative, which is what CoGAPS guarantees. This
+#'     is the \code{featureLoadings} slot of the CoGAPS result.}
+#'   \item{\code{hallmarks}}{a list of eight, one per pattern, in the column
+#'     order of \code{loadings}. Each element is a \code{data.table} with
+#'     columns \code{pathway} and \code{padj}: the MSigDB Hallmark gene sets
+#'     that \code{fgsea::fgsea} found enriched in that pattern's loadings at
+#'     \code{padj < 0.05}, ordered by \code{padj}.}
+#'   \item{\code{C4_3CA}}{the same, for the MSigDB C4:3CA collection, the
+#'     Curated Cancer Cell Atlas.}
+#' }
+#'
+#' @section How it was made:
+#' \code{data-raw/cogaps_example.r} downloads the CoGAPS result from the
+#' Zenodo record below, keeps its feature loadings, and runs
+#' \code{fgsea::fgsea} for every pattern against the two collections fetched
+#' with \code{msigdbr::msigdbr}. Only the significant rows and the two columns
+#' shown above are kept, so the gene set memberships themselves are not
+#' redistributed here.
+#'
+#' @section Licensing:
+#' The CoGAPS result is taken from a Zenodo record published under the
+#' Creative Commons Attribution 4.0 International licence; the attribution it
+#' asks for is the reference below. The MSigDB Hallmark and C4 collections are
+#' under the same licence, copyright the Broad Institute, MIT and the Regents
+#' of the University of California. The extra conditions MSigDB places on its
+#' KEGG and BioCarta sets do not apply here: those sit in the C2 collection,
+#' which this example does not use.
+#'
+#' @source The \code{cogapsresult.Rds} file of the Zenodo record
+#' \url{https://doi.org/10.5281/zenodo.7709664}.
+#'
+#' @references
+#' Johnson J, Tsang A, Mitchell JT, Zhou DL, Sherman T, Liefeld T, Loth M,
+#' Goff LA, Zimmerman J, Kinny-Koster B, Jaffee EM, Tamayo P, Mesirov JP,
+#' Reich M, Fertig EJ, Stein-O'Brien GL.
+#' \emph{Inferring cellular and molecular processes in single-cell data with
+#' non-negative matrix factorization using Python, R, and GenePattern Notebook
+#' implementations of CoGAPS.} Zenodo, 2023.
+#' \doi{10.5281/zenodo.7709664}
+#'
+#' Liberzon A, Birger C, Thorvaldsdottir H, Ghandi M, Mesirov JP, Tamayo P.
+#' \emph{The Molecular Signatures Database hallmark gene set collection.}
+#' Cell Systems 1(6), 417-425, 2015.
+#' \doi{10.1016/j.cels.2015.12.004}
+#'
+#' @examples
+#' data(friends.test.cogaps.example)
+#' dim(friends.test.cogaps.example$loadings)
+#' friends.test.cogaps.example$loadings[1:3, 1:4]
+#' head(friends.test.cogaps.example$hallmarks[[1]], 3)
 "friends.test.cogaps.example"
