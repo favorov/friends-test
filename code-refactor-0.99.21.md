@@ -412,13 +412,26 @@ this machine, per call:
 Sixty per cent, paid on every row. Capture the constants in a closure once and call
 it directly; do not assemble arguments per row.
 
-### 3.4 What this does to the function-length NOTE
+### 3.4 The function-length NOTE stays, and that is the decision
 
 BiocCheck: `friends_test()` 195 lines, `friends_test_bic()` 140, against a
-recommended 50. The reviewer's own checklist marks "No excessively long functions"
-as passed, so this is BiocCheck, not a review requirement — but axes B and C between
-them take both functions well under the limit as a side effect. Worth doing for that
-reason alone; not worth a separate item.
+recommended 50. The reviewer's own checklist marks "No excessively long
+functions" as passed, so this is BiocCheck, not a review requirement.
+
+The rework brought them to 118 and 73 — better, still over. What is left is the
+body of each per-row function, written inline at the point where it is handed to
+`.ft_map_rows()`. **Decision: they stay inline.** Two reasons:
+
+* There is nothing to gain in speed. A named function and a lambda are the same
+  closure object in R and cost the same to call, about 1.25 us either way.
+* There is something to lose in clarity. `.ft_map_rows()` replaces the
+  function's environment with the global one so a `SnowParam` worker can
+  deserialize it, which means an extracted named function would be re-parented
+  in exactly the same way. It would still not see the package namespace and
+  would still need `friends.test::` on every call — the extraction would buy
+  nothing and only separate the code from the place it is used.
+
+So the NOTE is permanent. If it is raised in the next round, that is the answer.
 
 ---
 

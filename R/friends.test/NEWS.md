@@ -17,6 +17,15 @@
 - `best_step_fit_bic()` no longer raises an error when every rank in a row is
   tied and `prior.to.have.friends` is 1; it reports no friends, as it already
   did for every other prior.
+- `cli.progress_show_after`, which `.progress = TRUE` sets, is now restored on
+  exit instead of being left changed in the user's session.
+- `max.friends.n` no longer accepts the abbreviations `"al"` and `"a"`, nor
+  `NA`. `"all"` and `NULL` still mean every column, and a number still means a
+  number.
+- The validity messages of `step_fit_ln_likelihoods()` name the argument they
+  are about. The first one used to refer to a `Rows_no` parameter, which the
+  function has never had, and two different problems shared the message
+  "Ranks are to be integer!".
 
 ## friends.test 0.99.21
 
