@@ -5,21 +5,23 @@ Version: 0.99.22
 Encoding: UTF-8
 Authors@R: c(
     person("Alexandra", "Suvorikova", email = "a.suvorikova@gmail.com",
-        role = c("aut", "ctb")),
+        role = c("aut")),
     person("Alexey", "Kroshnin", email = "kroshnin@wias-berlin.de",
-        role = c("aut", "ctb")),
+        role = c("aut")),
     person("Dmitrijs", "Lvovs", email = "dmitrijs.lvovs@gmail.com",
-        role = c("aut", "ctb")),
+        role = c("ctb")),
     person("Vera", "Mukhina", email = "atgc@vigg.ru",
-        role = c("aut", "ctb")),
+        role = c("ctb")),
     person("Andrey A.", "Mironov", email = "mironov@bioinf.fbb.msu.ru",
-        role = c("aut", "ctb")),
+        role = c("ctb")),
     person("Ludmila", "Danilova", email = "ludmila.danilova@gmail.com",
-        role = c("aut", "ctb")),
+        role = c("ctb")),
     person("Alexander", "Favorov", email = "favorov@sensi.org",
         role = c("aut", "cre"),
-        comment = c(ORCID = "0000-0003-2595-1091"))
+        comment = c(ORCID = "0000-0003-2595-1091")),
+    person("NIH", role = "fnd", comment = "Grant P30CA006973")
     )
+
 Description: A method for identifying specificity in interactions represented
     by a numeric matrix by detecting structural breaks. Rank-based
     representation of the columns of the interaction matrix ensures invariance
