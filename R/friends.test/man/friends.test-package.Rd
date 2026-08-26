@@ -33,12 +33,17 @@ Useful links:
 Authors:
 \itemize{
   \item Alexander Favorov \email{favorov@sensi.org} (\href{https://orcid.org/0000-0003-2595-1091}{ORCID})
-  \item Alexandra Suvorikova \email{a.suvorikova@gmail.com} [contributor]
-  \item Alexey Kroshnin \email{kroshnin@wias-berlin.de} [contributor]
+  \item Alexandra Suvorikova \email{a.suvorikova@gmail.com}
+  \item Alexey Kroshnin \email{kroshnin@wias-berlin.de}
+}
+
+Other contributors:
+\itemize{
   \item Dmitrijs Lvovs \email{dmitrijs.lvovs@gmail.com} [contributor]
   \item Vera Mukhina \email{atgc@vigg.ru} [contributor]
   \item Andrey A. Mironov \email{mironov@bioinf.fbb.msu.ru} [contributor]
   \item Ludmila Danilova \email{ludmila.danilova@gmail.com} [contributor]
+  \item NIH (Grant P30CA006973) [funder]
 }
 
 }

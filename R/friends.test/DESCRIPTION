@@ -39,4 +39,4 @@ VignetteBuilder: knitr
 Imports: stats, utils, methods, data.table, purrr, cli, BiocParallel
 Roxygen: list(markdown = TRUE)
 LazyData: false
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

@@ -8,15 +8,21 @@ export(friends_test_ks)
 export(row_int_ranks)
 export(step_fit_ln_likelihoods)
 export(unif_ks_test)
-importFrom(cli,cli_progress_along)
-importFrom(cli,cli_progress_done)
-importFrom(cli,cli_progress_step)
+importFrom(cli,
+  cli_progress_along,
+  cli_progress_done,
+  cli_progress_step
+)
 importFrom(data.table,frankv)
 importFrom(methods,is)
-importFrom(purrr,array_branch)
-importFrom(purrr,compact)
-importFrom(purrr,pmap)
-importFrom(stats,ks.test)
-importFrom(stats,p.adjust)
-importFrom(stats,runif)
+importFrom(purrr,
+  array_branch,
+  compact,
+  pmap
+)
+importFrom(stats,
+  ks.test,
+  p.adjust,
+  runif
+)
 importFrom(utils,packageDescription)

@@ -34,66 +34,6 @@ ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
 }
 
 
-#' Parallel lapply returning a numeric vector
-#'
-#' A thin wrapper around \code{\link[BiocParallel]{bplapply}} that unlists the
-#' result into a plain (unnamed) numeric vector.  Intended for row-wise scoring
-#' where each worker returns a single double value.
-#'
-#' @param X A vector or list to iterate over.
-#' @param FUN A function to apply to each element of \code{X}.
-#' @param ... Additional arguments passed to \code{FUN} via
-#'   \code{bplapply}.
-#' @param BPPARAM A \code{\link[BiocParallel]{BiocParallelParam}} object
-#'   (required; obtain one from \code{\link{ft_bpparam}}).
-#'
-#' @return A numeric vector of length \code{length(X)}, without names.
-#'
-#' @keywords internal
-#' @noRd
-ft_bplapply_dbl <- function(X, FUN, ..., BPPARAM) {
-    unlist(
-        BiocParallel::bplapply(
-            X, FUN, ...,
-            BPPARAM = BPPARAM
-        ),
-        use.names = FALSE
-    )
-}
-
-
-#' Parallel mapply returning a list
-#'
-#' A thin wrapper around \code{\link[BiocParallel]{bpmapply}} with
-#' \code{SIMPLIFY = FALSE} and \code{USE.NAMES = FALSE}, so the result is
-#' always an unnamed list regardless of what \code{FUN} returns.  Used to
-#' iterate over pairs of rows and columns in the step-fit stage.
-#'
-#' @param FUN A function whose first arguments are taken from the parallel
-#'   vectors in \code{...}.
-#' @param ... Parallel vectors or lists passed as positional arguments to
-#'   \code{FUN}.
-#' @param MoreArgs A named list of additional constant arguments passed to
-#'   \code{FUN} (forwarded to \code{bpmapply}).
-#' @param BPPARAM A \code{\link[BiocParallel]{BiocParallelParam}} object
-#'   (required; obtain one from \code{\link{ft_bpparam}}).
-#'
-#' @return An unnamed list of the same length as the shortest element of
-#'   \code{...}.
-#'
-#' @keywords internal
-#' @noRd
-ft_bpmapply_list <- function(FUN, ..., MoreArgs = NULL, BPPARAM) {
-    BiocParallel::bpmapply(
-        FUN = FUN,
-        ...,
-        MoreArgs = MoreArgs,
-        SIMPLIFY = FALSE,
-        USE.NAMES = FALSE,
-        BPPARAM = BPPARAM
-    )
-}
-
 #' Run a per-row function over the rows of a rank matrix
 #'
 #' The single place that knows how a row-wise stage is executed.  With a

@@ -16,11 +16,18 @@ progress_mat <- function() {
 
 test_that("the serial bar does not change what friends_test_ks returns", {
     A <- progress_mat()
+    # a threshold that actually yields markers, so that the run goes through
+    # the second stage and the compacting step rather than returning early
+    args <- list(A, threshold = 0.5, p.adjust.method = "none")
+
     set.seed(3)
-    quiet <- friends_test_ks(A)
+    quiet <- do.call(friends_test_ks, args)
     set.seed(3)
-    noisy <- suppressMessages(friends_test_ks(A, .progress = TRUE))
+    noisy <- suppressMessages(
+        do.call(friends_test_ks, c(args, list(.progress = TRUE)))
+    )
     expect_identical(quiet, noisy)
+    expect_gt(length(quiet), 0)
 })
 
 
