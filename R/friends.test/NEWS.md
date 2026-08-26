@@ -52,6 +52,14 @@
   are about. The first one used to refer to a `Rows_no` parameter, which the
   function has never had, and two different problems shared the message
   "Ranks are to be integer!".
+- The vignette is formatted with `BiocStyle`, has an Installation section, and
+  uses subsections where it used `\paragraph{}`, which never rendered.
+- `devtools` and `markdown` are dropped from `Suggests`. The vignette was the
+  only thing that named them, and it no longer does.
+- The example data is documented: what each of its three elements is, how
+  `data-raw/cogaps_example.r` builds it, and the terms its sources are under.
+- `Authors@R` gives each co-author one role rather than both `aut` and `ctb`,
+  and names the funder of the work.
 
 ## friends.test 0.99.21
 
