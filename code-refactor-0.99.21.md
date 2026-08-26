@@ -14,7 +14,7 @@ each round pushed during review, so several bumps are fine and probably desirabl
 
 ## Status, 26 August 2026
 
-The plan is worked through. Package is at 0.99.22, pushed; tests 143 pass and
+The plan is worked through. Package is at 0.99.22, pushed; tests 146 pass and
 2 skip; coverage 100%; `R CMD check --as-cran` 2 NOTE; `BiocCheck` 0 ERRORS,
 0 WARNINGS, 4 NOTES.
 
@@ -23,7 +23,7 @@ Against where the review found us:
 | | as reviewed | now |
 |---|---|---|
 | coverage | 75.57% | 100% |
-| tests | 83 | 143 |
+| tests | 83 | 146 |
 | `R CMD check` | 4 NOTE | 2 NOTE |
 | `BiocCheck` | 8 NOTES | 4 NOTES |
 | a pass over the CoGAPS matrix | 2.08 s | 1.58 s |
@@ -45,6 +45,7 @@ Against where the review found us:
 | 8 | CoGAPS data documented, with provenance and licences | `910e410` |
 | 10 | answer on `SharedObject` and `mori` | `169e5ba` |
 | 13.3, 13.4 | one role per co-author, `fnd` entry with the grant | `91e4129` |
+| 13.2 | the startup message is guarded on `interactive()` | `3b76d16` |
 | 9 | coverage to 100%, and two dead helpers removed | `5b38303` |
 
 Four things happened along the way that were not asked for and are worth a look:
@@ -59,12 +60,14 @@ Four things happened along the way that were not asked for and are worth a look:
   `.ft_map_rows()` replaced them. Measuring coverage is what found them.
 * `devtools` and `markdown` were declared in `Suggests` and used nowhere once
   the vignette stopped calling them.
+* `@importFrom utils packageDescription` had been lost from `zzz.R` when the
+  Yiddish phrase was removed, and was resting on the declaration in the
+  package-level file.
 
 **Still open**
 
 | § | what | who |
 |---|---|---|
-| 13.2 | keep or drop the startup message — the reviewer recommends dropping it | you |
 | 13.1 | Monte-Carlo critical values for the fitted-endpoint statistic; blocks nothing, `"observed"` stays the default either way. The note to put to them is `uniform-null-note.html` in this directory, also published at <https://claude.ai/code/artifact/1f48dd4a-eeb8-456a-8fc8-ecee08362fe1> | Suvorikova, Kroshnin |
 | 10 | three answers are drafted below and need sending to the issue: `integer(0L)`, dots in argument names, `SharedObject`/`mori` | you |
 
