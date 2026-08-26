@@ -12,11 +12,21 @@ each round pushed during review, so several bumps are fine and probably desirabl
 
 ---
 
-## Status, 25 August 2026
+## Status, 26 August 2026
 
-Everything below is either done or listed as still open. Package is at 0.99.22;
-tests 115 pass, 2 skip; `R CMD check --as-cran` 2 NOTE; `BiocCheck` 0 ERRORS,
-0 WARNINGS, 5 NOTES.
+The plan is worked through. Package is at 0.99.22, pushed; tests 143 pass and
+2 skip; coverage 100%; `R CMD check --as-cran` 2 NOTE; `BiocCheck` 0 ERRORS,
+0 WARNINGS, 4 NOTES.
+
+Against where the review found us:
+
+| | as reviewed | now |
+|---|---|---|
+| coverage | 75.57% | 100% |
+| tests | 83 | 143 |
+| `R CMD check` | 4 NOTE | 2 NOTE |
+| `BiocCheck` | 8 NOTES | 4 NOTES |
+| a pass over the CoGAPS matrix | 2.08 s | 1.58 s |
 
 **Done**
 
@@ -33,8 +43,11 @@ tests 115 pass, 2 skip; `R CMD check --as-cran` 2 NOTE; `BiocCheck` 0 ERRORS,
 | 1.2, 1.3, 1.4 | `uniform.null` replaces `uniform.max`; duplicated KS test removed | `cea5d04` |
 | 7.1–7.6 | BiocStyle, Installation, `###` subsections, setup chunk, `noquote` | `efdf99c` |
 | 8 | CoGAPS data documented, with provenance and licences | `910e410` |
+| 10 | answer on `SharedObject` and `mori` | `169e5ba` |
+| 13.3, 13.4 | one role per co-author, `fnd` entry with the grant | `91e4129` |
+| 9 | coverage to 100%, and two dead helpers removed | `5b38303` |
 
-Two things happened along the way that were not asked for and are worth a look:
+Four things happened along the way that were not asked for and are worth a look:
 
 * A pass over the CoGAPS matrix went from 2.08 to 1.58 seconds. `.libPaths()`
   was being *set* once per row, at 34 microseconds against 0.2 for reading it.
@@ -42,21 +55,30 @@ Two things happened along the way that were not asked for and are worth a look:
   tied and the prior was exactly 1. It now reports no friends, like every
   other prior. Sixteen corner cases were compared against the old code and
   this is the only one that differs.
+* `ft_bplapply_dbl()` and `ft_bpmapply_list()` had lost their callers when
+  `.ft_map_rows()` replaced them. Measuring coverage is what found them.
+* `devtools` and `markdown` were declared in `Suggests` and used nowhere once
+  the vignette stopped calling them.
 
 **Still open**
 
 | § | what | who |
 |---|---|---|
-| 9 | re-measure coverage — it was 75.57% before any of this, and the files have changed | me |
-| 10 | answers rather than changes: `integer(0L)`, dots in argument names, `shareObject`/`mori` | me, then you |
-| 13.1 | Monte-Carlo critical values for the fitted-endpoint statistic | Suvorikova, Kroshnin |
-| 13.2 | keep or drop the startup message | you |
-| 13.3 | one role per co-author in `Authors@R` | you |
-| 13.4 | a funder for the `fnd` role | you |
-| 7.7 | vignette numbers move only if the `uniform.null` default changes, which it is not | — |
+| 13.2 | keep or drop the startup message — the reviewer recommends dropping it | you |
+| 13.1 | Monte-Carlo critical values for the fitted-endpoint statistic; blocks nothing, `"observed"` stays the default either way | Suvorikova, Kroshnin |
+| 10 | three answers are drafted below and need sending to the issue: `integer(0L)`, dots in argument names, `SharedObject`/`mori` | you |
+
+Outside the plan, and deliberately deferred:
+
+* copying the package into `~/friends.test` by hand — `utils/_sync_engine.sh`
+  does not follow renames, and after the renaming only 13 of 38 files are
+  shared, so running it would leave that copy broken;
+* teaching the engine about renames, as a separate script.
 
 Two NOTES will not go away and that is deliberate: function length (§3.4) and
-the formatting ones, which are dominated by roxygen output in `man/`.
+the formatting ones, which are dominated by roxygen output in `man/`. roxygen2
+is 8.1.0 here and writes `importFrom` grouped over several lines, which adds
+nine of them in `NAMESPACE` alone.
 
 ---
 
