@@ -601,14 +601,41 @@ rewritten twice.
   arguments. Section 16.2.6.3 "Function arguments" says nothing about the style of
   the names, BiocCheck has no check for it, and `simulate.p.value` and `rescale.p`
   are the argument names of `stats::chisq.test`. Keeping them matches base R.
-* **`shareObject` / `mori`** — the reviewer asks whether either would help with the
-  `local(envir = globalenv())` plus `.libPaths(libs)` construction in the parallel
-  path. Needs an actual look before answering. The construction solves two distinct
-  problems: deserialization on a worker without loading the package namespace, and
-  finding the package in a library path that `R CMD build` created. A shared-object
-  package plausibly addresses the first and not the second. Note that after 3.3 this
-  construction lives in exactly one place, which makes the question easier to answer
-  and any replacement cheaper to try.
+* **`SharedObject` / `mori`** — the reviewer asks whether either would help with
+  the `local(envir = globalenv())` plus `.libPaths(libs)` construction in the
+  parallel path. Both were looked at. Neither applies, and the answer is worth
+  spelling out because the reason is not obvious.
+
+  Both packages remove the duplication of *data* across workers: `SharedObject`
+  (Bioconductor) and `mori` (CRAN) put an object in OS shared memory so that a
+  worker reads the same physical pages instead of receiving a copy. `mori`
+  serialises a shared object as the name of its memory segment rather than its
+  contents.
+
+  What the construction in the code does is something else. When R serialises a
+  closure it serialises its environment too, and for a package namespace it
+  writes a *reference* — the string `friends.test` is literally in the bytes.
+  Deserialising that reference on a worker requires **loading the package**,
+  before any of our code runs; that is the `there is no package called
+  'friends.test'` failure the trick exists to avoid. Re-parenting the closure to
+  the global environment removes the reference, which is why the function then
+  has to say `friends.test::` explicitly — and that is resolved at call time,
+  after `.libPaths()` has been set. Two halves, in that order: deliver the
+  function without needing the package, then let the package be found.
+
+  Shared memory changes neither half. It would only reduce what it costs to ship
+  the ranks, and at our scale that is not a cost: the rank rows of the CoGAPS
+  example serialise to 3 MB for the whole run, and `bpmapply` chunks them
+  anyway. On a matrix of, say, 100000 by 500 — 380 MB — sharing would genuinely
+  pay, but that is a separate optimisation for a separate situation, and even
+  then both halves of the present construction would still be needed.
+
+  There is also an argument in the reviewer's own terms: he objected to a heavy
+  dependency taken on for a startup message. Adding one for 3 MB of transfer
+  would be the same mistake.
+
+  After 3.3 this construction lives in exactly one place, `.ft_map_rows()`, so
+  if shared memory is ever wanted it is one function to change.
 * **`fnd` role in `Authors@R`** — needs a funder, if there is one to name.
 * **`aut` and `ctb` on the same person** — six co-authors carry both. One role each;
   the authors decide which.
