@@ -1,0 +1,541 @@
+<title>The Uniform Null of the KS Branch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+
+<style>
+  :root {
+    --paper:      #FCFCFA;
+    --panel:      #F3F3EF;
+    --ink:        #16181D;
+    --muted:      #64696F;
+    --rule:       #DCDCD5;
+    --rule-soft:  #E8E8E2;
+    --accent:     #2F4B7C;
+    --warn:       #A33A2E;
+    --warn-bg:    #F6EAE7;
+    --ok:         #3E6B4F;
+    --ok-bg:      #E9F0EA;
+
+    --measure: 68ch;
+    --step-0: 1rem;
+    --step-1: 1.1rem;
+    --step-2: 1.35rem;
+    --step-3: 1.75rem;
+    --step-4: 2.5rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #14161A;
+      --panel:     #1C1F25;
+      --ink:       #E7E9EC;
+      --muted:     #9AA1AA;
+      --rule:      #2C3038;
+      --rule-soft: #23262C;
+      --accent:    #86A9DC;
+      --warn:      #E08A7B;
+      --warn-bg:   #2A1E1C;
+      --ok:        #8CBE9C;
+      --ok-bg:     #1B241E;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:     #14161A;
+    --panel:     #1C1F25;
+    --ink:       #E7E9EC;
+    --muted:     #9AA1AA;
+    --rule:      #2C3038;
+    --rule-soft: #23262C;
+    --accent:    #86A9DC;
+    --warn:      #E08A7B;
+    --warn-bg:   #2A1E1C;
+    --ok:        #8CBE9C;
+    --ok-bg:     #1B241E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.65;
+    margin: 0;
+    padding: clamp(1.5rem, 5vw, 4.5rem) clamp(1.1rem, 5vw, 2rem) 6rem;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: var(--measure);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead { display: flex; flex-direction: column; gap: .9rem; }
+
+  .kicker {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .74rem;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  h1 {
+    font-family: Spectral, Georgia, serif;
+    font-size: var(--step-4);
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -.015em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .standfirst {
+    font-family: Spectral, Georgia, serif;
+    font-size: var(--step-2);
+    line-height: 1.5;
+    color: var(--muted);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .byline {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--rule);
+    padding-top: .8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.4rem;
+  }
+
+  /* ---------- sections ---------- */
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+
+  h2 {
+    font-family: Spectral, Georgia, serif;
+    font-size: var(--step-3);
+    font-weight: 600;
+    line-height: 1.22;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    margin: 1.4rem 0 0;
+  }
+
+  h3 {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: var(--step-1);
+    font-weight: 600;
+    margin: .8rem 0 0;
+  }
+
+  .finding-no {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: .06em;
+    display: block;
+    margin-bottom: .25rem;
+  }
+
+  p { margin: 0; text-wrap: pretty; }
+
+  ul, ol { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .5rem; }
+
+  li::marker { color: var(--muted); }
+
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .88em;
+    background: var(--panel);
+    padding: .1em .35em;
+    border-radius: 2px;
+  }
+
+  pre {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .82rem;
+    line-height: 1.6;
+    background: var(--panel);
+    border: 1px solid var(--rule-soft);
+    border-left: 2px solid var(--accent);
+    padding: .95rem 1.1rem;
+    margin: 0;
+    overflow-x: auto;
+  }
+
+  pre code { background: none; padding: 0; font-size: 1em; }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  strong { font-weight: 600; }
+
+  /* ---------- callout ---------- */
+
+  .callout {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+  }
+
+  .callout-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ---------- tables ---------- */
+
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: .87rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  th, td {
+    padding: .5rem .8rem;
+    text-align: right;
+    border-bottom: 1px solid var(--rule-soft);
+    white-space: nowrap;
+  }
+
+  th:first-child, td:first-child { text-align: left; }
+
+  thead th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: .72rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  td.mono, th.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  .bad  { color: var(--warn); font-weight: 500; }
+  .good { color: var(--ok);   font-weight: 500; }
+
+  caption {
+    caption-side: bottom;
+    text-align: left;
+    font-size: .8rem;
+    color: var(--muted);
+    padding: .6rem .8rem;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  /* ---------- figure ---------- */
+
+  figure { margin: 0; display: flex; flex-direction: column; gap: .7rem; }
+
+  figure svg { width: 100%; height: auto; display: block; }
+
+  figcaption { font-size: .82rem; color: var(--muted); text-wrap: pretty; }
+
+  /* ---------- references ---------- */
+
+  .refs { display: flex; flex-direction: column; gap: .8rem; font-size: .9rem; }
+
+  .ref {
+    padding-left: 1.1rem;
+    text-indent: -1.1rem;
+    line-height: 1.55;
+  }
+
+  .ref em { font-style: italic; }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: .6rem 0;
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <span class="kicker">friends.test &middot; note for the authors</span>
+    <h1>The Uniform Null of the KS Branch</h1>
+    <p class="standfirst">Which uniform the Kolmogorov&ndash;Smirnov branch tests against is settled, and deliberately. What is not settled is the p-value attached to it: the one <code>ks.test</code> returns is not the p-value of the test we are performing, and it costs us power.</p>
+    <div class="byline">
+      <span>Package version 0.99.22</span>
+      <span>Prepared during Bioconductor review</span>
+      <span>26 August 2026</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>What we are asking</h2>
+    <p>The rank of a row inside one column is an integer in 1 … <em>N</em>, where <em>N</em> is the number of rows. Under the null hypothesis &mdash; the row has no friends &mdash; those ranks are independent and uniform on the integers 1, …, <em>N</em>. To hand that null to <code>stats::ks.test</code> we must name a <em>continuous</em> distribution, and therefore an interval.</p>
+    <p>We fit that interval to the row itself: its own smallest and largest rank. That is the right null for what the method looks for, and the reasoning is in the next section. But fitting two parameters to the sample you are testing invalidates the distribution <code>ks.test</code> inverts to get its p-value. The test is honest; the number attached to it is not.</p>
+    <div class="callout">
+      <span class="callout-label">The question, in one line</span>
+      <p>Should we compute Monte-Carlo critical values for the fitted-endpoint statistic, the way <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.1967.10482916">Lilliefors (1967)</a> did for normality with unknown mean and variance? Or accept the conservativeness and document it?</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why the support is fitted to the row</h2>
+    <p>The method looks for a <strong>structural break</strong>, not for a shift. A row whose ranks are spread evenly over some part of the scale &mdash; the bottom half, say &mdash; has no subset of columns standing out from the rest. It should be reported as having no friends, even though its ranks are plainly not uniform on 1 … <em>N</em>.</p>
+    <p>Fitting both endpoints to the row makes the test invariant to where the profile sits and how wide it is, which is exactly that requirement. A fixed support answers a different question. Measured over 2&thinsp;000 rows at <em>N</em>&thinsp;=&thinsp;1000 with eight columns, the fraction called non-uniform at 0.05:</p>
+    <div class="scroll">
+      <table>
+        <caption>Only the fitted support treats a flat profile as flat wherever it sits.</caption>
+        <thead>
+          <tr><th>the row</th><th>support fitted to the row</th><th>support fixed at the scale</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>uniform on 1 … <em>N</em> &mdash; the true null</td><td class="good">0.0425</td><td class="good">0.0485</td></tr>
+          <tr><td>uniform on 1 … <em>N</em>/2 &mdash; flat, shifted</td><td class="good">0.0305</td><td class="bad">1.0000</td></tr>
+          <tr><td>uniform on 1 … <em>N</em>/10 &mdash; flat, tight</td><td class="good">0.0395</td><td class="bad">1.0000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A fixed support would flag every concentrated flat profile as a marker. That is not a bug in it &mdash; it is a different null, and a defensible one for a different question. It is not ours.</p>
+  </section>
+
+  <section>
+    <h2>Where the endpoints come from</h2>
+    <p>Three conventions are now implemented, selected by the <code>uniform.null</code> argument. A fourth existed and has been withdrawn.</p>
+
+    <figure>
+      <svg viewBox="0 0 720 300" role="img" aria-label="Three number lines showing the interval each convention declares as the support of the uniform null: the default fits both ends to the observed data, the withdrawn mode fixed only the upper end, and the two calibrated conventions span the whole rank scale.">
+        <text x="100" y="26" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity=".55">rank 1</text>
+        <text x="670" y="26" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity=".55" text-anchor="end">rank N</text>
+
+        <!-- ROW 1 : the default -->
+        <text x="88" y="80" font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor" text-anchor="end">observed</text>
+        <line x1="100" y1="76" x2="670" y2="76" stroke="currentColor" stroke-width="1" opacity=".18"/>
+        <g stroke="currentColor" stroke-width="1.5" opacity=".55">
+          <line x1="203" y1="60" x2="203" y2="70"/><line x1="225" y1="60" x2="225" y2="70"/>
+          <line x1="300" y1="60" x2="300" y2="70"/><line x1="391" y1="60" x2="391" y2="70"/>
+          <line x1="431" y1="60" x2="431" y2="70"/><line x1="510" y1="60" x2="510" y2="70"/>
+          <line x1="550" y1="60" x2="550" y2="70"/><line x1="590" y1="60" x2="590" y2="70"/>
+        </g>
+        <g style="stroke: var(--ok)" stroke-width="3">
+          <line x1="203" y1="76" x2="590" y2="76"/>
+          <line x1="203" y1="69" x2="203" y2="83"/>
+          <line x1="590" y1="69" x2="590" y2="83"/>
+        </g>
+        <text x="203" y="99" font-family="IBM Plex Mono, monospace" font-size="11" style="fill: var(--ok)" text-anchor="middle">min(ranks)</text>
+        <text x="590" y="99" font-family="IBM Plex Mono, monospace" font-size="11" style="fill: var(--ok)" text-anchor="middle">max(ranks)</text>
+        <text x="396" y="66" font-family="IBM Plex Sans, sans-serif" font-size="11.5" style="fill: var(--ok)" text-anchor="middle">the default</text>
+
+        <!-- ROW 2 : withdrawn -->
+        <text x="88" y="164" font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor" text-anchor="end">withdrawn</text>
+        <line x1="100" y1="160" x2="670" y2="160" stroke="currentColor" stroke-width="1" opacity=".18"/>
+        <g stroke="currentColor" stroke-width="1.5" opacity=".55">
+          <line x1="203" y1="144" x2="203" y2="154"/><line x1="225" y1="144" x2="225" y2="154"/>
+          <line x1="300" y1="144" x2="300" y2="154"/><line x1="391" y1="144" x2="391" y2="154"/>
+          <line x1="431" y1="144" x2="431" y2="154"/><line x1="510" y1="144" x2="510" y2="154"/>
+          <line x1="550" y1="144" x2="550" y2="154"/><line x1="590" y1="144" x2="590" y2="154"/>
+        </g>
+        <g style="stroke: var(--warn)" stroke-width="2.5">
+          <line x1="203" y1="160" x2="670" y2="160"/>
+          <line x1="203" y1="153" x2="203" y2="167"/>
+          <line x1="670" y1="153" x2="670" y2="167"/>
+        </g>
+        <text x="203" y="183" font-family="IBM Plex Mono, monospace" font-size="11" style="fill: var(--warn)" text-anchor="middle">min(ranks)</text>
+        <text x="670" y="183" font-family="IBM Plex Mono, monospace" font-size="11" style="fill: var(--warn)" text-anchor="end">N</text>
+        <text x="436" y="140" font-family="IBM Plex Sans, sans-serif" font-size="11.5" style="fill: var(--warn)" text-anchor="middle">one end fitted, one end fixed</text>
+
+        <!-- ROW 3 : the calibrated pair -->
+        <text x="88" y="248" font-family="IBM Plex Mono, monospace" font-size="12" fill="currentColor" text-anchor="end">fixed</text>
+        <line x1="100" y1="244" x2="670" y2="244" stroke="currentColor" stroke-width="1" opacity=".18"/>
+        <g stroke="currentColor" stroke-width="1.5" opacity=".55">
+          <line x1="203" y1="228" x2="203" y2="238"/><line x1="225" y1="228" x2="225" y2="238"/>
+          <line x1="300" y1="228" x2="300" y2="238"/><line x1="391" y1="228" x2="391" y2="238"/>
+          <line x1="431" y1="228" x2="431" y2="238"/><line x1="510" y1="228" x2="510" y2="238"/>
+          <line x1="550" y1="228" x2="550" y2="238"/><line x1="590" y1="228" x2="590" y2="238"/>
+        </g>
+        <g stroke="currentColor" stroke-width="2.5" opacity=".6">
+          <line x1="100" y1="244" x2="670" y2="244"/>
+          <line x1="100" y1="237" x2="100" y2="251"/>
+          <line x1="670" y1="237" x2="670" y2="251"/>
+        </g>
+        <text x="100" y="267" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity=".6" text-anchor="start">0.5</text>
+        <text x="670" y="267" font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" opacity=".6" text-anchor="end">N + 0.5</text>
+        <text x="385" y="290" font-family="IBM Plex Sans, sans-serif" font-size="11.5" fill="currentColor" opacity=".6" text-anchor="middle">tick marks are the eight observed ranks &mdash; the same data in all three rows</text>
+      </svg>
+      <figcaption>The interval each convention hands to <code>punif</code>, for one row of eight columns. The default pins both ends to the row. The withdrawn mode pinned the lower end to the row and the upper one to the rank scale, an asymmetry with no reading as a null hypothesis. <code>"continuity"</code> and <code>"randomized"</code> share the fixed support and differ in how the ranks are displaced.</figcaption>
+    </figure>
+
+    <div class="scroll">
+      <table>
+        <caption>What <code>uniform.null</code> accepts. Both fixed-support settings need <code>max.possible.rank</code>.</caption>
+        <thead>
+          <tr><th>setting</th><th>support</th><th>displacement</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">"observed" &mdash; default</td><td>min and max of the row</td><td>10<sup>&minus;7</sup>, to break ties</td></tr>
+          <tr><td class="mono">"continuity"</td><td>0.5 … <em>N</em>&thinsp;+&thinsp;0.5</td><td>10<sup>&minus;7</sup>, to break ties</td></tr>
+          <tr><td class="mono">"randomized"</td><td>0.5 … <em>N</em>&thinsp;+&thinsp;0.5</td><td>U(&minus;&frac12;,&thinsp;&frac12;)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>The withdrawn mode was a defect</h2>
+    <p>The old argument was called <code>uniform.max</code> and named only the upper endpoint. Its <code>"c"</code> setting fixed that endpoint at <em>N</em> while the lower one continued to come from the data, one line earlier and without being documented anywhere. Mixing a fitted lower end with a fixed upper one has no interpretation as a null hypothesis: the data touch the left edge of the declared support by construction and, with high probability, fall short of the right edge, so the KS statistic is inflated in a systematic direction.</p>
+    <p>It is the setting a user reaching for &ldquo;the statistically careful option&rdquo; would plausibly have chosen, and it is the one that produced false friends. It is removed rather than renamed.</p>
+  </section>
+
+  <section>
+    <h2>What the fitted endpoints cost us</h2>
+    <p>Rejection rate at a nominal 0.05, on rows drawn independently and uniformly from 1 … <em>N</em> with <em>N</em>&thinsp;=&thinsp;1000; 5&thinsp;000 replicates per cell, Monte-Carlo standard deviation 0.0031.</p>
+    <div class="scroll">
+      <table>
+        <caption>A correctly sized test reads 0.05. The default is conservative and collapses entirely at three columns; the withdrawn mode was anti-conservative throughout.</caption>
+        <thead>
+          <tr>
+            <th>columns <span class="mono">k</span></th>
+            <th class="mono">observed</th>
+            <th class="mono">withdrawn</th>
+            <th class="mono">continuity</th>
+            <th class="mono">randomized</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>3</td><td class="bad">0.0000</td><td class="bad">0.0836</td><td class="good">0.0508</td><td class="good">0.0488</td></tr>
+          <tr><td>5</td><td class="bad">0.0344</td><td class="bad">0.0738</td><td class="good">0.0548</td><td class="good">0.0460</td></tr>
+          <tr><td>8</td><td class="bad">0.0354</td><td class="bad">0.0674</td><td class="good">0.0522</td><td class="good">0.0534</td></tr>
+          <tr><td>20</td><td>0.0460</td><td>0.0566</td><td class="good">0.0552</td><td class="good">0.0502</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>At three columns the default <strong>never once</strong> produced a p-value below 0.05 in five thousand null rows. Two of the three points are pinned to the boundary; one is free; the statistic cannot get large enough. At five to ten columns it rejects around 0.035 instead of 0.05, so roughly a third of the intended sensitivity is gone. By twenty columns the loss is small.</p>
+    <p>This is not an argument against the convention. It is the Lilliefors situation exactly: the null is legitimate, the critical values are not. He answered it for normality with unknown mean and variance by tabulating the statistic under simulation, and the same is open to us.</p>
+  </section>
+
+  <section>
+    <h2>What it does to the CoGAPS example</h2>
+    <p>The loadings matrix distributed with the package, 15&thinsp;176 genes by 8 patterns, with the ranking seed held fixed so only the convention differs.</p>
+    <div class="scroll">
+      <table>
+        <caption>Genes selected as markers under Benjamini&ndash;Hochberg at 0.05.</caption>
+        <thead><tr><th>convention</th><th>markers</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">"observed" &mdash; default</td><td>650</td></tr>
+          <tr><td class="mono">"continuity"</td><td>7&thinsp;399</td></tr>
+          <tr><td class="mono">"randomized"</td><td>7&thinsp;401</td></tr>
+          <tr><td class="mono">the withdrawn mode</td><td>6&thinsp;190</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <span class="callout-label">A caveat we should not paper over</span>
+      <p>The gap between 650 and 7&thinsp;399 is not all lost sensitivity. The fixed-support conventions count concentration as evidence, and gene loadings are concentrated: they are non-negative and normalised across patterns, which induces dependence between a gene&rsquo;s ranks and departs from the i.i.d.-uniform null in its own right. A larger marker count is not by itself a better method.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>A limitation worth recording either way</h2>
+    <p>With few columns the KS branch has little power against the alternative the method is named for. At eight columns, friends placed in the top 1% of ranks, fixed support so that the size is right:</p>
+    <div class="scroll">
+      <table>
+        <caption>Rejection rate at 0.05, uncorrected, 3&thinsp;000 replicates.</caption>
+        <thead><tr><th>friends among the 8 columns</th><th>rejects at 0.05</th><th>median p</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>0.0440</td><td>0.507</td></tr>
+          <tr><td>1</td><td>0.0717</td><td>0.461</td></tr>
+          <tr><td>2</td><td>0.1323</td><td>0.265</td></tr>
+          <tr><td>3</td><td>0.3930</td><td>0.079</td></tr>
+          <tr><td>4</td><td>1.0000</td><td>0.021</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A single friend out of eight moves the KS statistic by at most 1/8, far short of what rejection needs at that sample size; the test needs roughly half the columns to be friends before it fires reliably. This is inherent to a KS test on <em>k</em> points and no choice of endpoints changes it. It does explain why the Bayesian branch, which fits the step model directly, is the more sensitive instrument for wide matrices with few columns.</p>
+  </section>
+
+  <section>
+    <h2>What is already in the package</h2>
+    <ul>
+      <li><code>uniform.null</code> replaces <code>uniform.max</code>, which named one endpoint and said nothing about the other &mdash; which is how the asymmetry survived unnoticed. The new argument names the whole convention.</li>
+      <li><code>"observed"</code> is the default, so nothing in any existing analysis moves.</li>
+      <li>The <code>"c"</code> setting is gone.</li>
+      <li><code>unif_ks_test()</code> used to compute its test twice, once on ranks mapped to the unit interval and once on the raw scale, discarding the first. The two are the same test &mdash; the KS statistic is invariant under a monotone transform applied to both sample and null &mdash; so the duplicate is deleted. It also jittered a second time while keeping the first jitter&rsquo;s maximum as the upper endpoint, which could put a point outside the declared support.</li>
+      <li>The documentation now states both endpoints, and what each convention is for.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>The question, restated</h2>
+    <div class="callout">
+      <span class="callout-label">For Alexandra and Alexey</span>
+      <p>The convention is not in question: the support is fitted to the row because the method tests for a break, not for a shift.</p>
+      <p>What is in question is the p-value. <code>ks.test</code> gives us the one for a completely specified null, and ours has two parameters estimated from the sample being tested. Do we want Monte-Carlo critical values for the fitted-endpoint statistic &mdash; simulated once per <em>k</em>, or per <em>k</em> and <em>N</em> &mdash; so that the reported p-value is the p-value of the test we are running? Or is the conservativeness acceptable, to be stated in the documentation and left alone?</p>
+      <p>If the answer is to simulate: is there a closed form or a published tabulation for the uniform case with both endpoints estimated, or is this a Lilliefors-style table we would have to make ourselves?</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>References</h2>
+    <div class="refs">
+      <p class="ref">Arnold, T. B. and Emerson, J. W. (2011). Nonparametric goodness-of-fit tests for discrete null distributions. <em>The R Journal</em> 3(2). <a href="https://journal.r-project.org/articles/RJ-2011-016/index.html">journal.r-project.org/articles/RJ-2011-016</a></p>
+      <p class="ref">Conover, W. J. (1972). A Kolmogorov goodness-of-fit test for discontinuous distributions. <em>Journal of the American Statistical Association</em> 67(339), 591&ndash;596. <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.1972.10481254">doi:10.1080/01621459.1972.10481254</a></p>
+      <p class="ref">Dunn, P. K. and Smyth, G. K. (1996). Randomized quantile residuals. <em>Journal of Computational and Graphical Statistics</em> 5(3), 236&ndash;244. <a href="https://www.tandfonline.com/doi/abs/10.1080/10618600.1996.10474708">doi:10.1080/10618600.1996.10474708</a></p>
+      <p class="ref">Lilliefors, H. W. (1967). On the Kolmogorov&ndash;Smirnov test for normality with mean and variance unknown. <em>Journal of the American Statistical Association</em> 62(318), 399&ndash;402. <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.1967.10482916">doi:10.1080/01621459.1967.10482916</a></p>
+      <p class="ref">Machado, J. A. F. and Santos Silva, J. M. C. (2005). Quantiles for counts. <em>Journal of the American Statistical Association</em> 100(472), 1226&ndash;1237.</p>
+      <p class="ref">Pearson, E. S. (1950). On questions raised by the combination of tests based on discontinuous distributions. <em>Biometrika</em> 37(3/4), 383&ndash;398.</p>
+    </div>
+    <p class="lbl" style="text-align:left">Conover, Dunn &amp; Smyth, Machado &amp; Santos Silva and Pearson bear on the two fixed-support conventions: the first on the exact treatment of a discrete null, the others on the randomised transform that makes <em>X</em>&thinsp;+&thinsp;U(&minus;&frac12;,&thinsp;&frac12;) exactly uniform on 0.5 … <em>N</em>&thinsp;+&thinsp;0.5. Lilliefors bears on the question actually being asked.</p>
+  </section>
+
+  <section>
+    <h2>Reproducing the tables</h2>
+    <p>Every number above comes from this, against package version 0.99.22.</p>
+<pre><code>library(friends.test)
+
+## size under the null, and the shift-invariance table
+set.seed(20260822)
+N &lt;- 1000; R &lt;- 5000
+size &lt;- function(k, gen, ...)
+  mean(replicate(R, unif_ks_test(gen(k), ...)) &lt; 0.05)
+
+for (k in c(3, 5, 8, 20)) print(c(
+  observed   = size(k, \(k) sample.int(N, k, replace = TRUE)),
+  continuity = size(k, \(k) sample.int(N, k, replace = TRUE),
+                    "continuity", max.possible.rank = N),
+  randomized = size(k, \(k) sample.int(N, k, replace = TRUE),
+                    "randomized", max.possible.rank = N)))
+
+## flat but shifted: the reason the support is fitted
+for (top in c(N, N %/% 2, N %/% 10)) print(c(
+  fitted = size(8, \(k) sample.int(top, k, replace = TRUE)),
+  fixed  = size(8, \(k) sample.int(top, k, replace = TRUE),
+                "continuity", max.possible.rank = N)))
+
+## the CoGAPS example
+data(friends.test.cogaps.example)
+fl &lt;- friends.test.cogaps.example$loadings
+for (m in c("observed", "continuity", "randomized")) {
+  set.seed(7)
+  cat(m, length(friends_test_ks(fl, uniform.null = m)), "\n")
+}</code></pre>
+  </section>
+
+</div>

@@ -65,7 +65,7 @@ Four things happened along the way that were not asked for and are worth a look:
 | § | what | who |
 |---|---|---|
 | 13.2 | keep or drop the startup message — the reviewer recommends dropping it | you |
-| 13.1 | Monte-Carlo critical values for the fitted-endpoint statistic; blocks nothing, `"observed"` stays the default either way | Suvorikova, Kroshnin |
+| 13.1 | Monte-Carlo critical values for the fitted-endpoint statistic; blocks nothing, `"observed"` stays the default either way. The note to put to them is `uniform-null-note.html` in this directory, also published at <https://claude.ai/code/artifact/1f48dd4a-eeb8-456a-8fc8-ecee08362fe1> | Suvorikova, Kroshnin |
 | 10 | three answers are drafted below and need sending to the issue: `integer(0L)`, dots in argument names, `SharedObject`/`mori` | you |
 
 Outside the plan, and deliberately deferred:
