@@ -79,3 +79,20 @@ test_that("the backend's own text progress bar stays off", {
     BiocParallel::bpprogressbar(param) <- TRUE
     expect_false(BiocParallel::bpprogressbar(ft_bpparam(param, TRUE)))
 })
+
+
+test_that("the startup message is only for a person at a console", {
+    hook <- friends.test:::.onAttach
+
+    # under R CMD check, in a script or on a build machine
+    expect_silent(hook("", "friends.test"))
+    expect_null(hook("", "friends.test"))
+
+    # and with someone watching
+    pretend_interactive <- hook
+    environment(pretend_interactive) <- list2env(
+        list(interactive = function() TRUE),
+        parent = environment(hook)
+    )
+    expect_message(pretend_interactive("", "friends.test"), "friends.test")
+})

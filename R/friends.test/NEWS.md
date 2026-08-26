@@ -22,6 +22,10 @@
 - `max.friends.n` no longer accepts the abbreviations `"al"` and `"a"`, nor
   `NA`. `"all"` and `NULL` still mean every column, and a number still means a
   number.
+- The startup message is only printed in an interactive session. The reviewer
+  pointed out that a workflow attaching dozens of packages does not want a
+  line from each of them; scripts, vignettes and build machines now see
+  nothing.
 - `unif_ks_test()` computed its test twice, once on ranks mapped to the unit
   interval and once on the raw scale, and threw the first result away. The two
   are the same test, so the duplicate is gone. It also jittered the ranks a
