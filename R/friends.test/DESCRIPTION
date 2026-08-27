@@ -21,15 +21,18 @@ Authors@R: c(
         comment = c(ORCID = "0000-0003-2595-1091")),
     person("NIH", role = "fnd", comment = "Grant P30CA006973")
     )
-Description: A method for identifying specificity in interactions represented
-    by a numeric matrix by detecting structural breaks. Rank-based
-    representation of the columns of the interaction matrix ensures invariance
-    to heterogeneous data and allows for integrating data from diverse
-    sources. To automatically locate the boundary between specific
-    interactions and background activity, we employ model fitting.
+Description: Given a matrix of the strength of relation of members of two
+    sets (columns and rows), for each row it tests whether there are column(s)
+    for which the row is significantly more relevant than for the other
+    column(s). The row is referred to as a marker, and the column(s) are
+    friend(s) of the marker. Thus a specific association is identified rather
+    than just the strongest one. The potential applications are numerous, from
+    refining fuzzy clustering to specific gene regulation. The columns are
+    ranked independently of one another, so they do not need to share a scale,
+    and matrices assembled from different sources can be analysed.
 License: Artistic-2.0
 Depends: R (>= 4.6.0)
-biocViews: Annotation, StatisticalMethod
+biocViews: Annotation, StatisticalMethod, GeneRegulation, Clustering
 URL: https://github.com/favorov/friends.test,
     https://arxiv.org/abs/2512.24843
 BugReports: https://github.com/favorov/friends.test/issues
