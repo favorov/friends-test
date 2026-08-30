@@ -661,11 +661,17 @@ rewritten twice.
 
   After 3.3 this construction lives in exactly one place, `.ft_map_rows()`, so
   if shared memory is ever wanted it is one function to change.
-* **`fnd` role in `Authors@R`** — needs a funder, if there is one to name.
-* **`aut` and `ctb` on the same person** — six co-authors carry both. One role each;
-  the authors decide which.
-* **Startup message** — the reviewer recommends against printing anything on attach.
-  `zzz.R` is now three lines and prints a version and a phrase. Decision pending.
+Three items that stood here as open questions were answered by changing the
+code instead, and are done:
+
+* **`fnd` role in `Authors@R`** — `NIH`, grant `P30CA006973` (`91e4129`).
+* **`aut` and `ctb` on the same person** — one role each now (`91e4129`).
+* **Startup message** — printed only when `interactive()` (`3b76d16`). The
+  reviewer's argument was that a workflow attaching dozens of packages does not
+  want a line from each; scripts, vignettes and build machines now see nothing,
+  and someone who typed `library()` still gets it.
+
+The three answers above are drafted for the issue in `review-response.md`.
 
 ---
 
