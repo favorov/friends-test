@@ -1,5 +1,22 @@
 # Friends.test version history
 
+## friends.test 0.99.23
+
+- `friends_test_bic()`, `best_step_fit_bic()` and `best_step_fit()` gain
+  `uniform.null`. The default, `"observed"`, takes the smallest and the largest
+  possible rank from the row itself, which is the scale the Kolmogorov-Smirnov
+  branch already tested on; `"continuity"` keeps the whole `1..N` scale, which
+  is what these functions did before. Results change: on the example matrix at
+  `prior.to.have.friends = 1e-4` the Bayesian branch reports 729 markers rather
+  than 2053.
+- `friends_test_ks()` passes its own `uniform.null` on to the step fit, so both
+  of its stages measure a row on one scale. Its marker set is unchanged, a
+  quarter of its friend sets are not. `"randomized"` has no counterpart in the
+  discrete step model and reaches the fit as `"continuity"`.
+- An exact draw between the step model and the uniform one now goes to the
+  uniform model, and a draw between friend counts to the smallest. Both are
+  common on a fitted scale, and the second one was what made friend sets grow.
+
 ## friends.test 0.99.22
 
 - `friends_test()` is now the entry point for both branches: its `mode` argument
