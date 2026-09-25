@@ -3,9 +3,29 @@
 # search the same candidates and build the same return list.
 
 
+# The rank scale the step models live on.  "observed" takes both ends from the
+# row, which is what unif_ks_test() does by default; "continuity" keeps the
+# whole 1..max.possible.rank scale.  The ranks come back rebased to 1..size,
+# with the offset that puts a split rank back on the scale of the input.
+.rank_scale <- function(ranks, max.possible.rank, uniform.null) {
+    if (uniform.null == "observed") {
+        lowest <- min(ranks)
+        return(list(
+            ranks  = ranks - lowest + 1L,
+            size   = max(ranks) - lowest + 1L,
+            offset = lowest - 1L
+        ))
+    }
+    list(ranks = ranks, size = max.possible.rank, offset = 0L)
+}
+
+
 # The best number of friends k1 among those with a non-empty valid l1 range,
-# ties broken towards the larger split rank l1 -- the convention inherited
-# from max(which(ln.likelihoods == max_ll)).
+# ties broken towards the fewest friends.  On equal likelihood the smaller
+# friend set is the parsimonious one, which is the reading that also sends a
+# tie between the step and the uniform model to the uniform one.  The choice
+# matters on a fitted rank scale, where a short scale leaves many k1 equally
+# likely; on the full scale nothing ties.
 #
 # Returns k1 = NA when no k1 is valid, which happens when every rank is tied,
 # together with the log-likelihood attained, -Inf in that case.
@@ -16,10 +36,7 @@
     }
     max.ln.l <- max(step.models$best_ll_by_k1[valid_k1])
     tied_k1 <- valid_k1[step.models$best_ll_by_k1[valid_k1] == max.ln.l]
-    list(
-        k1 = tied_k1[which.max(step.models$best_l1_by_k1[tied_k1])],
-        max.ln.l = max.ln.l
-    )
+    list(k1 = min(tied_k1), max.ln.l = max.ln.l)
 }
 
 

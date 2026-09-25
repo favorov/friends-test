@@ -36,7 +36,10 @@ on to \link{unif_ks_test}, which describes the three settings.
 \code{"observed"}, the default, fits it to the row's own range and so makes
 the test invariant to shift and scale. \code{"continuity"} and
 \code{"randomized"} fix it at the whole rank scale: they are calibrated,
-but count concentration as evidence.}
+but count concentration as evidence. The same choice reaches the second
+stage, where \link{best_step_fit} locates the step, so that both stages measure
+the row on one scale; the step model is discrete, so \code{"randomized"}
+reaches it as \code{"continuity"}, which names the same support.}
 
 \item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
 default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}.}

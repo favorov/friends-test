@@ -23,10 +23,15 @@ test_that("best friend is determined correctly", {
     expect_equivalent(friends, expected)
 
     friends <- friends_test_bic(attention, .5, max.friends.n = 1)
-    #we expct two friend now
+    # raising the prior adds row3, and row4, whose ranks leave one friend and
+    # four equally likely -- the tie goes to the smaller friend set, which the
+    # max.friends.n = 1 cap then lets through
     expected <- list(
         row3 = list(
             col4 = c(marker = 3, friend = 4, rank = 1)
+        ),
+        row4 = list(
+            col1 = c(marker = 4, friend = 1, rank = 1)
         ),
         row5 = list(
             col5 = c(marker = 5, friend = 5, rank = 1)
@@ -128,10 +133,15 @@ test_that("best friend is determined correctly in parallel mode", {
         max.friends.n = 1,
         BPPARAM = BiocParallel::SnowParam(workers = 2, progressbar = FALSE)
     )
-    #we expct two friend now
+    # raising the prior adds row3, and row4, whose ranks leave one friend and
+    # four equally likely -- the tie goes to the smaller friend set, which the
+    # max.friends.n = 1 cap then lets through
     expected <- list(
         row3 = list(
             col4 = c(marker = 3, friend = 4, rank = 1)
+        ),
+        row4 = list(
+            col1 = c(marker = 4, friend = 1, rank = 1)
         ),
         row5 = list(
             col5 = c(marker = 5, friend = 5, rank = 1)
@@ -169,6 +179,7 @@ test_that("best friend is determined correctly with MulticoreParam", {
     )
     expected <- list(
         row3 = list(col4 = c(marker = 3, friend = 4, rank = 1)),
+        row4 = list(col1 = c(marker = 4, friend = 1, rank = 1)),
         row5 = list(col5 = c(marker = 5, friend = 5, rank = 1))
     )
     expect_equivalent(friends, expected)

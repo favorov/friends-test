@@ -8,6 +8,7 @@ friends_test_bic(
   A = NULL,
   prior.to.have.friends = -1,
   max.friends.n = "all",
+  uniform.null = c("observed", "continuity"),
   .progress = FALSE,
   BPPARAM = NULL
 )
@@ -22,6 +23,13 @@ A value $n$ means that we filter out a row if it has more
 than $n$ friendly columns. 1 means we look only for unique (best) friends.
 The string \code{"all"} (the default) and \code{NULL} both mean
 \code{ncol(A)}, that is, do not filter markers by this parameter.}
+
+\item{uniform.null}{how the smallest and the largest possible rank are
+chosen, passed on to \link{best_step_fit_bic}, which describes both settings.
+\code{"observed"}, the default, takes them from each row, which makes the
+comparison invariant to shift and scale and matches what \link{friends_test_ks}
+does by default. \code{"continuity"} keeps the whole rank scale, which is
+what this function did before 0.99.23, and counts concentration as evidence.}
 
 \item{.progress}{if \code{TRUE}, report what the call is doing. What you see
 depends on the backend: a serial one draws a \code{cli} progress bar with a

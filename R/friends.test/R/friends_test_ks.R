@@ -29,7 +29,10 @@
 #' \code{"observed"}, the default, fits it to the row's own range and so makes
 #' the test invariant to shift and scale. \code{"continuity"} and
 #' \code{"randomized"} fix it at the whole rank scale: they are calibrated,
-#' but count concentration as evidence.
+#' but count concentration as evidence. The same choice reaches the second
+#' stage, where [best_step_fit] locates the step, so that both stages measure
+#' the row on one scale; the step model is discrete, so \code{"randomized"}
+#' reaches it as \code{"continuity"}, which names the same support.
 #' @param simulate.p.value K-S by Monte-Carlo if \code{TRUE};
 #' default is \code{FALSE}, see [stats::ks.test()].
 #' @param B number of or replicates if \code{simulate.p.value=TRUE}
@@ -150,6 +153,9 @@ friends_test_ks <- function(
 
     # find friends that make in-marker ranks non-uniform
     max.possible.rank <- dim(A)[1]
+    # the step model is discrete and has nothing to randomise; "randomized"
+    # names the same support as "continuity", so it reaches the fit as that
+    step.null <- if (uniform.null == "observed") "observed" else "continuity"
     #run ut all in purrr style
     #return: list of list of, trios
     #i, j, r -- vectors:
@@ -161,10 +167,13 @@ friends_test_ks <- function(
     col_names <- colnames(A)
     # return: list of lists of trios -- marker, friend, friend.rank
     ijrlist <- .ft_map_rows(
-        function(row, i, max.possible.rank, max.friends.n, col_names) {
+        function(
+            row, i, max.possible.rank, max.friends.n, step.null, col_names
+        ) {
             step <- friends.test::best_step_fit(
                 row,
-                max.possible.rank = max.possible.rank
+                max.possible.rank = max.possible.rank,
+                uniform.null = step.null
             )
             if (length(step$columns.on.left) > max.friends.n) {
                 return(NULL) # marker has too many friends
@@ -186,6 +195,7 @@ friends_test_ks <- function(
         MoreArgs = list(
             max.possible.rank = max.possible.rank,
             max.friends.n = max.friends.n,
+            step.null = step.null,
             col_names = col_names
         ),
         BPPARAM = BPPARAM,

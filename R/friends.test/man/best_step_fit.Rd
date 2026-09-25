@@ -4,12 +4,25 @@
 \alias{best_step_fit}
 \title{best_step_fit}
 \usage{
-best_step_fit(ranks, max.possible.rank)
+best_step_fit(
+  ranks,
+  max.possible.rank,
+  uniform.null = c("observed", "continuity")
+)
 }
 \arguments{
 \item{ranks}{integer vector of ranks of a row in different columns}
 
 \item{max.possible.rank}{number of rows, i.e. maximal possible rank}
+
+\item{uniform.null}{how the smallest and the largest possible rank are
+chosen. \code{"observed"} (the default) takes them from the row itself,
+\code{min(ranks)} and \code{max(ranks)}, which is the scale
+\link{unif_ks_test} tests uniformity on by default, so that the two stages of
+\link{friends_test_ks} agree. \code{"continuity"} keeps the whole scale,
+\eqn{1 \ldots N}. \code{max.possible.rank} is not used under
+\code{"observed"}, and \code{best.step.rank} always comes back on the
+scale of the ranks given.}
 }
 \value{
 a list of four values: \cr
@@ -33,4 +46,8 @@ See \link{friends_test} documentation for details.
 \examples{
 example(row_int_ranks)
 step <- best_step_fit(TF.ranks[42, ], genes.no)
+whole.scale <- best_step_fit(
+    TF.ranks[42, ], genes.no,
+    uniform.null = "continuity"
+)
 }

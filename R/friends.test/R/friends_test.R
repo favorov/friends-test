@@ -9,12 +9,14 @@
 #' If it does, those c for which the t is relevant,
 #' are the t's friend. And, the t is the c's marker.
 #'
-#' Two ways of deciding whether a row really has friends are provided, and
-#' they ask different questions.  \code{mode = "ks"} (the default) runs
-#' [friends_test_ks], which tests whether the row's ranks are uniformly
-#' spread over the columns, wherever that spread happens to sit.
+#' Two ways of deciding whether a row really has friends are provided.
+#' \code{mode = "ks"} (the default) runs [friends_test_ks], which tests
+#' whether the row's ranks are uniformly spread over the columns.
 #' \code{mode = "bic"} runs [friends_test_bic], which compares a step model
-#' against a uniform one over the whole rank scale.  Both return the same
+#' against a uniform one.  Both ask their question over the range the row's own
+#' ranks occupy, wherever that range sits, so neither reads a flat but
+#' concentrated profile as evidence of friends; \code{uniform.null} puts
+#' either of them back on the whole rank scale.  Both return the same
 #' structure, so a pipeline can switch between them.
 #'
 #' Arguments other than the ones listed below are passed to the function
