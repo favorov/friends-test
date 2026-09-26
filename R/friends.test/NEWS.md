@@ -41,7 +41,7 @@
 ## friends.test 0.99.19
 
 - Parallel backend switched from mirai/purrr to BiocParallel (pass `BPPARAM` to both main functions; default is serial).
-- The step-model likelihood search is rewritten from O(n_rows) to O(n_cols) per marker using a convexity argument, giving ~N00× speedup on large matrices.
+- The step-model likelihood search is rewritten from O(n_rows) to O(n_cols) per marker using a convexity argument, giving ~200× speedup on large matrices.
 - `step.fit.ln.likelihoods` return format changed: now returns a compact list instead of a full likelihood profile.
 - Function wrap `step.fit.ln.likelihoods.fullmesh` returns the previous full-profile return format.
 
