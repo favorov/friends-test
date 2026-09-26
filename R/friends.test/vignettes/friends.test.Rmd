@@ -147,8 +147,8 @@ similar to the expected, Gene1 has rank of 3 in the TF1 column.
 The lower is the prior to have friends for a row (it is an obligatory parameter
 for `friends_test_bic`), the less marker-friend pairs we get.
 
-```{r reg bic .33 .25 1}
-friends_test_bic(regulation, prior.to.have.friends = .33, max.friends.n = 1)
+```{r reg bic .4 .25 1}
+friends_test_bic(regulation, prior.to.have.friends = .4, max.friends.n = 1)
 friends_test_bic(regulation, prior.to.have.friends = .25, max.friends.n = 1)
 ```
 
@@ -203,6 +203,10 @@ print(head(iris, n = 5))
 We use only numeric columns:
 
 ```{r iris bic}
+# iris has many tied measurements, and ranking resolves ties at random, so we
+# fix the generator state to keep the example reproducible; see
+# "Ranking and random numbers" below
+set.seed(10)
 friends_test_bic(iris[1:4], prior.to.have.friends = .001)
 ```
 
