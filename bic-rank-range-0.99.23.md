@@ -12,17 +12,29 @@ run from `R/` directly, since the package is not installed on this machine.
 
 ## Status
 
-Implemented in the working tree, not committed: 3.2 to 3.5, the `>` tie rule of
-4.1, the roxygen of section 6 for the two functions and the contrast paragraph
-of `R/friends_test.R`, and the tests of section 7 in
-`tests/testthat/test-bic-rank-range.R`. `R CMD check --ignore-vignettes` is OK,
-221 expectations pass.
+Done, and released as 0.99.23.
 
-Also implemented: the `k1` tie rule of 4.2.1, breaking towards the fewest
-friends, and `best_step_fit()` following the same convention, section 3.2.1.
+* Sections 3.2 to 3.5 and 3.2.1: `uniform.null` on `friends_test_bic()`,
+  `best_step_fit_bic()` and `best_step_fit()`, forwarded by both entry points,
+  defaulting to `"observed"`.
+* Both tie rules: 4.1, an exact draw between the step model and the uniform one
+  going to the uniform one, and 4.2.1, a draw between friend counts going to the
+  smallest.
+* Section 6: the roxygen of the three functions, the contrast paragraph of
+  `R/friends_test.R`, `NEWS.md`, and the vignette. Its toy prior ladder and its
+  iris example had both stopped showing what their text said; the ladder's
+  middle prior moved from .33 to .4, and the iris chunk now fixes the generator
+  state, because that data set is heavily tied and the fitted scale of a row
+  depends on how the ties fall.
+* Section 7, in `tests/testthat/test-rank-range.R`.
 
-Still open: the version bump and `NEWS.md`; the vignette prose and its re-knit
-(no pandoc on this machine).
+`R CMD check` is OK with the vignette rebuilt, and 234 expectations pass. The
+vignette's gene set enrichment came out richer than before it: 7 empty `fgsea`
+tables against 12.
+
+Nothing in this specification is open. The question at the end of section 8, of
+whether fitting both endpoints is legitimate in a likelihood comparison at all,
+is for the authors and stands.
 
 ---
 
