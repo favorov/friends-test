@@ -2,90 +2,33 @@
 
 ## friends.test 0.99.23
 
-- `friends_test_bic()`, `best_step_fit_bic()` and `best_step_fit()` gain
-  `uniform.null`. The default, `"observed"`, takes the smallest and the largest
-  possible rank from the row itself, which is the scale the Kolmogorov-Smirnov
-  branch already tested on; `"continuity"` keeps the whole `1..N` scale, which
-  is what these functions did before. Results change: on the example matrix at
-  `prior.to.have.friends = 1e-4` the Bayesian branch reports 729 markers rather
-  than 2053.
-- `friends_test_ks()` passes its own `uniform.null` on to the step fit, so both
-  of its stages measure a row on one scale. Its marker set is unchanged, a
-  quarter of its friend sets are not. `"randomized"` has no counterpart in the
-  discrete step model and reaches the fit as `"continuity"`.
-- An exact draw between the step model and the uniform one now goes to the
-  uniform model, and a draw between friend counts to the smallest. Both are
-  common on a fitted scale, and the second one was what made friend sets grow.
+- `friends_test_bic`, `best_step_fit_bic` and `best_step_fit` take `uniform.null`, as the KS branch does: `"observed"`, the new default, takes the smallest and the largest possible rank from the row; `"continuity"` keeps the whole rank scale and is the previous behaviour. Marker sets change.
+- `friends_test_ks` passes `uniform.null` on to the step fit, so both of its stages work on one scale. Its markers are unchanged, its friend sets can differ.
+- An exact tie between the step model and the uniform one now goes to the uniform model, and a tie between friend counts to the smallest.
 
 ## friends.test 0.99.22
 
-- `friends_test()` is now the entry point for both branches: its `mode` argument
-  selects `"ks"` (the default) or `"bic"` and passes the remaining arguments on.
-  Passing an argument that belongs to the other mode is an error.
-- The Kolmogorov-Smirnov branch, previously `friends_test()` itself, is now
-  `friends_test_ks()`. `friends_test_bic()` is unchanged. All three are exported.
-- The row-wise stages of both branches now go through one internal driver
-  instead of a serial and a parallel copy each, and the two step fitters share
-  their search and their assembly. No result changes.
-- Worker library paths are only set when they differ from the ones already in
-  effect. Setting them costs about 34 microseconds against 0.2 for reading
-  them, and it was being done once per row: a pass over the 15176 by 8 example
-  matrix drops from 2.08 to 1.58 seconds.
-- `best_step_fit_bic()` no longer raises an error when every rank in a row is
-  tied and `prior.to.have.friends` is 1; it reports no friends, as it already
-  did for every other prior.
-- `cli.progress_show_after`, which `.progress = TRUE` sets, is now restored on
-  exit instead of being left changed in the user's session.
-- `max.friends.n` no longer accepts the abbreviations `"al"` and `"a"`, nor
-  `NA`. `"all"` and `NULL` still mean every column, and a number still means a
-  number.
-- The startup message is only printed in an interactive session. The reviewer
-  pointed out that a workflow attaching dozens of packages does not want a
-  line from each of them; scripts, vignettes and build machines now see
-  nothing.
-- `unif_ks_test()` computed its test twice, once on ranks mapped to the unit
-  interval and once on the raw scale, and threw the first result away. The two
-  are the same test, so the duplicate is gone. It also jittered the ranks a
-  second time while keeping the first jitter's maximum as the upper end of the
-  support, which could put a point outside the declared support.
-- `uniform.max` is replaced by `uniform.null`, which names the whole
-  convention rather than one endpoint. `"observed"`, the default, keeps the
-  present behaviour: the support is the row's own range, so the test is
-  invariant to where the profile sits and a row spread evenly over part of the
-  scale still counts as uniform. `"continuity"` and `"randomized"` fix the
-  support at the whole rank scale instead; they are calibrated, but treat
-  concentration as evidence. They need `max.possible.rank`.
-- The `"c"` setting of `uniform.max` is withdrawn rather than renamed. It took
-  the lower end of the support from the data and the upper end from the rank
-  scale, which is not a null hypothesis: measured against uniform rows it
-  rejected at 0.066 instead of 0.05 with eight columns, and at 0.084 with
-  three.
-- The documentation of `.progress` said it enabled the text progress bar of the
-  chosen `BPPARAM`. It does not: that bar has been off since 0.99.20 and the
-  package draws its own. What you actually see now says so, including that
-  neither kind renders when the output is redirected rather than shown in a
-  terminal.
-- The validity messages of `step_fit_ln_likelihoods()` name the argument they
-  are about. The first one used to refer to a `Rows_no` parameter, which the
-  function has never had, and two different problems shared the message
-  "Ranks are to be integer!".
-- The vignette is formatted with `BiocStyle`, has an Installation section, and
-  uses subsections where it used `\paragraph{}`, which never rendered.
-- `devtools` and `markdown` are dropped from `Suggests`. The vignette was the
-  only thing that named them, and it no longer does.
-- The example data is documented: what each of its three elements is, how
-  `data-raw/cogaps_example.r` builds it, and the terms its sources are under.
-- `Authors@R` gives each co-author one role rather than both `aut` and `ctb`,
-  and names the funder of the work.
+- `friends_test()` is the entry point for both branches; its `mode` parameter selects `"ks"` (the default) or `"bic"` and passes the rest on.
+- The KS branch, previously `friends_test()` itself, is now `friends_test_ks()`.
+- `uniform.max` is replaced by `uniform.null`, which names the whole support convention: `"observed"` (the default, the previous behaviour), `"continuity"` and `"randomized"`.
+- The `"c"` setting of `uniform.max` is withdrawn: it took the lower end of the support from the data and the upper end from the rank scale, and was anti-conservative.
+- `unif_ks_test()` no longer performs the same test twice.
+- `max.friends.n` no longer accepts the abbreviations `"al"` and `"a"`, nor `NA`.
+- The startup message is printed only in an interactive session.
+- `cli.progress_show_after`, which `.progress = TRUE` sets, is restored on exit.
+- `best_step_fit_bic()` no longer fails on a fully tied row when `prior.to.have.friends` is 1.
+- Both branches share one internal row-wise driver, and the two step fitters share their search and their assembly; results are unchanged.
+- Worker library paths are set only when they differ from the ones in effect, which speeds up a parallel run noticeably.
+- The validity messages of `step_fit_ln_likelihoods()` name the argument they are about.
+- The documentation of `.progress` no longer claims that it enables the text progress bar of `BPPARAM`.
+- The vignette is formatted with `BiocStyle`, has an Installation section, and uses subsections where it used `\paragraph{}`.
+- The example data is documented, with its sources and the terms they are under.
+- `Authors@R` gives each co-author one role, and names the funder.
+- `devtools` and `markdown` are dropped from `Suggests`.
 
 ## friends.test 0.99.21
 
-- Exported function names no longer contain dots, as the dot is reserved for S3
-  dispatch: `friends.test()`, `friends.test.bic()`, `row.int.ranks()`,
-  `unif.ks.test()`, `best.step.fit()`, `best.step.fit.bic()` and
-  `step.fit.ln.likelihoods()` became `friends_test()`, `friends_test_bic()`,
-  `row_int_ranks()`, `unif_ks_test()`, `best_step_fit()`, `best_step_fit_bic()`
-  and `step_fit_ln_likelihoods()`. Argument names are unchanged.
+- Dots are removed from exported function names, as the dot is reserved for S3 dispatch: `friends.test`, `friends.test.bic`, `row.int.ranks`, `unif.ks.test`, `best.step.fit`, `best.step.fit.bic` and `step.fit.ln.likelihoods` became `friends_test`, `friends_test_bic`, `row_int_ranks`, `unif_ks_test`, `best_step_fit`, `best_step_fit_bic` and `step_fit_ln_likelihoods`. Argument names are unchanged.
 - `step.fit.ln.likelihoods.fullmesh()` is no longer exported.
 - `is()` is imported from `methods`.
 - Source file names follow the function names, with the `.R` extension.
