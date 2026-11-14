@@ -31,6 +31,20 @@
 #' \code{"continuity"} and \code{"randomized"} need to know \eqn{N}, which is
 #' \code{max.possible.rank}.
 #'
+#' The ranks are integers, so a row almost always holds ties.  Nothing is
+#' displaced to hide them: \code{\link[stats]{ks.test}} computes the statistic
+#' correctly on a tied sample, and only the null distribution is affected --
+#' it drops to the asymptotic Kolmogorov law, which this function asks for
+#' explicitly.  A tie-free row keeps the exact law, which is calibrated for
+#' it.  One consequence is that \code{"observed"} and \code{"continuity"} draw
+#' no random numbers and repeat exactly; only \code{"randomized"} varies
+#' between runs.
+#'
+#' Under \code{"observed"}, a row holding a single rank leaves the fitted
+#' support no width at all.  There is no structural break to find there, so
+#' the p-value is 1.  The fixed-support conventions read such a row as the
+#' evidence it is.
+#'
 #' See [friends_test] documentation for details.
 #'
 #' @param ranks vector of ranks of a row in different columns, \eqn{1 .. N})
@@ -73,9 +87,7 @@ unif_ks_test <- function(
         # uniform on the integers 1..N, so no approximation is involved
         values <- ranks + runif(length(ranks), -0.5, 0.5)
     } else {
-        # a displacement far too small to move anything, there only to break
-        # ties so that ks.test is not handed a tied sample
-        values <- jitter(ranks, amount = 0.1E-6)
+        values <- as.double(ranks)
     }
 
     support <- if (uniform.null == "observed") {
@@ -84,10 +96,30 @@ unif_ks_test <- function(
         c(0.5, max.possible.rank + 0.5)
     }
 
-    ks.test(
-        values, "punif",
-        min = support[1L], max = support[2L],
-        simulate.p.value = simulate.p.value,
-        B = B
-    )$p.value
+    # a row holding a single rank leaves the fitted support no width, so the
+    # null collapses onto that one point and the row matches it exactly.
+    # ks.test cannot say that: its formula assumes a continuous null and
+    # reports D = 1. The fixed-support conventions need no such care.
+    if (uniform.null == "observed" && support[1L] == support[2L]) {
+        return(1)
+    }
+
+    ties <- anyDuplicated(values) > 0L
+
+    ks <- function() {
+        ks.test(
+            values, "punif",
+            min = support[1L], max = support[2L],
+            exact = if (ties) FALSE else NULL,
+            simulate.p.value = simulate.p.value,
+            B = B
+        )$p.value
+    }
+
+    # A tied sample has no continuous null, so ks.test drops to the asymptotic
+    # Kolmogorov law and warns. Ask for that law explicitly, which keeps the
+    # choice visible and independent of ks.test's own default, and muffle the
+    # warning just answered -- its text is translated, so matching it is not
+    # reliable.
+    if (ties) suppressWarnings(ks()) else ks()
 }

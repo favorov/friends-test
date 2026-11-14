@@ -1,15 +1,33 @@
-test_that("unif_ks_test returns large p-value for uniform data", {
-    set.seed(1)
-    x <- rep(1, 10)
-    res <- unif_ks_test(x)
-    expect_true(res > 0.05)
+test_that("a row holding a single rank is not a marker", {
+    # the fitted support has no width, so there is no break to find
+    expect_identical(unif_ks_test(rep(1L, 10)), 1)
+
+    # against a fixed support the same row is strong evidence
+    expect_lt(
+        unif_ks_test(rep(1L, 10), "continuity", max.possible.rank = 100),
+        0.05
+    )
 })
 
 test_that("unif_ks_test returns small p-value for non-uniform data", {
-    set.seed(1)
-    x <- c(1:9, 100)
-    res <- unif_ks_test(x)
-    expect_true(res < 0.05)
+    expect_lt(unif_ks_test(c(1:9, 100)), 0.05)
+})
+
+
+test_that("ties are kept, and move the test onto the asymptotic law", {
+    tied <- c(3L, 17L, 17L, 17L, 42L, 55L, 55L, 61L, 90L)
+    free <- c(3L, 17L, 29L, 42L, 55L, 61L, 90L)
+
+    # ks.test warns about the ties; the warning is answered here, not passed on
+    expect_no_warning(p.tied <- unif_ks_test(tied))
+    expect_equal(p.tied, suppressWarnings(stats::ks.test(
+        as.double(tied), "punif", min = 3, max = 90, exact = FALSE
+    )$p.value))
+
+    # a tie-free row keeps the exact law, which is calibrated for it
+    expect_equal(unif_ks_test(free), stats::ks.test(
+        as.double(free), "punif", min = 3, max = 90
+    )$p.value)
 })
 
 
@@ -50,15 +68,17 @@ test_that("only the randomized convention varies between runs", {
     set.seed(2)
     ranks <- sample.int(500, 10, replace = TRUE)
 
-    # the tie-breaking jitter is far too small to move a decision
-    spread <- diff(range(replicate(50, unif_ks_test(ranks))))
-    expect_lt(spread, 1e-6)
+    # nothing is displaced in these two, so they repeat exactly
+    expect_length(unique(replicate(20, unif_ks_test(ranks))), 1L)
+    expect_length(unique(replicate(
+        20, unif_ks_test(ranks, "continuity", max.possible.rank = 500)
+    )), 1L)
 
     # displacing by half a unit is a real randomisation
-    spread <- diff(range(
-        replicate(50, unif_ks_test(
-            ranks, "randomized", max.possible.rank = 500
-        ))
-    ))
-    expect_gt(spread, 1e-6)
+    expect_gt(
+        diff(range(replicate(
+            50, unif_ks_test(ranks, "randomized", max.possible.rank = 500)
+        ))),
+        1e-3
+    )
 })

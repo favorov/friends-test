@@ -190,12 +190,15 @@ test_that("best_step_fit follows the scale it is given", {
 
 
 test_that("friends_test_ks locates the step on the scale it tested on", {
+    # twelve columns, not eight: a tied row is tested against the asymptotic
+    # Kolmogorov law, and with eight columns the smallest p-value no longer
+    # survives the BH adjustment over twenty rows
     set.seed(9)
-    A <- matrix(rnorm(20 * 8), nrow = 20, ncol = 8)
-    A[1, 1:3] <- A[1, 1:3] + 12
-    A[2, 4:5] <- A[2, 4:5] + 12
+    A <- matrix(rnorm(20 * 12), nrow = 20, ncol = 12)
+    A[1, 1:4] <- A[1, 1:4] + 12
+    A[2, 5:7] <- A[2, 5:7] + 12
     rownames(A) <- paste0("row", seq_len(20))
-    colnames(A) <- paste0("col", seq_len(8))
+    colnames(A) <- paste0("col", seq_len(12))
     # rnorm leaves no ties, so the ranks do not depend on the tie-breaking RNG
     ranks <- row_int_ranks(A)
 

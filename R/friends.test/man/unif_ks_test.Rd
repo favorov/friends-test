@@ -64,6 +64,20 @@ give different p-values.}
 \code{"continuity"} and \code{"randomized"} need to know \eqn{N}, which is
 \code{max.possible.rank}.
 
+The ranks are integers, so a row almost always holds ties.  Nothing is
+displaced to hide them: \code{\link[stats]{ks.test}} computes the statistic
+correctly on a tied sample, and only the null distribution is affected --
+it drops to the asymptotic Kolmogorov law, which this function asks for
+explicitly.  A tie-free row keeps the exact law, which is calibrated for
+it.  One consequence is that \code{"observed"} and \code{"continuity"} draw
+no random numbers and repeat exactly; only \code{"randomized"} varies
+between runs.
+
+Under \code{"observed"}, a row holding a single rank leaves the fitted
+support no width at all.  There is no structural break to find there, so
+the p-value is 1.  The fixed-support conventions read such a row as the
+evidence it is.
+
 See \link{friends_test} documentation for details.
 }
 \examples{
