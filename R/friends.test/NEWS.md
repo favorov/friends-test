@@ -1,5 +1,11 @@
 # Friends.test version history
 
+## friends.test 0.99.24
+
+- `unif_ks_test()` keeps the ties between equal ranks instead of displacing them, and tests a tied row against the asymptotic Kolmogorov law. KS p-values change slightly; marker sets are unchanged on data with many distinct ranks per row.
+- Under `"observed"`, a row holding a single rank now gets a p-value of 1 instead of a random one.
+- `simulate.p.value` and `B` are withdrawn from `unif_ks_test()` and `friends_test_ks()`: the one-sample `ks.test()` does not use them.
+
 ## friends.test 0.99.23
 
 - `friends_test_bic`, `best_step_fit_bic` and `best_step_fit` take `uniform.null`, as the KS branch does: `"observed"`, the new default, takes the smallest and the largest possible rank from the row; `"continuity"` keeps the whole rank scale and is the previous behaviour. Marker sets change.

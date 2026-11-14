@@ -33,10 +33,6 @@
 #' stage, where [best_step_fit] locates the step, so that both stages measure
 #' the row on one scale; the step model is discrete, so \code{"randomized"}
 #' reaches it as \code{"continuity"}, which names the same support.
-#' @param simulate.p.value K-S by Monte-Carlo if \code{TRUE};
-#' default is \code{FALSE}, see [stats::ks.test()].
-#' @param B number of or replicates if \code{simulate.p.value=TRUE}
-#' default is 2000, see [stats::ks.test()].
 #' @param .progress if \code{TRUE}, report what the call is doing. What you see
 #' depends on the backend: a serial one draws a \code{cli} progress bar with a
 #' percentage and the elapsed time, a parallel one only names the stage it has
@@ -86,8 +82,6 @@ friends_test_ks <- function(
     p.adjust.method = "BH",
     max.friends.n = "all",
     uniform.null = c("observed", "continuity", "randomized"),
-    simulate.p.value = FALSE,
-    B = 2000,
     .progress = FALSE,
     BPPARAM = NULL
 ) {
@@ -113,25 +107,18 @@ friends_test_ks <- function(
     # calculate the p-values for null hypothesis for all the rank rows
     adj_nunif_pval <- unlist(
         .ft_map_rows(
-            function(
-                row, i, uniform.null, max.possible.rank,
-                simulate.p.value, B
-            ) {
+            function(row, i, uniform.null, max.possible.rank) {
                 friends.test::unif_ks_test(
                     row,
                     uniform.null = uniform.null,
-                    max.possible.rank = max.possible.rank,
-                    simulate.p.value = simulate.p.value,
-                    B = B
+                    max.possible.rank = max.possible.rank
                 )
             },
             rows = all_rank_rows,
             idx = seq_along(all_rank_rows),
             MoreArgs = list(
                 uniform.null = uniform.null,
-                max.possible.rank = nrow(A),
-                simulate.p.value = simulate.p.value,
-                B = B
+                max.possible.rank = nrow(A)
             ),
             BPPARAM = BPPARAM,
             .progress = .progress,

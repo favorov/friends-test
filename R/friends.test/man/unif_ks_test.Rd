@@ -7,9 +7,7 @@
 unif_ks_test(
   ranks,
   uniform.null = c("observed", "continuity", "randomized"),
-  max.possible.rank = NA,
-  simulate.p.value = FALSE,
-  B = 2000
+  max.possible.rank = NA
 )
 }
 \arguments{
@@ -22,12 +20,6 @@ described above.}
 \item{max.possible.rank}{the largest rank a row can take, \eqn{N}, that is
 the number of rows of the matrix the ranks came from. Required unless
 \code{uniform.null} is \code{"observed"}, which does not use it.}
-
-\item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
-default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}}
-
-\item{B}{number of or replicates if \code{simulate.p.value=TRUE}
-default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}}
 }
 \value{
 p-value for the KS test comparing the ranks distribution with uniform

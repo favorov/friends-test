@@ -10,8 +10,6 @@ friends_test_ks(
   p.adjust.method = "BH",
   max.friends.n = "all",
   uniform.null = c("observed", "continuity", "randomized"),
-  simulate.p.value = FALSE,
-  B = 2000,
   .progress = FALSE,
   BPPARAM = NULL
 )
@@ -40,12 +38,6 @@ but count concentration as evidence. The same choice reaches the second
 stage, where \link{best_step_fit} locates the step, so that both stages measure
 the row on one scale; the step model is discrete, so \code{"randomized"}
 reaches it as \code{"continuity"}, which names the same support.}
-
-\item{simulate.p.value}{K-S by Monte-Carlo if \code{TRUE};
-default is \code{FALSE}, see \code{\link[stats:ks.test]{stats::ks.test()}}.}
-
-\item{B}{number of or replicates if \code{simulate.p.value=TRUE}
-default is 2000, see \code{\link[stats:ks.test]{stats::ks.test()}}.}
 
 \item{.progress}{if \code{TRUE}, report what the call is doing. What you see
 depends on the backend: a serial one draws a \code{cli} progress bar with a

@@ -54,10 +54,6 @@
 #' @param max.possible.rank the largest rank a row can take, \eqn{N}, that is
 #' the number of rows of the matrix the ranks came from. Required unless
 #' \code{uniform.null} is \code{"observed"}, which does not use it.
-#' @param simulate.p.value K-S by Monte-Carlo if \code{TRUE};
-#' default is \code{FALSE}, see [stats::ks.test()]
-#' @param B number of or replicates if \code{simulate.p.value=TRUE}
-#' default is 2000, see [stats::ks.test()]
 #' @return p-value for the KS test comparing the ranks distribution with uniform
 #' @importFrom stats ks.test runif
 #' @examples
@@ -68,9 +64,7 @@
 unif_ks_test <- function(
     ranks,
     uniform.null = c("observed", "continuity", "randomized"),
-    max.possible.rank = NA,
-    simulate.p.value = FALSE,
-    B = 2000
+    max.possible.rank = NA
 ) {
     uniform.null <- match.arg(uniform.null)
 
@@ -110,9 +104,7 @@ unif_ks_test <- function(
         ks.test(
             values, "punif",
             min = support[1L], max = support[2L],
-            exact = if (ties) FALSE else NULL,
-            simulate.p.value = simulate.p.value,
-            B = B
+            exact = if (ties) FALSE else NULL
         )$p.value
     }
 
