@@ -33,6 +33,9 @@
 #' stage, where [best_step_fit] locates the step, so that both stages measure
 #' the row on one scale; the step model is discrete, so \code{"randomized"}
 #' reaches it as \code{"continuity"}, which names the same support.
+#' @param simulate.p.value deprecated and ignored: the one-sample
+#' \code{\link[stats]{ks.test}} does not use it.
+#' @param B deprecated and ignored, see \code{simulate.p.value}.
 #' @param .progress if \code{TRUE}, report what the call is doing. What you see
 #' depends on the backend: a serial one draws a \code{cli} progress bar with a
 #' percentage and the elapsed time, a parallel one only names the stage it has
@@ -82,9 +85,21 @@ friends_test_ks <- function(
     p.adjust.method = "BH",
     max.friends.n = "all",
     uniform.null = c("observed", "continuity", "randomized"),
+    simulate.p.value = FALSE,
+    B = 2000,
     .progress = FALSE,
     BPPARAM = NULL
 ) {
+    # the one-sample ks.test() never read these two, so they are ignored here
+    # as well; they stay in the signature for one cycle so that a call passing
+    # them warns instead of failing
+    if (!missing(simulate.p.value) || !missing(B)) {
+        .Deprecated(msg = paste(
+            "'simulate.p.value' and 'B' are deprecated and ignored:",
+            "the one-sample ks.test() does not use them."
+        ))
+    }
+
     if (.progress) {
         # cli needs the bar to appear at once; put the user's setting back
         # whichever way this call ends

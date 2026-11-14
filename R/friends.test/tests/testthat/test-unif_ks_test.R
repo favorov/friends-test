@@ -82,3 +82,24 @@ test_that("only the randomized convention varies between runs", {
         1e-3
     )
 })
+
+test_that("simulate.p.value and B are deprecated and ignored", {
+    ranks <- c(3L, 17L, 29L, 42L, 55L, 61L, 90L)
+
+    expect_warning(
+        p <- unif_ks_test(ranks, simulate.p.value = TRUE),
+        class = "deprecatedWarning"
+    )
+    expect_identical(p, unif_ks_test(ranks))
+
+    expect_warning(
+        unif_ks_test(ranks, B = 10),
+        class = "deprecatedWarning"
+    )
+
+    # passing the default value is still passing it
+    expect_warning(
+        unif_ks_test(ranks, simulate.p.value = FALSE),
+        class = "deprecatedWarning"
+    )
+})
