@@ -2,7 +2,7 @@
 
 ## friends.test 0.99.24
 
-- `unif_ks_test()` keeps the ties between equal ranks instead of displacing them, and tests a tied row against the asymptotic Kolmogorov law. KS p-values change slightly; marker sets are unchanged on data with many distinct ranks per row.
+- `unif_ks_test()` now keeps the ties between equal in-column ranks (not the matrixvalues, it is other step) instead of jittering them, and tests a tied row against the asymptotic Kolmogorov law. KS p-values change slightly; marker sets are unchanged on data with many distinct ranks per row.
 - Under `"observed"`, a row holding a single rank now gets a p-value of 1 instead of a random one.
 - `simulate.p.value` and `B` are deprecated in `unif_ks_test()` and `friends_test_ks()`: the one-sample `ks.test()` does not use them, so they are ignored and a call that passes them warns.
 
