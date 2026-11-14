@@ -4,6 +4,9 @@
 #
 #   ./utils/lay_version_on_bioc.sh <commit-ish> [--dry-run]
 #
+# --dry-run may come before or after the commit-ish. It reports what would be
+# laid down and touches nothing.
+#
 # The commit-ish is resolved in this repository -- a tag such as 0.99.22 is the
 # usual thing to pass. Everything the copy tracks is replaced by what that tree
 # holds; the files the copy keeps for itself are left alone.
@@ -23,18 +26,36 @@
 
 set -euo pipefail
 
-if [ "$#" -lt 1 ]; then
+usage() {
     echo "usage: $(basename "$0") <commit-ish> [--dry-run]" >&2
-    exit 2
-fi
+}
 
-WHAT=$1
-shift
 DRY_RUN=0
-if [ "${1:-}" = "--dry-run" ]; then
-    DRY_RUN=1
-elif [ -n "${1:-}" ]; then
-    echo "unknown argument: $1" >&2
+WHAT=""
+for arg in "$@"; do
+    case "$arg" in
+        --dry-run)
+            DRY_RUN=1
+            ;;
+        -*)
+            echo "unknown option: $arg" >&2
+            usage
+            exit 2
+            ;;
+        *)
+            if [ -n "$WHAT" ]; then
+                echo "two commit-ishes given: '$WHAT' and '$arg'" >&2
+                usage
+                exit 2
+            fi
+            WHAT=$arg
+            ;;
+    esac
+done
+
+if [ -z "$WHAT" ]; then
+    echo "no commit-ish given" >&2
+    usage
     exit 2
 fi
 
@@ -56,8 +77,12 @@ die() { echo "error: $*" >&2; exit 2; }
 git -C "$DEV" rev-parse --git-dir >/dev/null 2>&1 || die "$DEV is not a git repository"
 git -C "$BIOC" rev-parse --git-dir >/dev/null 2>&1 || die "$BIOC is not a git repository"
 
-git -C "$DEV" rev-parse --verify --quiet "$WHAT^{commit}" >/dev/null ||
-    die "'$WHAT' does not name a commit in $DEV"
+if ! git -C "$DEV" rev-parse --verify --quiet "$WHAT^{commit}" >/dev/null; then
+    echo "error: '$WHAT' does not name a commit in $DEV" >&2
+    RECENT=$(git -C "$DEV" tag --sort=-v:refname 2>/dev/null | head -5 | tr '\n' ' ' || true)
+    [ -n "$RECENT" ] && echo "       most recent tags: $RECENT" >&2
+    exit 2
+fi
 
 if [ -n "$(git -C "$BIOC" status --porcelain --untracked-files=no)" ]; then
     die "$BIOC has uncommitted changes; commit or stash them first"
