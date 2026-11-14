@@ -416,12 +416,11 @@ step.fit.ln.likelihoods.fullmesh  -> .step_fit_profile   (возвращает �
 
 ## Версия
 
-В `DESCRIPTION` **0.99.23**; в копии Bioconductor (`~/friends.test`) тот же
-0.99.23, коммит `8c6a285`, дерево чистое.
+В `DESCRIPTION` **0.99.24** — узлы в ветке ks, постоянная строка под
+`"observed"`, снятые `simulate.p.value` и `B`; то же в секции `NEWS.md`.
 
-В `NEWS.md` открыта секция **0.99.24** — узлы в ветке ks, постоянная строка под
-`"observed"`, снятые `simulate.p.value` и `B`. `DESCRIPTION` под неё ещё не
-поднят.
+В копии Bioconductor (`~/friends.test`) ещё 0.99.23, коммит `8c6a285`, дерево
+чистое: 0.99.24 туда не переносили.
 
 ## Возможные планы (после принятия в Bioconductor)
 
