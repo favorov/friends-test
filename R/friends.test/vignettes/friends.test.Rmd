@@ -182,8 +182,9 @@ sensitive on small dataset, so we use unpractical threshold for the p-value to
 see the result.
 
 ```{r reg ks .5 noadj 1}
-friends_test_ks(regulation, threshold = .5, p.adjust.method = "no",
-                max.friends.n = 1)
+friends_test_ks(
+    regulation, threshold = .5, p.adjust.method = "no", max.friends.n = 1
+)
 ```
 
 And, as usual, if we relax the `max.friends.no` restriction, we will see more

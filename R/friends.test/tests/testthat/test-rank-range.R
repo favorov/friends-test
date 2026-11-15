@@ -1,6 +1,7 @@
-# The rank scale the step models are fitted on, in both branches.  "continuity" is the
-# whole 1..N scale, which is what the branch did before 0.99.23; "observed"
-# takes the ends from the row, as the KS branch does by default.
+# The rank scale the step models are fitted on, in both branches.
+# "continuity" is the whole 1..N scale, which is what the branch did before
+# 0.99.23; "observed" takes the ends from the row, as the KS branch does by
+# default.
 
 
 test_that("continuity reproduces the fits of 0.99.22", {
@@ -56,7 +57,9 @@ test_that("observed is continuity on the rebased row", {
         )
         expect_identical(observed$columns.on.left, rebased$columns.on.left)
         expect_identical(observed$columns.on.right, rebased$columns.on.right)
-        expect_identical(observed$population.on.left, rebased$population.on.left)
+        expect_identical(
+            observed$population.on.left, rebased$population.on.left
+        )
         expect_identical(
             observed$best.step.rank,
             rebased$best.step.rank + lowest - 1L
@@ -215,7 +218,9 @@ test_that("friends_test_ks locates the step on the scale it tested on", {
                 uniform.null = step.null
             )
             expect_identical(
-                unname(vapply(got[[nm]], function(t) t[["friend"]], integer(1))),
+                unname(
+                    vapply(got[[nm]], function(t) t[["friend"]], integer(1))
+                ),
                 fit$columns.on.left,
                 info = paste(null, nm)
             )

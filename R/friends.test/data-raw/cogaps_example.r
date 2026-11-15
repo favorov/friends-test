@@ -1,7 +1,7 @@
 library(usethis)
 library(CoGAPS)
-library('fgsea')
-library('msigdbr')
+library("fgsea")
+library("msigdbr")
 
 options(timeout = 3000)
 friends.test.cogaps.example <- list()

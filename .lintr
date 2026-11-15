@@ -1,7 +1,7 @@
 linters: linters_with_defaults(
   indentation_linter(
     indent = 4L,
-    hanging_indent_style = c("tidy", "always", "never"),
+    hanging_indent_style = "never",
     assignment_as_infix = TRUE
     ),
   object_length_linter = NULL,
