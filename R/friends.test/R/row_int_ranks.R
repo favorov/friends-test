@@ -36,7 +36,17 @@ row_int_ranks <- function(
     distance_like = FALSE,
     neglect_diagonal = FALSE
 ) {
+    if (is.null(A)) {
+        stop(
+            "The friends.test needs a non-null A matrix."
+        )
+    }
     dims <- dim(A)
+    if (length(dims) != 2) {
+        stop(
+            "The friends.test needs a 2D A matrix."
+        )
+    }
     if (min(dims) < 2) {
         stop(
             "The friends.test requires both dimensions of the A matrix ",

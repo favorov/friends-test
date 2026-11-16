@@ -64,14 +64,14 @@ test_that(paste0(
 ), {
     set.seed(42)
     cases <- list(
-        list(ranks = c(97, 1, 98, 99, 100), max.possible.rank = 100,  shape = "tall"),
-        list(ranks = c(3, 1, 5, 2, 4),      max.possible.rank = 5,    shape = "square"),
-        list(ranks = c(2, 1, 3, 3, 2),      max.possible.rank = 3,    shape = "wide")
+        list(ranks = c(97, 1, 98, 99, 100), n = 100, shape = "tall"),
+        list(ranks = c(3, 1, 5, 2, 4),      n = 5,   shape = "square"),
+        list(ranks = c(2, 1, 3, 3, 2),      n = 3,   shape = "wide")
     )
 
     for (case in cases) {
         ranks <- case$ranks
-        max.possible.rank <- case$max.possible.rank
+        max.possible.rank <- case$n
         shape <- case$shape
 
         fm  <- .step_fit_profile(ranks, max.possible.rank)

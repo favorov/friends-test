@@ -42,6 +42,13 @@ test_that("each branch checks its own parameter", {
 })
 
 
+test_that("row_int_ranks refuses something that is not a matrix", {
+    expect_error(row_int_ranks(NULL), "non-null")
+    expect_error(row_int_ranks(1:10), "2D")
+    expect_error(row_int_ranks(array(1:8, c(2, 2, 2))), "2D")
+})
+
+
 test_that("row_int_ranks needs both dimensions above one", {
     expect_error(row_int_ranks(matrix(1:3, nrow = 1)), "dimensions")
     expect_error(row_int_ranks(matrix(1:3, ncol = 1)), "dimensions")

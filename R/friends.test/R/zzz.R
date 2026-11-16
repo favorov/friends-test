@@ -8,9 +8,7 @@
     }
     version <- packageDescription("friends.test", fields = "Version")
     packageStartupMessage(
-        paste0(
-            "Welcome to friends.test, version ",
-            version, " Summer Almost Gone.\n "
-        )
+        "Welcome to friends.test, version ", version,
+        ", Icelandic Language Day."
     )
 }
