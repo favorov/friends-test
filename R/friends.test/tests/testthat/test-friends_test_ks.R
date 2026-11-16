@@ -158,7 +158,7 @@ test_that("passes non-diagonal diagonal parallel test with MulticoreParam", {
     expect_equivalent(friends, expected)
 })
 
-test_that("the deprecated arguments warn once per call, not once per row", {
+test_that("the ignored arguments warn once per call, not once per row", {
     set.seed(3)
     A <- matrix(rnorm(10 * 6), nrow = 10, ncol = 6)
     rownames(A) <- paste0("row", seq_len(10))
@@ -169,7 +169,7 @@ test_that("the deprecated arguments warn once per call, not once per row", {
         capture_warnings(friends_test_ks(A, simulate.p.value = TRUE, B = 10))
     )
     expect_length(w, 1L)
-    expect_match(w, "deprecated and ignored")
+    expect_match(w, "are ignored")
 
     # the result is the one the call would have given without them
     set.seed(4)

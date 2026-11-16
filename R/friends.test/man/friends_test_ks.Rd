@@ -41,10 +41,10 @@ stage, where \link{best_step_fit} locates the step, so that both stages measure
 the row on one scale; the step model is discrete, so \code{"randomized"}
 reaches it as \code{"continuity"}, which names the same support.}
 
-\item{simulate.p.value}{deprecated and ignored: the one-sample
+\item{simulate.p.value}{ignored: the one-sample
 \code{\link[stats]{ks.test}} does not use it.}
 
-\item{B}{deprecated and ignored, see \code{simulate.p.value}.}
+\item{B}{ignored, see \code{simulate.p.value}.}
 
 \item{.progress}{if \code{TRUE}, report what the call is doing. What you see
 depends on the backend: a serial one draws a \code{cli} progress bar with a

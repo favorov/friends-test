@@ -23,10 +23,10 @@ described above.}
 the number of rows of the matrix the ranks came from. Required unless
 \code{uniform.null} is \code{"observed"}, which does not use it.}
 
-\item{simulate.p.value}{deprecated and ignored: the one-sample
+\item{simulate.p.value}{ignored: the one-sample
 \code{\link[stats]{ks.test}} does not use it.}
 
-\item{B}{deprecated and ignored, see \code{simulate.p.value}.}
+\item{B}{ignored, see \code{simulate.p.value}.}
 }
 \value{
 p-value for the KS test comparing the ranks distribution with uniform

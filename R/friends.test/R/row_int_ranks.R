@@ -38,8 +38,10 @@ row_int_ranks <- function(
 ) {
     dims <- dim(A)
     if (min(dims) < 2) {
-        stop("The friends.test requires both dimensions of the
-        A matrix to be more than 1")
+        stop(
+            "The friends.test requires both dimensions of the A matrix ",
+            "to be more than 1."
+        )
     }
     if (neglect_diagonal) {
         if (dims[1] == dims[2]) {
@@ -72,10 +74,6 @@ row_int_ranks <- function(
     # we applied ranking column-by-column (column-by-column)
     rownames(ranks.of.rows) <- rownames(A)
     colnames(ranks.of.rows) <- colnames(A)
-    # we reapply NA to the diagonal -- it will be used not to see
-    # at in the C++ u statistics calculation
-    # it also signals C++ that there are |C|-1 values rather that |C|
-    # there a no other source on NA's in ranks.of.rows
     if (neglect_diagonal) {
         diag(ranks.of.rows) <- NA
     }

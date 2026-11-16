@@ -54,9 +54,9 @@
 #' @param max.possible.rank the largest rank a row can take, \eqn{N}, that is
 #' the number of rows of the matrix the ranks came from. Required unless
 #' \code{uniform.null} is \code{"observed"}, which does not use it.
-#' @param simulate.p.value deprecated and ignored: the one-sample
+#' @param simulate.p.value ignored: the one-sample
 #' \code{\link[stats]{ks.test}} does not use it.
-#' @param B deprecated and ignored, see \code{simulate.p.value}.
+#' @param B ignored, see \code{simulate.p.value}.
 #' @return p-value for the KS test comparing the ranks distribution with uniform
 #' @importFrom stats ks.test runif
 #' @examples
@@ -72,13 +72,13 @@ unif_ks_test <- function(
     B = 2000
 ) {
     # the one-sample ks.test() never read these two, so they are ignored here
-    # as well; they stay in the signature for one cycle so that a call passing
-    # them warns instead of failing
+    # as well; they stay in the signature so that a call passing them warns
+    # instead of failing
     if (!missing(simulate.p.value) || !missing(B)) {
-        .Deprecated(msg = paste(
-            "'simulate.p.value' and 'B' are deprecated and ignored:",
+        warning(
+            "'simulate.p.value' and 'B' are ignored: ",
             "the one-sample ks.test() does not use them."
-        ))
+        )
     }
 
     uniform.null <- match.arg(uniform.null)
