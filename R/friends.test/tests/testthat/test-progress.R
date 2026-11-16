@@ -77,7 +77,7 @@ test_that("the backend's own text progress bar stays off", {
     # the package draws its own; BiocParallel's was disabled in 0.99.20
     param <- BiocParallel::SerialParam()
     BiocParallel::bpprogressbar(param) <- TRUE
-    expect_false(BiocParallel::bpprogressbar(ft_bpparam(param, TRUE)))
+    expect_false(BiocParallel::bpprogressbar(ft_bpparam(param)))
 })
 
 

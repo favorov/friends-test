@@ -4,8 +4,8 @@
 #' the log-likelihood-maximising split rank \eqn{\ell_1} by exploiting the
 #' convexity of the log-likelihood in \eqn{\ell_1} over the valid range
 #' \eqn{[\mathrm{sorted\_ranks}[k_1],\ \mathrm{sorted\_ranks}[k_1+1]-1]}.
-#' Total work is O(k) = O(ncol) per row, compared to O(max.possible.rank)
-#' compared to the O(max.possible.rank) full-mesh enumeration.
+#' Total work is O(k) = O(ncol) per row, against the O(max.possible.rank)
+#' of the full-mesh enumeration.
 #'
 #' The input ranks are integers in \eqn{1 \ldots \mathrm{max.possible.rank}}.
 #' A step model splits columns into a "friends" group (ranks

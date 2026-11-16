@@ -17,8 +17,8 @@
 #' @param A the original interaction matrix
 #' @param prior.to.have.friends The prior for a row to have friendly columns.
 #' @param max.friends.n The maximal number of friends for a marker.
-#' A value $n$ means that we filter out a row if it has more
-#' than $n$ friendly columns. 1 means we look only for unique (best) friends.
+#' A value \eqn{n} means that we filter out a row if it has more than
+#' \eqn{n} friendly columns. 1 means we look only for unique (best) friends.
 #' The string \code{"all"} (the default) and \code{NULL} both mean
 #' \code{ncol(A)}, that is, do not filter markers by this parameter.
 #' @param uniform.null how the smallest and the largest possible rank are
@@ -36,13 +36,13 @@
 #' @param BPPARAM a [BiocParallel::BiocParallelParam-class] instance that
 #' controls whether the row-wise work is run serially or in parallel. The
 #' default is \code{BiocParallel::SerialParam()}.
-#' @return \code{list}; each element represents a marker, *e.g.*,
+#' @return \code{list}; each element represents a marker, *i.e.*,
 #' a matrix row that has friend(s). Each element of the return list
 #' is also a list, one element per friend, and the 2-nd level element
 #' is an integer vector with three numbers, that are:
 #' the marker coordinate (\code{marker}),
 #' the friend coordinate (\code{friend}), and
-#' the the rank of the friend for the marker (\code{rank}).
+#' the rank of the friend for the marker (\code{rank}).
 #' So, it is list of lists of simple integer vectors, each
 #' vector represents a marker+friend pair,
 #' the inner lists enumerate friends,
@@ -62,7 +62,6 @@
 #' A
 #' friends_test_bic(A, prior.to.have.friends = 0.5)
 #' friends_test_bic(A, prior.to.have.friends = 0.001)
-#' @importFrom stats p.adjust
 #' @importFrom purrr array_branch compact pmap
 #' @importFrom cli cli_progress_step cli_progress_done cli_progress_along
 #' @importFrom methods is
@@ -98,10 +97,6 @@ friends_test_bic <- function(
     all_rank_rows <- prep$rows
     max.possible.rank <- nrow(A)
 
-    #run ut all in purrr style
-    #return: list of list of, trios
-    #i, j, r -- vectors:
-    #marker, friend, friend.rank
     col_names <- colnames(A)
     # return: list of lists of trios -- marker, friend, friend.rank
     ijrlist <- .ft_map_rows(

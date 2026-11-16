@@ -34,8 +34,8 @@
 #' \code{"bic"} for the Bayesian one, [friends_test_bic].
 #' @param ... further arguments for the function selected by \code{mode}.
 #' @param max.friends.n The maximal number of friends for a marker.
-#' A value $n$ means that we filter out a row if it has more
-#' than $n$ friendly columns. 1 means we look only for unique (best) friends.
+#' A value \eqn{n} means that we filter out a row if it has more than
+#' \eqn{n} friendly columns. 1 means we look only for unique (best) friends.
 #' The string \code{"all"} (the default) and \code{NULL} both mean
 #' \code{ncol(A)}, that is, do not filter markers by this parameter.
 #' @param .progress if \code{TRUE}, report what the call is doing. What you see
@@ -47,13 +47,13 @@
 #' @param BPPARAM a [BiocParallel::BiocParallelParam-class] instance that
 #' controls whether the row-wise work is run serially or in parallel. The
 #' default is \code{BiocParallel::SerialParam()}.
-#' @return \code{list}; each element represents a marker, *e.g.*,
+#' @return \code{list}; each element represents a marker, *i.e.*,
 #' a matrix row that has friend(s). Each element of the return list
 #' is also a list, one element per friend, and the 2-nd level element
 #' is an integer vector with three numbers, that are:
 #' the marker coordinate (\code{marker}),
 #' the friend coordinate (\code{friend}), and
-#' the the rank of the friend for the marker (\code{rank}).
+#' the rank of the friend for the marker (\code{rank}).
 #' So, it is list of lists of simple integer vectors, each
 #' vector represents a marker+friend pair,
 #' the inner lists enumerate friends,

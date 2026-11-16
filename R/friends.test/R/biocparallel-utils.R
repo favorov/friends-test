@@ -1,22 +1,3 @@
-#' Normalise a BiocParallel backend parameter
-#'
-#' Validates and configures a \code{BiocParallelParam} object for use in
-#' \code{friends_test_ks} and \code{friends_test_bic}.  When \code{BPPARAM} is
-#' \code{NULL} the function falls back to
-#' \code{\link[BiocParallel]{SerialParam}}
-#' so that callers always receive a usable backend.  The progress bar is
-#' enabled or disabled according to \code{.progress}.
-#'
-#' @param BPPARAM A \code{\link[BiocParallel]{BiocParallelParam}} object, or
-#'   \code{NULL} (default) to use \code{SerialParam}.
-#' @param .progress Logical scalar.  \code{TRUE} enables the backend's built-in
-#'   progress bar; \code{FALSE} (default) disables it.
-#'
-#' @return The (possibly newly created) \code{BiocParallelParam} object with the
-#'   progress bar set as requested.
-#'
-#' @keywords internal
-#' @noRd
 # cli progress bar format for a finished bar: show the elapsed time
 # instead of the "ETA: 0s" the default format ends with.
 ft_pb_format_done <- paste0(
@@ -25,7 +6,25 @@ ft_pb_format_done <- paste0(
 )
 
 
-ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
+#' Normalise a BiocParallel backend parameter
+#'
+#' Validates and configures a \code{BiocParallelParam} object for use in
+#' \code{friends_test_ks} and \code{friends_test_bic}.  When \code{BPPARAM} is
+#' \code{NULL} the function falls back to
+#' \code{\link[BiocParallel]{SerialParam}}
+#' so that callers always receive a usable backend.  The backend's own text
+#' progress bar is always switched off: the package draws a \code{cli} bar of
+#' its own, and two bars at once render on top of each other.
+#'
+#' @param BPPARAM A \code{\link[BiocParallel]{BiocParallelParam}} object, or
+#'   \code{NULL} (default) to use \code{SerialParam}.
+#'
+#' @return The (possibly newly created) \code{BiocParallelParam} object with its
+#'   progress bar disabled.
+#'
+#' @keywords internal
+#' @noRd
+ft_bpparam <- function(BPPARAM = NULL) {
     if (is.null(BPPARAM)) {
         BPPARAM <- BiocParallel::SerialParam()
     }
@@ -149,7 +148,7 @@ ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
     if (is.null(dimnames(A)[[1]])) rownames(A) <- seq_len(nrow(A))
     if (is.null(dimnames(A)[[2]])) colnames(A) <- seq_len(ncol(A))
 
-    BPPARAM <- ft_bpparam(BPPARAM = BPPARAM, .progress = .progress)
+    BPPARAM <- ft_bpparam(BPPARAM = BPPARAM)
 
     if (.progress) cli::cli_progress_step("Ranking...")
     ranks <- row_int_ranks(A)

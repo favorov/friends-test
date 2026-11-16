@@ -14,9 +14,9 @@
 #' \eqn{1 \ldots N}. \code{max.possible.rank} is not used under
 #' \code{"observed"}, and \code{best.step.rank} always comes back on the
 #' scale of the ranks given.
-#' @return a list of four values: \cr
+#' @return a list of five values: \cr
 #' \code{step.models} is return from [step_fit_ln_likelihoods] call,
-#' which the function starts with
+#' which the function starts with\cr
 #' \code{best.step.rank} is the rank value that makes the best step;
 #' it is not obligatory one on the \code{ranks} value.\cr
 #' \code{columns.on.left} is

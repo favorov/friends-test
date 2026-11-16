@@ -55,12 +55,9 @@ row_int_ranks <- function(
     }
 
     order <- ifelse(distance_like, 1, -1)
-    # if the interaction strength is distance_like, we order in ascending
-    # if nor, descending.
-    # E.g., the least ranks are the
-    # most close interactions
-    # if distance_like holds, the least is the best (first)
-    # and order==1 (ascending)
+    # a distance-like interaction strength is ranked ascending, so that the
+    # least rank is the closest interaction; otherwise descending, so that
+    # the least rank is the strongest interaction
     ranks.of.rows <-
         apply(
             A, 2,
@@ -71,7 +68,6 @@ row_int_ranks <- function(
                 )
             }
         )
-    # we applied ranking column-by-column (column-by-column)
     rownames(ranks.of.rows) <- rownames(A)
     colnames(ranks.of.rows) <- colnames(A)
     if (neglect_diagonal) {
