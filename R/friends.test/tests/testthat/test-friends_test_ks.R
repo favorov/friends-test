@@ -12,9 +12,9 @@ test_that("best friend is determined correctly", {
             row3 0.3841037 0.3800352 0.1255551 0.86969085 0.1862176
             row4 0.7698414 0.7774452 0.2672207 0.34034900 0.8273733
             row5 0.0000000 0.0000000 0.0000000 0.00000000 1.0000000"
-    attention <- as.matrix(read.table(text = text, header = TRUE))
+    A <- as.matrix(read.table(text = text, header = TRUE))
 
-    friends <- friends_test_ks(attention)
+    friends <- friends_test_ks(A)
     expected <- list(
         row5 = list(
             col5 = c(marker = 5, friend = 5, rank = 1)

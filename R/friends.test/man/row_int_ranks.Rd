@@ -4,14 +4,10 @@
 \alias{row_int_ranks}
 \title{row_int_ranks}
 \usage{
-row_int_ranks(
-  attention = NULL,
-  distance_like = FALSE,
-  neglect_diagonal = FALSE
-)
+row_int_ranks(A = NULL, distance_like = FALSE, neglect_diagonal = FALSE)
 }
 \arguments{
-\item{attention}{original attention matrix}
+\item{A}{the original interaction matrix}
 
 \item{distance_like}{if \code{TRUE}, ranks are ascending
 (the smaller is the better). Default is \code{FALSE}.}
@@ -25,7 +21,7 @@ a \eqn{|T| x |C|} matrix of integer ranks in
 \eqn{[1 .. |T|]} (or, \eqn{[1 .. |T|-1]} if neglect_diagonal).
 }
 \description{
-Given the (\code{attention}) \eqn{|T| \times |C|} matrix,
+Given the \eqn{|T| \times |C|} interaction matrix,
 convert it to matrix of descending ranks of rows in
 columns (columns).
 See \link{friends_test} documentation for details.

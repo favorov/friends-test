@@ -21,8 +21,8 @@ Authors@R: c(
         comment = c(ORCID = "0000-0003-2595-1091")),
     person("NIH", role = "fnd", comment = "Grant P30CA006973")
     )
-Description: Given a matrix of the strength of relation of members of two
-    sets (columns and rows), for each row it tests whether there are column(s)
+Description: Given an interaction matrix that holds the interaction strength
+    between members of two sets (columns and rows), for each row it tests whether there are column(s)
     for which the row is significantly more relevant than for the other
     column(s). The row is referred to as a marker, and the column(s) are
     friend(s) of the marker. Thus a specific association is identified rather

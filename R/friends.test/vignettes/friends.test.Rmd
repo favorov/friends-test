@@ -52,9 +52,9 @@ more important for the friends than for the non-friends.
 
 ### The test
 
-We have two sets:T (rows) and C (columns) and A real matrix A(t,c) that
-describes the strength of relation between each t and each c; t is an element of
-T and c is an element of C.
+We have two sets:T (rows) and C (columns) and a real interaction matrix A(t,c)
+that describes the interaction strength between each t and each c; t is an
+element of T and c is an element of C.
 
 The model applies to many problems in bioinformatics and statistics.
 
@@ -76,9 +76,9 @@ a friend (or the best friend if there is only one) for the row. We intend to
 express the meaning of the word "particularly" in this context by a statistical
 test, that is the **friends.test** provided by this package.
 
-Let's define the relevance of a row to a column as the rank of the $i$-th rows's
-relation with $j$-the column inside the column, or, in our notation, the rank of
-$A_{ij}$ in $A_{*j}$, and denote it as $r(t_i,c_j)$.
+Let's define the relevance of a row to a column as the rank of the $i$-th row's
+interaction with the $j$-th column inside the column, or, in our notation, the
+rank of $A_{ij}$ in $A_{*j}$, and denote it as $r(t_i,c_j)$.
 
 The main idea of the **friends.test** test is that if a row $t_i$ is not
 preferred by any column(s), the distribution of the ranks of the row in all the
@@ -476,8 +476,8 @@ hallmarks_by_markers
 
 The result of both `friends_test_ks` and `friends_test_bic` functions depends on
 random state generator. The dependency is because the test starts with ranking
-of the elements of the input matrix in the columns. The test requires the rank
-values to be integer, so the ties are resolved randomly. It you want a
+of the interaction matrix values in the columns. The test requires the ranks to
+be integer, so the ties are resolved randomly. It you want a
 reproducible result, keep the initial random generator state. Another option is
 to rank the matrix before the test call and then to pass the rank matrix as the
 input. It does not consume a lot of additional time, and the ranking of
@@ -502,7 +502,7 @@ Here is a minimal parallel example using a socket backend that also works on
 Windows:
 
 ```{r 'simple parallel example'}
-toy_attention <- matrix(
+toy_interaction <- matrix(
     c(
         10, 6, 7, 8, 9,
         9, 10, 6, 7, 8,
@@ -515,7 +515,7 @@ toy_attention <- matrix(
 )
 
 friends_test_ks(
-    toy_attention,
+    toy_interaction,
     threshold = 0.05,
     .progress = TRUE,
     BPPARAM = BiocParallel::SnowParam(workers = 2)

@@ -118,7 +118,7 @@ ft_bpparam <- function(BPPARAM = NULL, .progress = FALSE) {
 #' default dimnames, normalises the backend and ranks the matrix.  Each branch
 #' is then left with only the checks of its own parameters.
 #'
-#' @param A The association matrix.
+#' @param A The interaction matrix.
 #' @param max.friends.n The caller's value; \code{"all"} and \code{NULL} both
 #'   mean \code{ncol(A)}.  The caller is responsible for
 #'   \code{cli.progress_show_after}: the option has to outlive this call, so it

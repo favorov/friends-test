@@ -17,7 +17,7 @@ friends_test_ks(
 )
 }
 \arguments{
-\item{A}{original association matrix}
+\item{A}{the original interaction matrix}
 
 \item{threshold}{The adjusted p-value threshold for KS test for
 non-uniformity of ranks.}

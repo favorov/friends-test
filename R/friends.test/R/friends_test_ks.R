@@ -14,7 +14,7 @@
 #' for instance \code{BiocParallel::MulticoreParam(workers = 4)} on Unix-like
 #' systems or \code{BiocParallel::SnowParam(workers = 4)} on all platforms.
 #'
-#' @param A original association matrix
+#' @param A the original interaction matrix
 #' @param threshold The adjusted p-value threshold for KS test for
 #' non-uniformity of ranks.
 #' @param p.adjust.method Multiple testing correction method,

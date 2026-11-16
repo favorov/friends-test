@@ -3,7 +3,7 @@ friends.test R implementation
 
 This is R implementation of the friends.test .
 
-The idea is: we have T rows and C columns and column-to-row relation described as a full |T|x|C| matrix. Relation is a comparable value, *e.g.* weight, load, correlation. First, we rank all relations of a column to all the rows inside the column. The ranks are referred to as importance of the rows to the column.
+The idea is: we have T rows and C columns and column-to-row interaction described as a full |T|x|C| interaction matrix. An interaction matrix value is a comparable number, *e.g.* weight, load, correlation. First, we rank all the interaction strengths of a column to all the rows inside the column. The ranks are referred to as importance of the rows to the column.
 
 If a row is more important for a column than for other column(s), and the difference is more than by chance, the column is the row's friend and the row is the column's marker. "By chance" (null model)" implies uniform distribution of the row's importance for different columns.
 

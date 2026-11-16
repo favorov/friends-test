@@ -1,11 +1,11 @@
 #'
 #' row_int_ranks
 #'
-#' Given the (\code{attention}) \eqn{|T| \times |C|} matrix,
+#' Given the \eqn{|T| \times |C|} interaction matrix,
 #' convert it to matrix of descending ranks of rows in
 #' columns (columns).
 #' See [friends_test] documentation for details.
-#' @param attention original attention matrix
+#' @param A the original interaction matrix
 #' @param distance_like if \code{TRUE}, ranks are ascending
 #' (the smaller is the better). Default is \code{FALSE}.
 #' @param neglect_diagonal if square matrix, and the diagonal
@@ -32,36 +32,36 @@
 #' TF.ranks <- row_int_ranks(regulation)
 #' @export
 row_int_ranks <- function(
-    attention = NULL,
+    A = NULL,
     distance_like = FALSE,
     neglect_diagonal = FALSE
 ) {
-    dims <- dim(attention)
+    dims <- dim(A)
     if (min(dims) < 2) {
         stop("The friends.test requires both dimensions of the
         A matrix to be more than 1")
     }
     if (neglect_diagonal) {
         if (dims[1] == dims[2]) {
-            diag(attention) <- NA
+            diag(A) <- NA
         } else {
             warning(
-                "neglect_diagonal can work only for square attention matrix"
+                "neglect_diagonal can work only for square interaction matrix"
             )
             neglect_diagonal <- FALSE
         }
     }
 
     order <- ifelse(distance_like, 1, -1)
-    # if attention is distance_like, we will order in ascending
+    # if the interaction strength is distance_like, we order in ascending
     # if nor, descending.
     # E.g., the least ranks are the
-    # most close attentions
+    # most close interactions
     # if distance_like holds, the least is the best (first)
     # and order==1 (ascending)
     ranks.of.rows <-
         apply(
-            attention, 2,
+            A, 2,
             function(x) {
                 data.table::frankv(x,
                     ties.method = "random",
@@ -70,8 +70,8 @@ row_int_ranks <- function(
             }
         )
     # we applied ranking column-by-column (column-by-column)
-    rownames(ranks.of.rows) <- rownames(attention)
-    colnames(ranks.of.rows) <- colnames(attention)
+    rownames(ranks.of.rows) <- rownames(A)
+    colnames(ranks.of.rows) <- colnames(A)
     # we reapply NA to the diagonal -- it will be used not to see
     # at in the C++ u statistics calculation
     # it also signals C++ that there are |C|-1 values rather that |C|

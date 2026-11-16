@@ -14,7 +14,7 @@ friends_test(
 )
 }
 \arguments{
-\item{A}{original association matrix}
+\item{A}{the original interaction matrix}
 
 \item{mode}{which test decides whether a row has friends: \code{"ks"}
 (default) for the Kolmogorov-Smirnov branch, \link{friends_test_ks}, or
@@ -54,7 +54,7 @@ the outer (return) list enumerate markers.
 }
 \description{
 We have two sets: T (rows) and C (columns) and
-A real matrix A(t,c) that describes the strength of association
+a real interaction matrix A(t,c) that describes the interaction strength
 between each t and each c; t is an element of T and c is an element of C.
 For each t we want to identify whether it is significantly more
 relevant for some c's than for the remaining c's.

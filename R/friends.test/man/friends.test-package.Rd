@@ -7,7 +7,7 @@
 \title{friends.test: Rank-Based Method for Feature Selection in Interaction Matrices}
 \description{
 We have two sets:T (rows) and C (columns) and
-A real matrix A(t,c) that describes the strength of association
+a real interaction matrix A(t,c) that describes the interaction strength
 between each t and each c; t is an element of T and c is an element of C.
 For each t we want to identify whether it is significantly more
 relevant for some c's than for the remaining c's.
@@ -16,7 +16,7 @@ are the t's friend. And, the t is the c's marker.
 For each row, we want to identify the column(s) that specifically prefer(s)
 the row. We say that such a column is a friend (or the best friend if it is
 the only) for the row.
-The simplest example: imagine that only one column pays attention to our row.
+The simplest example: imagine that only one column interacts with our row.
 }
 \seealso{
 Useful links:
