@@ -23,19 +23,19 @@ test_that("Signal-noise test for ks", {
         fn <- sum(mask_true & !mask_pred) # False Negatives
         tn <- sum(!mask_true & !mask_pred) # True Negatives
 
-        # Всего истинных положительных и отрицательных
+        # how many entries are really signal, and how many are really noise
         total_true <- tp + fn
         total_false <- fp + tn
 
-        # Проценты
+        # the shares
         tp_pct_true <- tp / total_true
-        # сколько % от всех TRUE в mask_true нашли
+        # the share of the real signal that was found
         fp_pct_false <- fp / total_false
-        # сколько % от всех FALSE в mask_true ошибочно пометили
+        # the share of the real noise that was flagged
         precision_pct <- if ((tp + fp) > 0) tp / (tp + fp) else NA
-        # доля TP среди всех предсказанных положительных
+        # the share of true positives among everything flagged
         recall_pct <- tp / total_true
-        # доля TP среди всех реальных положительных
+        # the share of true positives among all the real signal
 
 
         list(

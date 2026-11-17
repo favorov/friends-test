@@ -195,7 +195,7 @@ friends_test_ks(regulation, threshold = .5, p.adjust.method = "no")
 ```
 
 ### Iris example
-Let's look for anomalies in the traditional **iris** dataset: 
+Let's look for anomalies in the traditional **iris** dataset:
 ```{r datairis}
 data("iris")
 print(head(iris, n = 5))
@@ -230,7 +230,7 @@ friends.test naturally works with this type of data.
 ## CoGAPS feature loadings example
 
 [NATURAM EXPELLAS FURCA, TAMEN USQUE RECURRET]{style="float:right"}
- 
+
 CoGAPS decomposes an expression dataset into patterns of expression, ideally,
 each of them represent an underlying biological process. We use the
 [PDAC dataset](https://zenodo.org/records/7709664) from the
