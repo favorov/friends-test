@@ -3,6 +3,23 @@
 # search the same candidates and build the same return list.
 
 
+# The BIC branch needs a prior, and both the wrapper and the fit have to say
+# so before they do any work.  The bounds are inclusive: a prior of 0 or 1 is
+# a statement about the data, not a mistake.
+.check_prior <- function(prior.to.have.friends) {
+    if (!is.numeric(prior.to.have.friends) ||
+            length(prior.to.have.friends) != 1L ||
+            is.na(prior.to.have.friends) ||
+            prior.to.have.friends < 0 || prior.to.have.friends > 1) {
+        stop(
+            "prior.to.have.friends must be a single number between 0 and 1.",
+            call. = FALSE
+        )
+    }
+    invisible(TRUE)
+}
+
+
 # The rank scale the step models live on.  "observed" takes both ends from the
 # row, which is what unif_ks_test() does by default; "continuity" keeps the
 # whole 1..max.possible.rank scale.  The ranks come back rebased to 1..size,

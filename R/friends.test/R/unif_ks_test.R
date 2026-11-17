@@ -15,8 +15,7 @@
 #'     ranks are spread evenly over part of the scale counts as uniform.  That
 #'     is deliberate: the method looks for a structural break, not for a shift.
 #'     The price is that both endpoints are fitted to the sample, so the
-#'     p-value is conservative -- with three columns the test cannot reject at
-#'     all.}
+#'     p-value is conservative.}
 #'   \item{\code{"continuity"}}{the support is \eqn{[0.5, N + 0.5]}, spreading
 #'     each integer \eqn{i} over \eqn{[i - 0.5, i + 0.5]}.  Nothing is fitted,
 #'     so the p-value is calibrated, but concentration into part of the scale
@@ -39,6 +38,20 @@
 #' it.  One consequence is that \code{"observed"} and \code{"continuity"} draw
 #' no random numbers and repeat exactly; only \code{"randomized"} varies
 #' between runs.
+#'
+#' The fitted support decreases the sensitivity of the test, and with few
+#' columns the loss decides the outcome: under \code{"observed"} the p-value
+#' of a row of \eqn{k} columns is bounded below by \eqn{2 / k^k}.  That is
+#' 0.074 for \eqn{k = 3}, so a three-column matrix yields no markers at any
+#' conventional threshold, and 0.0078, \eqn{6.4 \times 10^{-4}}{6.4e-4} and
+#' \eqn{4.3 \times 10^{-5}}{4.3e-5} for four, five and six columns.  The
+#' bound is
+#' approached, not reached, by a row that puts all of its ranks but one at one
+#' end of its own range, and it bounds the raw p-value: a run over many rows
+#' has to survive \code{p.adjust.method} as well.  The fixed-support
+#' conventions have no such floor -- \code{"continuity"} returns about 0.005
+#' for three columns of a tall matrix -- which is the other half of the price
+#' of invariance.
 #'
 #' Under \code{"observed"}, a row holding a single rank leaves the fitted
 #' support no width at all.  There is no structural break to find there, so

@@ -16,8 +16,8 @@ best_step_fit_bic(
 
 \item{max.possible.rank}{number of rows, i.e. maximal possible rank}
 
-\item{prior.to.have.friends}{The prior for a row is important enough to
-have friendly columns}
+\item{prior.to.have.friends}{The prior probability that a row has friendly
+columns, a number in \eqn{[0, 1]}.  It has no default and has to be given.}
 
 \item{uniform.null}{how the smallest and the largest possible rank are
 chosen. \code{"observed"} (the default) takes them from the row itself,

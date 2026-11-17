@@ -42,6 +42,33 @@ test_that("each branch checks its own parameter", {
 })
 
 
+test_that("the prior is a single number between 0 and 1, inclusive", {
+    set.seed(7)
+    A <- matrix(rnorm(60), nrow = 20, ncol = 3)
+    ranks <- row_int_ranks(A)[1, ]
+
+    bad <- list(NULL, NA, NA_real_, "0.5", c(0.1, 0.2), -1, 2, Inf)
+    for (value in bad) {
+        expect_error(
+            friends_test_bic(A, prior.to.have.friends = value),
+            "between 0 and 1"
+        )
+        # the exported fit checks it too: it is reachable on its own
+        expect_error(
+            best_step_fit_bic(ranks, 20, value),
+            "between 0 and 1"
+        )
+    }
+
+    # and it is required, with no default standing in for it
+    expect_error(friends_test_bic(A), "prior.to.have.friends")
+
+    # the ends of the range are statements about the data, not mistakes
+    expect_no_error(friends_test_bic(A, prior.to.have.friends = 0))
+    expect_no_error(friends_test_bic(A, prior.to.have.friends = 1))
+})
+
+
 test_that("row_int_ranks refuses something that is not a matrix", {
     expect_error(row_int_ranks(NULL), "non-null")
     expect_error(row_int_ranks(1:10), "2D")

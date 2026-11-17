@@ -8,8 +8,8 @@
 #' See [friends_test] documentation for details.
 #'
 #' @inheritParams step_fit_ln_likelihoods
-#' @param prior.to.have.friends The prior for a row is important enough to
-#' have friendly columns
+#' @param prior.to.have.friends The prior probability that a row has friendly
+#' columns, a number in \eqn{[0, 1]}.  It has no default and has to be given.
 #' @param uniform.null how the smallest and the largest possible rank are
 #' chosen. \code{"observed"} (the default) takes them from the row itself,
 #' \code{min(ranks)} and \code{max(ranks)}, which makes the comparison
@@ -53,6 +53,7 @@ best_step_fit_bic <- function(
     prior.to.have.friends,
     uniform.null = c("observed", "continuity")
 ) {
+    .check_prior(prior.to.have.friends)
     uniform.null <- match.arg(uniform.null)
     scale <- .rank_scale(ranks, max.possible.rank, uniform.null)
     step.models <- .step_fit_compact(scale$ranks, scale$size)

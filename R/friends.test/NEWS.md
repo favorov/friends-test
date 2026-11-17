@@ -2,9 +2,11 @@
 
 ## friends.test 0.99.24
 
-- `unif_ks_test()` now keeps the ties between equal in-column ranks (not the interaction matrix values, that is a different step) instead of jittering them, and tests a tied row against the asymptotic Kolmogorov law. KS p-values change slightly; marker sets are unchanged on data with many distinct ranks per row.
+- `unif_ks_test()` now keeps the ties between equal in-column ranks instead of jittering them, and tests a tied row against the asymptotic Kolmogorov law. KS p-values change slightly; marker sets are unchanged on data with many distinct ranks per row. We do not speak about the source A (interaction) matrix values, that is a different step.
 - Under `"observed"`, a row holding a single rank now gets a p-value of 1 instead of a random one.
 - `simulate.p.value` and `B` are ignored in `unif_ks_test()` and `friends_test_ks()`: the one-sample `ks.test()` does not use them, so a call that passes them warns.
+- All "attention" terms for the initial A matrix are changed to "interaction" according to the manuscript. The attention argument of `row_int_ranks()` renamed to A
+- prior.to.have.friends check improved
 
 ## friends.test 0.99.23
 

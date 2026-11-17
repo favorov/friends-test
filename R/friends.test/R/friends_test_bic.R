@@ -15,7 +15,8 @@
 #' systems or \code{BiocParallel::SnowParam(workers = 4)} on all platforms.
 #'
 #' @param A the original interaction matrix
-#' @param prior.to.have.friends The prior for a row to have friendly columns.
+#' @param prior.to.have.friends The prior probability that a row has friendly
+#' columns, a number in \eqn{[0, 1]}.  It has no default and has to be given.
 #' @param max.friends.n The maximal number of friends for a marker.
 #' A value \eqn{n} means that we filter out a row if it has more than
 #' \eqn{n} friendly columns. 1 means we look only for unique (best) friends.
@@ -69,7 +70,7 @@
 #'
 friends_test_bic <- function(
     A = NULL,
-    prior.to.have.friends = -1,
+    prior.to.have.friends,
     max.friends.n = "all",
     uniform.null = c("observed", "continuity"),
     .progress = FALSE,
@@ -82,12 +83,7 @@ friends_test_bic <- function(
         on.exit(options(old_options), add = TRUE)
     }
 
-    if (prior.to.have.friends < 0 || prior.to.have.friends > 1) {
-        stop(
-            "friends_test_bic requires the prior.to.have.friends value ",
-            "to be explicitly provided and to be a prior."
-        )
-    }
+    .check_prior(prior.to.have.friends)
     uniform.null <- match.arg(uniform.null)
 
     prep <- .ft_prepare(A, max.friends.n, .progress, BPPARAM)

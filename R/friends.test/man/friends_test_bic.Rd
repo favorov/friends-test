@@ -6,7 +6,7 @@
 \usage{
 friends_test_bic(
   A = NULL,
-  prior.to.have.friends = -1,
+  prior.to.have.friends,
   max.friends.n = "all",
   uniform.null = c("observed", "continuity"),
   .progress = FALSE,
@@ -16,7 +16,8 @@ friends_test_bic(
 \arguments{
 \item{A}{the original interaction matrix}
 
-\item{prior.to.have.friends}{The prior for a row to have friendly columns.}
+\item{prior.to.have.friends}{The prior probability that a row has friendly
+columns, a number in \eqn{[0, 1]}.  It has no default and has to be given.}
 
 \item{max.friends.n}{The maximal number of friends for a marker.
 A value \eqn{n} means that we filter out a row if it has more than

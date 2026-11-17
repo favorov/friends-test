@@ -52,6 +52,27 @@ test_that("the three uniform.null conventions differ as intended", {
 })
 
 
+test_that("the fitted support puts a floor under the p-value", {
+    # with the support fitted to the row, the KS statistic cannot exceed
+    # (k - 1) / k, so a row of k columns cannot reach below 2 / k^k. The floor
+    # is approached by a row with all its ranks but one at one end.
+    for (k in 3:6) {
+        extreme <- c(seq_len(k - 1L), 1e9)
+        bound <- 2 / k^k
+        expect_gt(unif_ks_test(extreme), bound)
+        expect_lt(unif_ks_test(extreme), bound * 1.001)
+    }
+
+    # three columns therefore yield no marker at any conventional threshold,
+    # while a fixed support has no such floor
+    expect_gt(unif_ks_test(c(1, 2, 1e9)), 0.05)
+    expect_lt(
+        unif_ks_test(c(1L, 1L, 1L), "continuity", max.possible.rank = 1000),
+        0.05
+    )
+})
+
+
 test_that("uniform.null is validated, and two of them need the rank scale", {
     ranks <- c(3L, 17L, 42L, 55L)
 
