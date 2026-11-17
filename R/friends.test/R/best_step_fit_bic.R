@@ -23,8 +23,9 @@
 #' @return a list of five values: \cr
 #' \code{step.models} is the value returned by
 #' [step_fit_ln_likelihoods], the call this function starts with\cr
-#' \code{best.step.rank} is the rank value that makes the best step;
-#' it is not obligatory one on the \code{ranks} value.\cr
+#' \code{best.step.rank} is the rank value that makes the best step; it is a
+#' rank on the scale of \code{ranks} and need not be one of the ranks the row
+#' actually takes.\cr
 #' \code{columns.on.left} is the vector of the columns on the
 #' left of the best step (including the step value).
 #' They are friends of the row, and the row is their marker.\cr
