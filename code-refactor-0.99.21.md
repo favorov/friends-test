@@ -671,7 +671,7 @@ code instead, and are done:
   want a line from each; scripts, vignettes and build machines now see nothing,
   and someone who typed `library()` still gets it.
 
-The three answers above are drafted for the issue in `review-response.md`.
+The three answers above are drafted for the issue in `review-response-0.99.20-0.99.24.md`.
 
 ---
 

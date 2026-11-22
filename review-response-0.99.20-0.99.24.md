@@ -1,16 +1,49 @@
-# Reply to the review — draft for the Contributions issue
+# friends.test 0.99.24 — the answer to the review of 0.99.20
 
-Version 0.99.22 is on the default branch of <https://github.com/favorov/friends.test>.
-Two commits, tagged `0.99.21` and `0.99.22`; `NEWS.md` lists everything.
+Version 0.99.24 is on the default branch of <https://github.com/favorov/friends.test>.
+
+Hugo Gruson reviewed version 0.99.20 in Contributions issue #4239. The code part
+of the review arrived as PR #1, merged on 5 August 2026; the rest as a checklist
+comment. That issue was closed for inactivity before we answered, and we are
+sorry for the silence — the package was not idle. Everything the review asked
+for is answered below, nothing dropped. Four tagged versions have gone in since:
+`0.99.21`, `0.99.22`, `0.99.23` and `0.99.24`; `NEWS.md` lists every change under
+its version.
 
 Where the package stands against where the review found it:
 
-| | reviewed | now |
+| | 0.99.20, reviewed | 0.99.24 |
 |---|---|---|
+| tests | 83 | 281 |
 | test coverage | 75.57% | 100% |
-| tests | 83 | 146 |
-| `R CMD check --as-cran` | 4 NOTE | 2 NOTE |
-| `BiocCheck` | 8 NOTES | 4 NOTES, 0 ERRORS, 0 WARNINGS |
+| `R CMD check` | 4 NOTE | OK, no NOTE |
+| `R CMD check --as-cran` | | 2 NOTE |
+| `BiocCheck` | 8 NOTES | 0 ERRORS, 0 WARNINGS, 5 NOTES |
+
+Two of those rows need a correction from us before anything else, and three
+changes made after the review alter results without having been asked for. The
+correction is next; the three changes are at the end.
+
+---
+
+## A correction to our own test numbers
+
+While finishing 0.99.24 we found that `tests/testthat.R` held only
+`test_package("friends.test")`. Under `R CMD check` that call runs nothing: it
+looks for tests inside the *installed* package, where `tests/` is not copied,
+finds none, prints "No installed testthat tests found" and exits 0. So every
+`Status: OK` this package has ever earned — on our machines and on the
+Bioconductor build machines — was earned without a single test being executed.
+The tests themselves were real and passing; we ran them with `testthat` directly
+and measured coverage with `covr`, which is why nothing looked wrong.
+
+`tests/testthat.R` now calls `test_check("friends.test")`, and `R CMD check`
+runs 281 tests. That also turned on two `SnowParam` tests that skip in
+`load_all()` mode and had therefore never run anywhere.
+
+The coverage figure in the table, 100%, was measured with `covr` at 0.99.22 and
+is the honest provenance of it; the test count has nearly doubled since, and we
+have not re-measured.
 
 ---
 
@@ -45,6 +78,12 @@ message, is gone. Two more went with it: `devtools` and `markdown` were in
 **`biocViews`.** While rewriting the `Description` we let `BiocCheck` suggest
 terms from the new text and took both: `GeneRegulation` and `Clustering` join
 `Annotation` and `StatisticalMethod`.
+
+**`URL`.** The preprint is listed next to the repository.
+
+**Terminology.** The input matrix is called an interaction matrix throughout,
+in the manuscript and now in the package: the `attention` argument of
+`row_int_ranks()` is `A`, and the word is gone from the documentation.
 
 ## NAMESPACE
 
@@ -101,9 +140,9 @@ and our own adjusted p-values are shipped, never the gene set memberships.
 
 ## Unit tests
 
-**Coverage.** 75.57% → 100%. Most of what was uncovered turned out to be
-validation: a check that never fires in a passing test is a check nobody has
-run. There is a file for them now.
+**Coverage.** 75.57% → 100%, measured at 0.99.22 and with the caveat above.
+Most of what was uncovered turned out to be validation: a check that never fires
+in a passing test is a check nobody has run. There is a file for them now.
 
 Measuring coverage also found two internal helpers, `ft_bplapply_dbl()` and
 `ft_bpmapply_list()`, that had lost their callers during the refactoring. They
@@ -124,6 +163,8 @@ when the call ends in an error.
 **Messages that name the wrong argument.** `step_fit_ln_likelihoods()` referred
 to a `Rows_no` parameter the function has never had, and two different problems
 — a non-integer rank and a rank below one — shared one message. Both fixed.
+`prior.to.have.friends` is validated the same way now, in both functions that
+take it.
 
 **Code repetition.** Three kinds, and all three are gone.
 
@@ -215,50 +256,98 @@ entirely, say so and it will.
 
 ## What the remaining NOTES are
 
-`R CMD check --as-cran` reports two: "New submission", and one about `V8` not
-being installed on our machine, which stops it checking maths rendering in the
-HTML manual.
+`R CMD check` is clean. Under `--as-cran` two NOTES remain: "New submission",
+and `V8` not being installed on our machine, which stops it checking maths
+rendering in the HTML manual.
 
-`BiocCheck` reports four, and two of them will not go away:
+`BiocCheck` reports five, and three of them will not go away:
 
-* **Function length.** `friends_test_ks()` is 122 lines against a recommended
-  50. The rework brought it down from 195. What is left is the body of each
-  per-row function, written inline where it is handed to the internal driver.
-  Extracting them would buy nothing: the driver replaces the function's
-  environment with the global one so a `SnowParam` worker can deserialize it,
-  so an extracted function would be re-parented in the same way, still not see
-  the package namespace, and still need `friends.test::` on every call. Your
-  own checklist marks "No excessively long functions" as passed, so we have
-  left them where they are.
-* **Line lengths and indentation.** 17 lines over 80 characters and 49 indents
-  that are not a multiple of four. These are dominated by the `man/` pages,
-  which `roxygen2` writes, and by the grouped `importFrom` form that
-  `roxygen2` 8.1.0 now uses in `NAMESPACE`. Neither survives regeneration if we
+* **Function length.** Four functions are over the recommended 50 lines; the
+  longest is `friends_test_ks()` at 128, down from 195 before the rework. What
+  is left is the body of each per-row function, written inline where it is
+  handed to the internal driver. Extracting them would buy nothing: the driver
+  replaces the function's environment with the global one so a `SnowParam`
+  worker can deserialize it, so an extracted function would be re-parented in
+  the same way, still not see the package namespace, and still need
+  `friends.test::` on every call. Your own checklist marks "No excessively long
+  functions" as passed, so we have left them where they are.
+* **Line lengths and indentation.** Two NOTES, both dominated by the `man/`
+  pages, which `roxygen2` writes, and by the grouped `importFrom` form that
+  `roxygen2` 8.1.1 now uses in `NAMESPACE`. Neither survives regeneration if we
   edit it by hand. In `R/` itself there are none of either.
-* The other two are the `fnd` grant note, which disappeared once the funder was
-  added, and the mailing-list subscription that `BiocCheck` cannot verify
+* **`suppressWarnings()`.** One call, in `unif_ks_test()`, and deliberate. A
+  tied sample makes `ks.test()` fall back to the asymptotic Kolmogorov law and
+  warn about it; we ask for that law explicitly, so the warning is answering a
+  question we have already decided. Matching it by text is not an option — the
+  message is translated.
+* The fifth is the mailing-list subscription, which `BiocCheck` cannot verify
   without credentials.
 
 ---
 
-## One thing we changed that you did not ask about
+## Three changes we made that you did not ask for
 
-While going through `unif_ks_test()` we found something in the statistics that
-we think you should know about, though it does not need anything from you.
+They are in the statistics, not in the interface, and two of them change which
+markers and friends the package reports. We think the reviewer should hear that
+from us.
 
-The KS test needs a continuous null, so an interval has to be named for the
-ranks. The old `uniform.max` argument named only its upper endpoint. The lower
-one was taken from the data in every setting, one line earlier, and was
-documented nowhere. Its `"c"` setting therefore mixed a fitted lower end with a
-fixed upper one, which has no reading as a null hypothesis: measured against
-uniform rows it rejected at 0.066 instead of 0.05 with eight columns, and at
-0.084 with three.
+**0.99.22 — the null of the KS test got a name.** The KS test needs a
+continuous null, so an interval has to be named for the ranks. The old
+`uniform.max` argument named only its upper endpoint. The lower one was taken
+from the data in every setting, one line earlier, and was documented nowhere.
+Its `"c"` setting therefore mixed a fitted lower end with a fixed upper one,
+which has no reading as a null hypothesis: measured against uniform rows it
+rejected at 0.066 instead of 0.05 with eight columns, and at 0.084 with three.
 
 `uniform.max` is replaced by `uniform.null`, which names the whole convention.
-The default, `"observed"`, keeps the present behaviour and is a deliberate
-choice: the method looks for a structural break, not for a shift, so a row
-whose ranks are spread evenly over part of the scale should count as having no
+The default, `"observed"`, keeps the previous behaviour and is a deliberate
+choice: the method looks for a structural break, not for a shift, so a row whose
+ranks are spread evenly over part of the scale should count as having no
 friends. Two calibrated alternatives, `"continuity"` and `"randomized"`, are
 available and documented. The `"c"` setting is withdrawn rather than renamed.
-Marker sets are unchanged on every case we checked, including the CoGAPS
-example.
+What the default costs is now documented too: a fitted support puts a floor
+under the p-value, `2 / k^k` for a row of `k` columns, which is 0.074 at
+three columns — so a three-column matrix yields no markers at any conventional
+threshold. The fixed-support settings have no such floor.
+
+**0.99.23 — the Bayesian branch took the same null.** `friends_test_bic()`,
+`best_step_fit_bic()` and `best_step_fit()` were always comparing the step model
+against the whole rank scale `1..nrow(A)` while the KS branch, under its
+default, used the row's own range. We had decided earlier that the two branches
+ask different questions on purpose; on reflection that was wrong, and a user who
+sets a convention should get it in both. All three take `uniform.null` now,
+`"observed"` is the default, and `"continuity"` is the way back to the previous
+behaviour. Two exact ties are resolved explicitly: a draw between the step model
+and the uniform one goes to the uniform one, and a draw between friend counts to
+the smallest.
+
+This one moves results, and considerably. On the shipped 15176 by 8 CoGAPS
+matrix, the BIC branch at a prior of 1e-3 reports 1583 markers where it used to
+report 3569, with 999 in common — a Jaccard index of 0.24. The direction
+reverses across the prior: at 1e-2 the new convention gives far *more* markers
+(14327 against 6298), at 1e-4 far fewer (729 against 2053). "Stricter" is not a
+statement one can make about it. The KS branch keeps its marker set exactly, as
+its own test did not change; a quarter of its markers get a slightly smaller
+friend set, because the step is now located on the same scale the test used.
+Under `"continuity"` nothing moves at all, which is how we checked the wiring.
+
+Whether fitting both endpoints of the support is legitimate inside a likelihood
+comparison is a question for the authors of the method, and it is open. It
+blocks nothing: `"observed"` is the default either way, and `"continuity"` is one
+argument away.
+
+**0.99.24 — ties are kept instead of jittered.** `unif_ks_test()` used to add
+noise to equal ranks to make the sample continuous. It does not any longer:
+`ks.test()` computes the statistic correctly on a tied sample, only the null
+distribution is affected, and the function now asks for the asymptotic
+Kolmogorov law explicitly for a tied row and keeps the exact law for a tie-free
+one. Two runs on the same data give the same answer under `"observed"` and
+`"continuity"`; only `"randomized"` varies, which is what its name is for. A row
+holding a single distinct rank returns 1 rather than a random p-value. KS
+p-values move slightly; marker sets are unchanged on data with many distinct
+ranks per row, and unchanged on the 765 by 700 matrix of our own application.
+
+`simulate.p.value` and `B` are withdrawn from `unif_ks_test()` and
+`friends_test_ks()`. They were dead: one-sample `ks.test()` computes
+`pkolmogorov(D, n)` and never reads them, and a call that passes them now warns
+rather than appearing to do something.
