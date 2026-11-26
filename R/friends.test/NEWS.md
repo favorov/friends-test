@@ -1,5 +1,9 @@
 # Friends.test version history
 
+## friends.test 0.99.25
+
+- `friends.test.cogaps.example`: the source now links to the Zenodo record and the CoGAPS reference cites the bioRxiv DOI.
+
 ## friends.test 0.99.24
 
 - `unif_ks_test()` now keeps the ties between equal in-column ranks instead of jittering them, and tests a tied row against the asymptotic Kolmogorov law. KS p-values change slightly; marker sets are unchanged on data with many distinct ranks per row. We do not speak about the source A (interaction) matrix values, that is a different step.

@@ -43,7 +43,7 @@
 #' which this example does not use.
 #'
 #' @source The \code{cogapsresult.Rds} file of the Zenodo record
-#' \url{https://doi.org/10.5281/zenodo.7709664}.
+#' \url{https://zenodo.org/records/7709664}.
 #'
 #' @references
 #' Johnson J, Tsang A, Mitchell JT, Zhou DL, Sherman T, Liefeld T, Loth M,
@@ -51,8 +51,8 @@
 #' Reich M, Fertig EJ, Stein-O'Brien GL.
 #' \emph{Inferring cellular and molecular processes in single-cell data with
 #' non-negative matrix factorization using Python, R, and GenePattern Notebook
-#' implementations of CoGAPS.} Zenodo, 2023.
-#' \doi{10.5281/zenodo.7709664}
+#' implementations of CoGAPS.} bioRxiv, 2022.
+#' \doi{10.1101/2022.07.09.499398}
 #'
 #' Liberzon A, Birger C, Thorvaldsdottir H, Ghandi M, Mesirov JP, Tamayo P.
 #' \emph{The Molecular Signatures Database hallmark gene set collection.}
