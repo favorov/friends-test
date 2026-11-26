@@ -236,3 +236,6 @@ p-values move slightly; marker sets are unchanged on data with many distinct
 ranks per row, and on the 765 by 700 matrix of our own application.
 `simulate.p.value` and `B` are withdrawn as dead — one-sample `ks.test()` never
 reads them — so a call that passes them warns.
+
+**0.99.25 - doi and url fixed in data docs.** The PDAC data source was refered with 
+typos. Fixed. 
