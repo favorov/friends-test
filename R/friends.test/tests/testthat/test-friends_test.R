@@ -61,6 +61,11 @@ test_that("friends_test rejects an argument belonging to the other mode", {
         friends_test(A, mode = "ks", prior.to.have.friends = 0.5),
         "belongs to mode \"bic\""
     )
+    expect_error(
+        friends_test(A, mode = "bic", threshold = 0.05,
+            p.adjust.method = "BH"),
+        "arguments .*threshold.*p\\.adjust\\.method.* belong to mode \"ks\""
+    )
 })
 
 
